@@ -39,10 +39,10 @@ public class Utils {
     }
 
     public static<K, V, W extends V> Map<K, List<W>> collectByClass(
-            List<V> list, ElementKey<K, V> elementKey) {
+            List<V> list, Function<V, K> elementKey) {
         Map<K, List<W>> map = new HashMap<>();
         for (V v : list) {
-            K key = elementKey.getKey(v);
+            K key = elementKey.apply(v);
             if (key != null) {
                 if (!map.containsKey(key)) {
                     map.put(key, new ArrayList<W>());
@@ -89,7 +89,7 @@ public class Utils {
         private final T t;
         private final int count;
 
-        Countable(T t, int count) {
+        public Countable(T t, int count) {
             this.t = t;
             this.count = count;
         }
@@ -98,13 +98,24 @@ public class Utils {
         public int getCount() { return count; }
     }
 
+    public static class Availalbe<T> extends Countable<T>{
+
+        public Availalbe(T t, boolean available) {
+            super(t, available ? 1 : 0);
+        }
+
+        public boolean isAvailalbe() {
+            return getCount() > 0;
+        }
+    }
+
     public static class LimitedCountable<T> {
 
         private final T t;
         private final int count;
         private final int limit;
 
-        LimitedCountable(T t, int count, int limit) {
+        public LimitedCountable(T t, int count, int limit) {
             this.t = t;
             this.count = count;
             this.limit = limit;

@@ -1,7 +1,6 @@
 package shaul.games.moo.model.commands;
 
 import shaul.games.moo.model.Fleet;
-import shaul.games.moo.model.Player;
 
 /**
  * Created by Shaul on 2/25/2015.

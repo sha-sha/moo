@@ -1,17 +1,17 @@
 package shaul.games.moo.setup;
 
-import shaul.games.moo.model.Ship.Module;
+import shaul.games.moo.model.Ship.ShipModule;
 
 /**
  * Created by Shaul on 3/21/2015.
  */
 public class ModuleFactory {
 
-    public static Module createComputerModule(String name, final int level) {
-        return new Module(name, new Computer(name, level));
+    public static ShipModule createComputerModule(String name, final int level) {
+        return new ShipModule(name, ShipModule.Type.COMPUTER, new Computer(level));
     }
 
-    private static class BaseModule implements Module.Base {
+    private static class BaseModule implements ShipModule.Base {
         private final int[] baseCost;
         private final int[] baseSize;
         private final int[] basePower;
@@ -32,7 +32,7 @@ public class ModuleFactory {
         }
     }
 
-    private static class Computer extends BaseModule implements Module.Computer {
+    private static class Computer extends BaseModule implements ShipModule.Computer {
         private static final int[] BASE_COST = {5, 22, 104, 520};
         private static final int[] BASE_SIZE_POWER = {5, 10, 20, 100};
         private static final int[] BASE_SPACE = {10, 20, 40, 200};

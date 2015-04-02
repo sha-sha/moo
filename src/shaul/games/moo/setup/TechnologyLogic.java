@@ -1,7 +1,9 @@
 package shaul.games.moo.setup;
 
 import shaul.games.moo.model.Research.ITechnologyLogic;
+import shaul.games.moo.model.Research.Technology;
 import shaul.games.moo.model.Ship.HullType;
+import shaul.games.moo.model.Ship.ShipModule;
 
 import java.util.Arrays;
 import java.util.List;
@@ -28,5 +30,30 @@ public class TechnologyLogic implements ITechnologyLogic {
     @Override
     public List<HullType> getAvailableHullTypes() {
         return HULL_TYPES;
+    }
+
+    @Override
+    public int getHullTotalSpace(int hullSize) {
+        return 0;
+    }
+
+    @Override
+    public Technology getTechnology(String name) {
+        return null;
+    }
+
+    @Override
+    public ShipModule getShipModule(String name) {
+        return null;
+    }
+
+    @Override
+    public ShipModule getLowestArmor() {
+        return null;
+    }
+
+    @Override
+    public ShipModule getLowestEngine() {
+        return null;
     }
 }

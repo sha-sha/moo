@@ -3,11 +3,13 @@ package shaul.games.moo;
 
 import shaul.games.moo.model.IGameLogic;
 import shaul.games.moo.model.Player.IPlayer;
-import shaul.games.moo.model.Player.Player;
+import shaul.games.moo.model.Player.PlayerImpl;
+import shaul.games.moo.model.Ship.ShipModule;
 import shaul.games.moo.model.Research.Technology;
 import shaul.games.moo.model.Ship.HullType;
 import shaul.games.moo.model.Ship.ShipDesigner;
 import shaul.games.moo.model.Star;
+import shaul.games.moo.model.Utils;
 import shaul.games.moo.setup.GameLogic;
 import shaul.games.moo.setup.TechnologyTree;
 
@@ -27,19 +29,17 @@ public class Main {
         IGameLogic gameLogic = new GameLogic();
 
         // Ship
-        IPlayer currentPlayer = new Player();
-
-
+        IPlayer currentPlayer = new PlayerImpl();
 
 
         ShipDesigner shipDesigner = new ShipDesigner(gameLogic, currentPlayer);
         List<HullType> hullTypes = shipDesigner.getHullTypes();
 
-        if (shipDesigner.canChangeHullType(1)) {
-            shipDesigner.changeHullSize(1);
+        if (shipDesigner.canChangeHullSize(2)) {
+            shipDesigner.changeHullSize(2);
         }
-
-        shipDesigner.
+        List<Utils.Availalbe<ShipModule>> computerModules = shipDesigner.getAvailableComputerModules();
+        System.out.println(computerModules);
 
 
 

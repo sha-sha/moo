@@ -2,7 +2,9 @@ package shaul.games.moo.model.commands;
 
 import shaul.games.moo.model.Fleet;
 import shaul.games.moo.model.GameData;
-import shaul.games.moo.model.Player;
+import shaul.games.moo.model.Player.IPlayer;
+import shaul.games.moo.model.Player.IPlayerState;
+import shaul.games.moo.model.Player.PlayerStateImpl;
 import shaul.games.moo.model.Utils;
 
 import java.util.ArrayList;
@@ -14,18 +16,18 @@ import java.util.Map;
  */
 public class CommandsExecutor implements ICommandsExecutor {
 
-    private static final Utils.ElementKey<String, ICommand> COMMAND_ELEMENT_KEY =
-            new Utils.ElementKey<String, ICommand>() {
+    private static final Utils.Function<ICommand, String> COMMAND_ELEMENT_KEY =
+            new Utils.Function<ICommand, String>() {
                 @Override
-                public String getKey(ICommand iCommand) {
+                public String apply(ICommand iCommand) {
                     return iCommand.getPlayer();
                 }
             };
 
-    private static final Utils.ElementKey<Long, ICommand> FLEET_COMMAND_ELEMENT_KEY =
-            new Utils.ElementKey<Long, ICommand>() {
+    private static final Utils.Function<ICommand, Long> FLEET_COMMAND_ELEMENT_KEY =
+            new Utils.Function<ICommand, Long>() {
                 @Override
-                public Long getKey(ICommand iCommand) {
+                public Long apply(ICommand iCommand) {
                     if (iCommand instanceof FleetCommand) {
                         return ((FleetCommand)iCommand).getFleetId();
                     }
@@ -35,24 +37,22 @@ public class CommandsExecutor implements ICommandsExecutor {
 
     @Override
     public GameData execute(GameData gameData, List<ICommand> commands) {
-        Map<String, List<ICommand>> commandsPerPlayer = Utils.collect(
-                commands, COMMAND_ELEMENT_KEY);
-        List<Player> players = gameData.getPlayers();
-        List<Player> newPlayers = new ArrayList<>();
-        for (Player player : players) {
-            newPlayers.add(
-                    execute(player, commandsPerPlayer.get(player.getPlayerInfo().getName())));
+        Map<String, List<ICommand>> commandsPerPlayer = Utils.collect(commands, COMMAND_ELEMENT_KEY);
+        List<IPlayer> players = gameData.getPlayers();
+        List<IPlayer> newPlayers = new ArrayList<>();
+        for (IPlayer player : players) {
+            player.setPlayerState(execute(player, commandsPerPlayer.get(player.getPlayerName())));
         }
         return new GameData(gameData.getGalaxy(), newPlayers);
     }
 
-    private Player execute(Player player, List<ICommand> commands) {
+    private IPlayerState execute(IPlayer player, List<ICommand> commands) {
         if (commands == null) {
-            return player;
+            return player.getPlayerState();
         }
         Map<Long, List<FleetCommand>> commandsPerFleet = Utils.collectByClass(
                 commands, FLEET_COMMAND_ELEMENT_KEY);
-        List<Fleet> fleets = player.getFleets();
+        List<Fleet> fleets = player.getPlayerState().getFleets();
         List<Fleet> newFleets = new ArrayList<>();
         for (Fleet fleet : fleets) {
             List<FleetCommand> fleetCommands = commandsPerFleet.get(fleet.getId());
@@ -62,7 +62,7 @@ public class CommandsExecutor implements ICommandsExecutor {
             }
             newFleets.addAll(execute(fleet, fleetCommands));
         }
-        return new Player(player.getPlayerInfo(), newFleets);
+        return new PlayerStateImpl(player.getPlayerName(), newFleets);
     }
 
     private List<Fleet> execute(Fleet fleet, List<FleetCommand> fleetCommands) {

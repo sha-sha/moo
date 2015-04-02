@@ -3,10 +3,15 @@ package shaul.games.moo.model.Ship;
 /**
  * Created by Shaul on 3/8/2015.
  */
-public class Module {
+public class ShipModule {
+
+    public static final ShipModule EMPTY = new ShipModule();
+
+    public enum Type {NONE, COMPUTER, SHIELD, ECM, ARMOR, ENGINE, SPECIAL};
 
     private final String name;
     private final Base moduleData;
+    private final Type type;
 
     public enum WeaponType {Laser, Kinetic};
 
@@ -54,11 +59,39 @@ public class Module {
 
     }
 
-    public Module(String name, Base moduleData) {
+    public ShipModule(String name, Type type, Base moduleData) {
         this.name = name;
+        this.type = type;
         this.moduleData = moduleData;
     }
 
+    private ShipModule() {
+        this.name = "EMPTY";
+        this.type = Type.NONE;
+        this.moduleData = new Base() {
+            @Override
+            public int getCost(int hullSize) {
+                return 0;
+            }
+
+            @Override
+            public int getSize(int hullSize) {
+                return 0;
+            }
+
+            @Override
+            public int getPower(int hullSize) {
+                return 0;
+            }
+
+            @Override
+            public int getSpace(int hullSize) {
+                return 0;
+            }
+        };
+    }
+
     public String getName() { return name; }
+    public Type getType() { return type; }
     public Base getModuleData() { return moduleData; }
 }

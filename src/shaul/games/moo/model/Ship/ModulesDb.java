@@ -8,14 +8,14 @@ import java.util.List;
  * Created by Shaul on 3/24/2015.
  */
 public class ModulesDb {
-    private List<Utils.LimitedCountable<Module>> modules;
+    private List<Utils.LimitedCountable<ShipModule>> modules;
 
     public ModulesDb() {
 
     }
 
-    public void add(Module module) {
-        modules.add()
-    }
+    //public void add(Module module) {
+    //    modules.add()
+    //}
 
 }

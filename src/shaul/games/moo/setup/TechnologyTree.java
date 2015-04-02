@@ -50,7 +50,7 @@ public final class TechnologyTree {
         add(roboticsControls(5, 5));
         add(battleComputer(7));
         add(ecmJammer(7));
-        add(new Technology(CATEGORY_COMPUTERS, "Hyperspace Communications", "", GlobalTech.hyperComm()));
+        //add(new Technology(CATEGORY_COMPUTERS, "Hyperspace Communications", "", GlobalTech.hyperComm()));
         add(battleComputer(8));
         add(ecmJammer(8));
         add(roboticsControls(6, 6));
@@ -79,32 +79,38 @@ public final class TechnologyTree {
     }
 
     private static Technology ecmJammer(int level) {
-        return new Technology(CATEGORY_COMPUTERS, "ECM Jammer Mark " + level, "", ShipTech.ecm(level));
+        //return new Technology(CATEGORY_COMPUTERS, "ECM Jammer Mark " + level, "", ShipTech.ecm(level));
+        return null;
     }
 
     private static Technology battleComputer(int level) {
-        return new Technology(CATEGORY_COMPUTERS, "Battle Computer Mark " + level, "", ShipTech.computer(level));
+        return null;
+        //return new Technology(CATEGORY_COMPUTERS, "Battle Computer Mark " + level, "", ShipTech.computer(level));
     }
 
     private static Technology battleScanner() {
-        return new Technology(CATEGORY_COMPUTERS, "Battle Scanner", "", "ShipScanner" /*ShipTech.scanner()*/);
+        return null;
+        //return new Technology(CATEGORY_COMPUTERS, "Battle Scanner", "", "ShipScanner" /*ShipTech.scanner()*/);
     }
 
     private static Technology roboticsControls(int level, int factoryPerPopulation) {
-        return new Technology(CATEGORY_COMPUTERS, "Robotics Controls " + level, "",
-                PlanetTech.roboticsControls(factoryPerPopulation));
+        return null;
+        //return new Technology(CATEGORY_COMPUTERS, "Robotics Controls " + level, "",
+        //        PlanetTech.roboticsControls(factoryPerPopulation));
     }
 
     private static Technology spaceScanner(String name, int level, int planetShipSensorRange, int planetStarSensorRange,
                                            int shipSensorRange, boolean enemyShipDestinationAndEta) {
-        return new Technology(CATEGORY_COMPUTERS, name, "",
-                GlobalTech.spaceScanner(level, planetShipSensorRange, planetStarSensorRange,
-                        shipSensorRange, enemyShipDestinationAndEta));
+        return null;
+        //return new Technology(CATEGORY_COMPUTERS, name, "",
+        //        GlobalTech.spaceScanner(level, planetShipSensorRange, planetStarSensorRange,
+        //                shipSensorRange, enemyShipDestinationAndEta));
     }
 
     private static Technology armor(String type, int small, int medium, int large, int huge, int missleBase) {
-        return new Technology(CATEGORY_CONSTRUCTION, type + " Armor", "",
-                ShipTech.roboticsControls(factoryPerPopulation));
+        return null;
+        //return new Technology(CATEGORY_CONSTRUCTION, type + " Armor", "",
+        //        ShipTech.roboticsControls(factoryPerPopulation));
     }
 
 }

@@ -1,5 +1,7 @@
 package shaul.games.moo.model;
 
+import shaul.games.moo.model.Player.IPlayer;
+
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -12,23 +14,23 @@ import java.util.Map;
 public class GameData {
 
     private List<Star> galaxy;
-    private List<Player> players;
+    private List<IPlayer> players;
     private long lastFleetId = 0;
 
     // helpers.
-    Map<String, Player> playersMap = new HashMap<>();
+    Map<String, IPlayer> playersMap = new HashMap<>();
 
-    public GameData(List<Star> galaxy, List<Player> players) {
+    public GameData(List<Star> galaxy, List<IPlayer> players) {
         this.galaxy = galaxy;
         this.players = players;
-        playersMap = Utils.map(players, Player.ELEMENT_KEY);
+        playersMap = Utils.map(players, IPlayer.ELEMENT_KEY);
     }
 
-    public List<Player> getPlayers() {
+    public List<IPlayer> getPlayers() {
         return players;
     }
 
-    public Player getPlayer(String name) {
+    public IPlayer getPlayer(String name) {
         return playersMap.get(name);
     }
 

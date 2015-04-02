@@ -1,11 +1,12 @@
 package shaul.games.moo.setup;
 
+import shaul.games.moo.model.Fleet;
 import shaul.games.moo.model.IShipComponent;
-import shaul.games.moo.model.Ship.ShipModule;
 import shaul.games.moo.model.Research.TechBonus;
 import shaul.games.moo.model.Research.TechModule;
 import shaul.games.moo.model.ShipAttribute;
 import shaul.games.moo.model.ShipComponentCategory;
+import shaul.games.moo.model.Ship.ShipModule;
 
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -17,9 +18,8 @@ import java.util.List;
 public class ShipTech {
 
     // Ship modules.
-
     private static final List<ShipModule> MODULES = new ArrayList<ShipModule>() {{{
-        add(new ShipModule("Ship Scanner", ShipModule.Category.Special, ))
+        add(new ShipModule("Ship Scanner", ShipModule.Type.SPECIAL, null));
     }}};
 
     public static List<ShipModule> getTechnologies() {
@@ -35,8 +35,9 @@ public class ShipTech {
     }
 
     public static ShipModule scanner(int cost, int size, int power, int space) {
-        return new TechModule(TechModule.SHIP_MODULE_SCANNER, TechModule.Type.Ship, 1,
-                Arrays.asList(shipMissleDef(1), shipScan(), shipInitiative(3)));
+        return null;
+        //return new TechModule(TechModule.SHIP_MODULE_SCANNER, TechModule.Type.Ship, 1,
+        //        Arrays.asList(shipMissleDef(1), shipScan(), shipInitiative(3)));
     }
 
     public static TechModule armor(int level) {
