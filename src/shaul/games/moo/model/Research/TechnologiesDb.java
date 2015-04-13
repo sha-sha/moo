@@ -19,6 +19,8 @@ public class TechnologiesDb {
             new ModuleTypePredicate(ShipModule.ShipComponent.ARMOR);
     public static final Predicate<ShipModule> IS_ENGINE_MODULE =
             new ModuleTypePredicate(ShipModule.ShipComponent.ENGINE);
+    public static final Predicate<ShipModule> IS_WEAPON_MODULE =
+            new ModuleTypePredicate(ShipModule.ShipComponent.WEAPON);
 
     private final List<String> technologies;
     private final ITechnologyLogic technologyLogic;

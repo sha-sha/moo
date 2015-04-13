@@ -11,7 +11,7 @@ import java.util.List;
  */
 public interface ITechnologyLogic {
 
-    float getCostReduction();
+    double getCostReduction(int deltaTechLevel);
 
     List<HullType> getAvailableHullTypes();
 
@@ -23,4 +23,5 @@ public interface ITechnologyLogic {
     ShipModule getLowestArmor();
     ShipModule getLowestEngine();
 
+    double getModuleCostReduction(String module, TechnologiesDb playerTechs);
 }

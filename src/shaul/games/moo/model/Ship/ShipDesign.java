@@ -45,6 +45,27 @@ public class ShipDesign {
         StringBuilder sb = new StringBuilder();
         sb.append("Ship: {hull: " + hullSize);
         if (computerSlot != null) { sb.append(", computer: " + computerSlot.getName()); }
+        if (shieldSlot != null) { sb.append(", shield: " + shieldSlot.getName()); }
+        if (ecmSlot != null) { sb.append(", ecm: " + ecmSlot.getName()); }
+        if (armorSlot != null) { sb.append(", armor: " + armorSlot.getName()); }
+        if (engineSlot != null) { sb.append(", engine: " + engineSlot.getName()); }
+        if (maneuverSlot != null) { sb.append(", maneuver: " + maneuverSlot.getName()); }
+        sb.append(", weapons: { ");
+        for (int i = 0 ; i < weaponSlot.size(); i++) {
+            Utils.Countable<ShipModule> weapon = weaponSlot.get(i);
+            if (weapon.getCount() > 0 && weapon.get() != ShipModule.EMPTY) {
+                sb.append(weapon.getCount() + ":'" + weapon.get().getName() + "' ");
+            }
+        }
+        sb.append("} ");
+        sb.append(", special: { ");
+        for (int i = 0 ; i < specialSlot.size(); i++) {
+            ShipModule special = specialSlot.get(i);
+            if (special != ShipModule.EMPTY) {
+                sb.append("'" + special.getName() + "' ");
+            }
+        }
+        sb.append("} ");
         sb.append("}");
         return sb.toString();
     }
@@ -120,6 +141,11 @@ public class ShipDesign {
         public int getWeaponSlotCount(int index) {
             Utils.check(index >= 0 && index < weaponSlots.size());
             return this.weaponSlots.get(index).getCount();
+        }
+
+        public ShipModule getWeaponSlot(int index) {
+            Utils.check(index >= 0 && index < weaponSlots.size());
+            return this.weaponSlots.get(index).get();
         }
 
         public Builder setWeaponSlotCount(int index, int newCount) {

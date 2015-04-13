@@ -47,6 +47,16 @@ public class ShipTech {
                         .build());
     }
 
+    public static TechModule energyWeapon(String name) {
+        return new ShipModule(name, ShipModule.ShipComponent.WEAPON,
+                new ShipModule.ShipData.Builder()
+                        .setCost(20, 80, 120, 400)
+                        .setSize(20, 80, 120, 400)
+                        .setPower(20, 80, 120, 400)
+                        .setWeaponDamage(1)
+                        .build());
+    }
+
     public static TechModule armor(final String name, final int level, final boolean extraThick) {
 
         return new ShipModule(name, ShipModule.ShipComponent.ARMOR,

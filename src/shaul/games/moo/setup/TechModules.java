@@ -42,6 +42,10 @@ public class TechModules {
             add(ShipTech.armor(armors[i], i, false));
             add(ShipTech.armor(armors[i] + " II", i, true));
         }
+
+        add(ShipTech.energyWeapon("Laser"));
+        add(ShipTech.energyWeapon("Heavy Laser"));
+
     }
 
     private static void add(TechModule techModule) {

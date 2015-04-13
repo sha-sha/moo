@@ -66,9 +66,11 @@ public final class TechnologyTree {
         add(battleComputer(31, 11));
 
         add(constructionTech(1, "Titanium", "Titanium", "Titanium II"));
+        add(weaponTech(1, "Laser", "Laser", "Heavy Laser"));
 
     }}};
     private static Map<String, Technology> TECHNOLOGIES_MAP = null;
+    private static Map<String, Technology> MODULE_TECHNOLOGIES_MAP = null;
 
     public static List<String> getCategories() {
         return CATEGORIES;
@@ -86,6 +88,18 @@ public final class TechnologyTree {
             }
         }
         return TECHNOLOGIES_MAP;
+    }
+
+    public static Map<String, Technology> getModuleToTechnologyMap() {
+        if (MODULE_TECHNOLOGIES_MAP == null) {
+            MODULE_TECHNOLOGIES_MAP = new HashMap<>();
+            for (Technology t : TECHNOLOGIES) {
+                for (String module : t.getModules()) {
+                    MODULE_TECHNOLOGIES_MAP.put(module, t);
+                }
+            }
+        }
+        return MODULE_TECHNOLOGIES_MAP;
     }
 
     private static Technology ecmJammer(int techLevel, int level) {
@@ -112,6 +126,10 @@ public final class TechnologyTree {
 
     private static Technology constructionTech(int techLevel, String name, String... module) {
         return new Technology(CATEGORY_CONSTRUCTION, techLevel, name, module);
+    }
+
+    private static Technology weaponTech(int techLevel, String name, String... module) {
+        return new Technology(CATEGORY_WEAPONS, techLevel, name, module);
     }
 
     private static Technology spaceScannerzz(int techLevel, String name, int level, int planetShipSensorRange, int planetStarSensorRange,

@@ -41,6 +41,10 @@ public class ShipDesigner {
         builder.setComputerSlot(computerModule);
     }
 
+    public void setWeaponModule(int weaponSlot, ShipModule weapon, int count) {
+        builder.setWeaponSlot(weaponSlot, new Utils.Countable<ShipModule>(weapon, count));
+    }
+
     public List<HullType> getHullTypes() {
         return gameLogic.getTechnologyLogic().getAvailableHullTypes();
     }
@@ -103,6 +107,20 @@ public class ShipDesigner {
         return modules;
     }
 
+    public List<Utils.Countable<ShipModule>> getAvailableWeaponModulesAtSlot(int slot) {
+        ShipModule current = builder.getWeaponSlot(slot);
+        int maxExtraSpace = getAvailableSpace();
+        maxExtraSpace -= getRequiredSpace(current) * builder.getWeaponSlotCount(slot);
+        List<Utils.Countable<ShipModule>> modules = new ArrayList<>();
+        for (ShipModule module : player.getPlayerState().getTechnologies().getShipModule(
+                TechnologiesDb.IS_WEAPON_MODULE)) {
+            Utils.check("Module need zero space " + module, getRequiredSpace(module) > 0);
+            int count = maxExtraSpace / getRequiredSpace(module);
+            modules.add(new Utils.Countable<ShipModule>(module, count));
+        }
+        return modules;
+    }
+
     private int getRequiredSpace(ShipModule module) {
         return getRequiredSpaceForReplacing(ShipModule.EMPTY, module);
     }
@@ -113,11 +131,23 @@ public class ShipDesigner {
             if (oldModule.getShipComponentType().equals(ShipModule.ShipComponent.ENGINE)) {
                 //...
             } else {
-                deltaSpace -= oldModule.getModuleData().getSpace(builder.getHullSize());
+                deltaSpace -= getNonEngineModuleSpace(oldModule);
             }
         }
-        deltaSpace += newModule.getModuleData().getSpace(builder.getHullSize());
+        if (newModule != ShipModule.EMPTY) {
+            deltaSpace += getNonEngineModuleSpace(newModule);
+        }
         return deltaSpace;
+    }
+
+    private int getNonEngineModuleSpace(ShipModule module) {
+        if (module == ShipModule.EMPTY) {
+            return 0;
+        }
+        ShipModule.Base moduleData = module.getModuleData();
+        return (int) (moduleData.getSize(builder.getHullSize()) *
+                gameLogic.getTechnologyLogic().getModuleCostReduction(
+                        module.getName(), player.getPlayerState().getTechnologies()));
     }
 
     private ShipDesign.Builder resetBuilder(int hullSize) {

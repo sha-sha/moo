@@ -48,7 +48,7 @@ public class Main {
         IPlayer currentPlayer = new PlayerImpl(gameLogic, "shaul");
         currentPlayer.setPlayerState(new PlayerStateImpl(
                 null, new TechnologiesDb(gameLogic.getTechnologyLogic(), Arrays.asList(
-                "Battle Computer Mark 1", "Battle Scanner", "Titanium"))));
+                "Battle Computer Mark 1", "Battle Scanner", "Titanium", "Laser"))));
 
 
         ShipDesigner shipDesigner = new ShipDesigner(gameLogic, currentPlayer);
@@ -57,11 +57,15 @@ public class Main {
         if (shipDesigner.canChangeHullSize(2)) {
             shipDesigner.changeHullSize(2);
         }
+
+        System.out.println("================");
+
         System.out.println("Available computers: " + shipDesigner.getAvailableComputerModules());
         System.out.println("Available armors: " + shipDesigner.getAvailableArmorModules());
+        System.out.println("Available weapons: " + shipDesigner.getAvailableWeaponModulesAtSlot(0));
 
         shipDesigner.setComputerModule(shipDesigner.getAvailableComputerModules().get(0).get());
-
+        shipDesigner.setWeaponModule(0, shipDesigner.getAvailableWeaponModulesAtSlot(0).get(0).get(), 1);
         System.out.println("Ship design:\n " + shipDesigner.complete());
     }
 }

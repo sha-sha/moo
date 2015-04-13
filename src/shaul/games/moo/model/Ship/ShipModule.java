@@ -11,13 +11,13 @@ public class ShipModule extends TechModule {
 
     public static final ShipModule EMPTY = new ShipModule();
 
-    public enum ShipComponent {NONE, COMPUTER, SHIELD, ECM, ARMOR, ENGINE, SPECIAL};
-    public enum ShipScanLevel {NONE, BASIC, ADVANCE};
+    public enum ShipComponent {NONE, COMPUTER, SHIELD, ECM, ARMOR, ENGINE, WEAPON, SPECIAL}
+    public enum ShipScanLevel {NONE, BASIC, ADVANCE}
 
     private final Base moduleData;
     private final ShipComponent shipComponent;
 
-    public enum WeaponType {None, Laser, Kinetic};
+    public enum WeaponType {None, Laser, Kinetic}
 
     public interface Base {
         int getCost(int hullSize);

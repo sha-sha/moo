@@ -2,9 +2,11 @@ package shaul.games.moo.setup;
 
 import shaul.games.moo.model.Research.ITechnologyLogic;
 import shaul.games.moo.model.Research.TechModule;
+import shaul.games.moo.model.Research.TechnologiesDb;
 import shaul.games.moo.model.Research.Technology;
 import shaul.games.moo.model.Ship.HullType;
 import shaul.games.moo.model.Ship.ShipModule;
+import shaul.games.moo.model.Utils;
 
 import java.util.Arrays;
 import java.util.List;
@@ -24,8 +26,8 @@ public class TechnologyLogic implements ITechnologyLogic {
     }
 
     @Override
-    public float getCostReduction() {
-        return 0;
+    public double getCostReduction(int deltaTechLevel) {
+        return 1.0 - (deltaTechLevel / 10 * 0.1);
     }
 
     @Override
@@ -60,5 +62,17 @@ public class TechnologyLogic implements ITechnologyLogic {
     @Override
     public ShipModule getLowestEngine() {
         return null;
+    }
+
+    @Override
+    public double getModuleCostReduction(String module, TechnologiesDb playerTechs) {
+        Utils.assertNotNull(module);
+        Utils.assertNotNull(playerTechs);
+        Technology tech = TechnologyTree.getModuleToTechnologyMap().get(module);
+        Utils.check("Module " + module + " has no tech!", tech != null);
+        int moduleTechLevel = tech.getTechLevel();
+        String moduleCategory = tech.getCategory();
+        int currentTechLevel = playerTechs.getTechLevel(moduleCategory);
+        return getCostReduction(currentTechLevel - moduleTechLevel);
     }
 }

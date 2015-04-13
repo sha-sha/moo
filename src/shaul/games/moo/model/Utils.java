@@ -100,6 +100,12 @@ public class Utils {
 
         public T get() { return t; }
         public int getCount() { return count; }
+
+        @Override
+        public String toString() {
+            return " " + getCount() + ":" + get().toString();
+        }
+
     }
 
     public static class Availalbe<T> extends Countable<T>{
