@@ -23,6 +23,7 @@ public class ShipDesigner {
     private int availableSpace;
     private int usedSpace;
     private int totalSpace;
+    private Utils.Availalbe<ShipModule> computerModule;
 
     public ShipDesigner(IGameLogic gameLogic, IPlayer player) {
         this.gameLogic = gameLogic;
@@ -30,6 +31,14 @@ public class ShipDesigner {
         this.builder = resetBuilder(1);
         this.availableSpace = getTotalSpace(builder.getHullSize());
         this.availableSpace = calcAvailableSpace(builder.getHullSize());
+    }
+
+    public ShipDesign complete() {
+        return builder.build();
+    }
+
+    public void setComputerModule(ShipModule computerModule) {
+        builder.setComputerSlot(computerModule);
     }
 
     public List<HullType> getHullTypes() {
@@ -82,18 +91,32 @@ public class ShipDesigner {
         return modules;
     }
 
+    public List<Utils.Availalbe<ShipModule>> getAvailableArmorModules() {
+        ShipModule current = builder.getArmorSlot();
+        int maxExtraSpace = getAvailableSpace();
+        List<Utils.Availalbe<ShipModule>> modules = new ArrayList<>();
+        for (ShipModule module : player.getPlayerState().getTechnologies().getShipModule(
+                TechnologiesDb.IS_ARMOR_MODULE)) {
+            modules.add(new Utils.Availalbe<ShipModule>(module,
+                    getRequiredSpaceForReplacing(current, module) <= maxExtraSpace));
+        }
+        return modules;
+    }
+
     private int getRequiredSpace(ShipModule module) {
         return getRequiredSpaceForReplacing(ShipModule.EMPTY, module);
     }
 
     private int getRequiredSpaceForReplacing(ShipModule oldModule, ShipModule newModule) {
         int deltaSpace = 0;
-        if (oldModule.getType().equals(ShipModule.Type.ENGINE)) {
-            //...
-        } else {
-            deltaSpace -= oldModule.getModuleData().getSpace(builder.getHullSize());
+        if (oldModule != null) {
+            if (oldModule.getShipComponentType().equals(ShipModule.ShipComponent.ENGINE)) {
+                //...
+            } else {
+                deltaSpace -= oldModule.getModuleData().getSpace(builder.getHullSize());
+            }
         }
-        deltaSpace += oldModule.getModuleData().getSpace(builder.getHullSize());
+        deltaSpace += newModule.getModuleData().getSpace(builder.getHullSize());
         return deltaSpace;
     }
 
@@ -105,5 +128,4 @@ public class ShipDesigner {
                 .setWeaponSlots(Arrays.asList(NO_MODULE, NO_MODULE, NO_MODULE, NO_MODULE))
                 .setSpecialSlots(Arrays.asList(ShipModule.EMPTY, ShipModule.EMPTY, ShipModule.EMPTY));
     }
-
 }

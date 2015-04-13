@@ -8,13 +8,14 @@ import shaul.games.moo.model.Research.ITechnologyLogic;
  */
 public class GameLogic implements IGameLogic {
 
+    private ITechnologyLogic technologyLogic;
 
     public GameLogic() {
-        ITechnologyLogic technologyLogic = new TechnologyLogic();
+        technologyLogic = new TechnologyLogic();
     }
 
     @Override
     public ITechnologyLogic getTechnologyLogic() {
-        return null;
+        return technologyLogic;
     }
 }

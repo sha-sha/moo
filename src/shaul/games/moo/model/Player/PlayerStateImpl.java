@@ -11,14 +11,16 @@ import java.util.List;
 public class PlayerStateImpl implements IPlayerState {
 
     private final List<Fleet> fleets;
+    private final TechnologiesDb technologies;
 
-    public PlayerStateImpl(List<Fleet> fleets) {
+    public PlayerStateImpl(List<Fleet> fleets, TechnologiesDb technologies) {
+        this.technologies = technologies;
         this.fleets = fleets;
     }
 
     @Override
     public TechnologiesDb getTechnologies() {
-        return null;
+        return technologies;
     }
 
     @Override

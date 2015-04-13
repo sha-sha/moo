@@ -1,6 +1,7 @@
 package shaul.games.moo.setup;
 
 import shaul.games.moo.model.Research.ITechnologyLogic;
+import shaul.games.moo.model.Research.TechModule;
 import shaul.games.moo.model.Research.Technology;
 import shaul.games.moo.model.Ship.HullType;
 import shaul.games.moo.model.Ship.ShipModule;
@@ -39,12 +40,16 @@ public class TechnologyLogic implements ITechnologyLogic {
 
     @Override
     public Technology getTechnology(String name) {
-        return null;
+        return TechnologyTree.getTechnologiesMap().get(name);
     }
 
     @Override
     public ShipModule getShipModule(String name) {
-        return null;
+        TechModule module = TechModules.getModule(name);
+        if (module == null || module.getType() != TechModule.Type.Ship) {
+            return null;
+        }
+        return (ShipModule)module;
     }
 
     @Override

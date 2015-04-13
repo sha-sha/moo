@@ -62,7 +62,7 @@ public class CommandsExecutor implements ICommandsExecutor {
             }
             newFleets.addAll(execute(fleet, fleetCommands));
         }
-        return new PlayerStateImpl(player.getPlayerName(), newFleets);
+        return new PlayerStateImpl(newFleets, player.getPlayerState().getTechnologies());
     }
 
     private List<Fleet> execute(Fleet fleet, List<FleetCommand> fleetCommands) {

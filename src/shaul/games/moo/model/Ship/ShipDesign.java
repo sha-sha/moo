@@ -40,6 +40,15 @@ public class ShipDesign {
         this.specialSlot = new ArrayList<ShipModule>(specialSlot);
     }
 
+    @Override
+    public String toString() {
+        StringBuilder sb = new StringBuilder();
+        sb.append("Ship: {hull: " + hullSize);
+        if (computerSlot != null) { sb.append(", computer: " + computerSlot.getName()); }
+        sb.append("}");
+        return sb.toString();
+    }
+
     public static class Builder {
         private int hullSize;
         private ShipModule computerSlot;
@@ -63,6 +72,11 @@ public class ShipDesign {
         public Builder setComputerSlot(ShipModule computerSlot) { this.computerSlot = computerSlot;
             return this;
         }
+
+        public ShipModule getComputerSlot() {
+            return computerSlot;
+        }
+
         public Builder setShieldSlot(ShipModule shieldSlot) {
             this.shieldSlot = shieldSlot;
             return this;
@@ -76,6 +90,10 @@ public class ShipDesign {
         public Builder setArmorSlot(ShipModule armorSlot) {
             this.armorSlot = armorSlot;
             return this;
+        }
+
+        public ShipModule getArmorSlot() {
+            return armorSlot;
         }
 
         public Builder setEngineSlot(ShipModule engineSlot) {
@@ -126,10 +144,6 @@ public class ShipDesign {
         public ShipDesign build() {
             return new ShipDesign(hullSize, computerSlot, shieldSlot, ecmSlot, armorSlot, engineSlot,
                     maneuverSlot, weaponSlots, specialSlots);
-        }
-
-        public ShipModule getComputerSlot() {
-            return computerSlot;
         }
     }
 }

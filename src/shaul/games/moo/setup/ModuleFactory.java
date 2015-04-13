@@ -1,15 +1,12 @@
 package shaul.games.moo.setup;
 
+import shaul.games.moo.model.Research.TechModule;
 import shaul.games.moo.model.Ship.ShipModule;
 
 /**
  * Created by Shaul on 3/21/2015.
  */
 public class ModuleFactory {
-
-    public static ShipModule createComputerModule(String name, final int level) {
-        return new ShipModule(name, ShipModule.Type.COMPUTER, new Computer(level));
-    }
 
     private static class BaseModule implements ShipModule.Base {
         private final int[] baseCost;

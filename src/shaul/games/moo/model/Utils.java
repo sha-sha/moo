@@ -18,6 +18,10 @@ public class Utils {
         B apply(A a);
     }
 
+    public static interface Int2Int {
+        int apply(int a);
+    }
+
     public static<K, V> Map<K, V> map(List<V> list, Function<V, K> elementKey) {
         Map<K, V> map = new HashMap<>();
         for (V v : list) {
@@ -106,6 +110,11 @@ public class Utils {
 
         public boolean isAvailalbe() {
             return getCount() > 0;
+        }
+
+        @Override
+        public String toString() {
+            return (isAvailalbe() ? "Availalbe " : "Not Available ") + get().toString();
         }
     }
 

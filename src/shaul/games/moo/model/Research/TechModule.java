@@ -1,5 +1,7 @@
 package shaul.games.moo.model.Research;
 
+import shaul.games.moo.model.Utils;
+
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
@@ -21,34 +23,37 @@ public class TechModule {
     public static final String GLOBAL_MODULE_SPACE_SCANNER = "space-scanner";
     public static final String GLOBAL_MODULE_COMMUNICATION = "communication";
 
+
+    public static class HullFunction implements Utils.Int2Int {
+        private final double factor;
+        private final int offset;
+
+        HullFunction(double factor) { this(factor, 0); }
+        HullFunction(double factor, int offset) {
+            this.factor = factor;
+            this.offset = offset;
+        }
+
+        @Override
+        public int apply(int a) {
+            return ((int) Math.floor(factor * a)) + offset;
+        }
+    }
+
     private final String name;
     private final Type type;
-    private final int level;
-    private final List<TechBonus> bonuses;
 
     public TechModule(String name, Type type) {
-        this(name, type, 0, new ArrayList<TechBonus>());
-    }
-
-    public TechModule(String name, Type type, int level, TechBonus bonus) {
-        this(name, type, level, Arrays.asList(bonus));
-    }
-
-    public TechModule(String name, Type type, int level, List<TechBonus> bonuses) {
         this.name = name;
         this.type = type;
-        this.level = level;
-        this.bonuses = bonuses;
     }
 
     public String getName() { return name; }
     public Type getType() { return type; }
-    public int getLevel() { return level; }
-    public List<TechBonus> getBonuses() { return bonuses; }
 
     @Override
     public String toString() {
-        return String.format("%s %s lvl: %d bonus: %s", type, name, level, bonuses);
+        return String.format("%s %s", type, name);
     }
 
 }
