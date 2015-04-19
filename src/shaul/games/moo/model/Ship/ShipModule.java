@@ -332,6 +332,7 @@ public class ShipModule extends TechModule {
 
     public ShipComponent getShipComponentType() { return shipComponent; }
     public Base getModuleData() { return moduleData; }
+    public boolean isEmpty() { return this == EMPTY; }
 
     @Override
     public String toString() {

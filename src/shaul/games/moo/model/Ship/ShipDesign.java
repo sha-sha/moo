@@ -10,6 +10,9 @@ import java.util.List;
  * Created by Shaul on 3/24/2015.
  */
 public class ShipDesign {
+    public static final Utils.Countable<ShipModule> NO_WEAPON =
+            new Utils.Countable<ShipModule>(ShipModule.EMPTY, 0);
+
     private final int hullSize;
     private final ShipModule computerSlot;
     private final ShipModule shieldSlot;
@@ -71,15 +74,18 @@ public class ShipDesign {
     }
 
     public static class Builder {
+
         private int hullSize;
-        private ShipModule computerSlot;
-        private ShipModule shieldSlot;
-        private ShipModule ecmSlot;
-        private ShipModule armorSlot;
-        private ShipModule engineSlot;
-        private ShipModule maneuverSlot;
-        private List<Utils.Countable<ShipModule>> weaponSlots;
-        private List<ShipModule> specialSlots;
+        private ShipModule computerSlot = ShipModule.EMPTY;
+        private ShipModule shieldSlot = ShipModule.EMPTY;
+        private ShipModule ecmSlot = ShipModule.EMPTY;
+        private ShipModule armorSlot = ShipModule.EMPTY;
+        private ShipModule engineSlot = ShipModule.EMPTY;
+        private ShipModule maneuverSlot = ShipModule.EMPTY;
+        private List<Utils.Countable<ShipModule>> weaponSlots =
+                Arrays.asList(NO_WEAPON, NO_WEAPON, NO_WEAPON, NO_WEAPON);
+        private List<ShipModule> specialSlots =
+                Arrays.asList(ShipModule.EMPTY, ShipModule.EMPTY, ShipModule.EMPTY);
 
         public Builder setHullSize(int hullSize) {
             this.hullSize = hullSize;

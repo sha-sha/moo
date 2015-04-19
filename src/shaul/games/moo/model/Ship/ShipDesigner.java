@@ -21,8 +21,6 @@ public class ShipDesigner {
 
     private ShipDesign.Builder builder;
     private int availableSpace;
-    private int usedSpace;
-    private int totalSpace;
     private Utils.Availalbe<ShipModule> computerModule;
 
     public ShipDesigner(IGameLogic gameLogic, IPlayer player) {
@@ -50,10 +48,10 @@ public class ShipDesigner {
     }
 
     public boolean canChangeHullSize(int hullSize) {
-        return calcAvailableSpace(hullSize) <= getTotalSpace(hullSize);
+        return getUsedSpace(hullSize) <= getTotalSpace(hullSize);
     }
 
-    public int getTotalSpace(int hullSize) {
+    private int getTotalSpace(int hullSize) {
         int constructionTechLevel =
                 player.getPlayerState().getTechnologies().getTechLevel(Category.Construction.getName());
         // XXX: Fix
@@ -61,21 +59,27 @@ public class ShipDesigner {
     }
 
     public int getUsedSpace() {
+        return getUsedSpace(builder.getHullSize());
+    }
+
+    private int getUsedSpace(int hullSize) {
+        int usedSpace = 0;
+        usedSpace += getNonEngineModuleSpace(builder.getComputerSlot(), hullSize);
         return usedSpace;
     }
 
     public int getTotalSpace() {
-        return totalSpace;
+        return getTotalSpace(builder.getHullSize());
     }
 
     public int getAvailableSpace() {
-        return totalSpace - usedSpace;
+        return getTotalSpace() - getUsedSpace();
     }
 
     private int calcAvailableSpace(int hullSize) {
         //gameLogic.getTechnologyLogic()
         //for ()
-        return 10 * hullSize;
+        return 10000 * hullSize;
     }
 
     public void changeHullSize(int hullSize) {
@@ -131,21 +135,21 @@ public class ShipDesigner {
             if (oldModule.getShipComponentType().equals(ShipModule.ShipComponent.ENGINE)) {
                 //...
             } else {
-                deltaSpace -= getNonEngineModuleSpace(oldModule);
+                deltaSpace -= getNonEngineModuleSpace(oldModule, builder.getHullSize());
             }
         }
         if (newModule != ShipModule.EMPTY) {
-            deltaSpace += getNonEngineModuleSpace(newModule);
+            deltaSpace += getNonEngineModuleSpace(newModule, builder.getHullSize());
         }
         return deltaSpace;
     }
 
-    private int getNonEngineModuleSpace(ShipModule module) {
+    private int getNonEngineModuleSpace(ShipModule module, int hullSize) {
         if (module == ShipModule.EMPTY) {
             return 0;
         }
         ShipModule.Base moduleData = module.getModuleData();
-        return (int) (moduleData.getSize(builder.getHullSize()) *
+        return (int) (moduleData.getSize(hullSize) *
                 gameLogic.getTechnologyLogic().getModuleCostReduction(
                         module.getName(), player.getPlayerState().getTechnologies()));
     }
