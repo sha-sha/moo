@@ -5,6 +5,7 @@ import shaul.games.moo.model.Ship.ShipModule;
 import shaul.games.moo.model.Utils;
 
 import java.util.ArrayList;
+import java.util.Comparator;
 import java.util.List;
 import java.util.function.Predicate;
 
@@ -22,13 +23,24 @@ public class TechnologiesDb {
     public static final Predicate<ShipModule> IS_WEAPON_MODULE =
             new ModuleTypePredicate(ShipModule.ShipComponent.WEAPON);
 
+    private final Comparator<ShipModule> COMPARE_TECH_LEVEL;
+
     private final List<String> technologies;
     private final ITechnologyLogic technologyLogic;
+    private ShipModule lowestArmor;
+    private ShipModule lowestEngine;
 
-    public TechnologiesDb(ITechnologyLogic technologyLogic, List<String> technologies) {
+    public TechnologiesDb(final ITechnologyLogic technologyLogic, List<String> technologies) {
         // TODO: create immutable list.
         this.technologies = new ArrayList<String>(technologies);
         this.technologyLogic = technologyLogic;
+        COMPARE_TECH_LEVEL = new Comparator<ShipModule>() {
+            @Override
+            public int compare(ShipModule o1, ShipModule o2) {
+                return technologyLogic.getTechnologyOfTechModule(o1.getName()).getTechLevel() -
+                        technologyLogic.getTechnologyOfTechModule(o2.getName()).getTechLevel();
+            }
+        };
     }
 
     public int getTechLevel(String category) {
@@ -44,8 +56,23 @@ public class TechnologiesDb {
         return highestTechLevel;
     }
 
+    public ShipModule getShipModule(final String name) {
+        List<ShipModule> modules = getShipModule(new Predicate<ShipModule>() {
+            @Override
+            public boolean test(ShipModule shipModule) {
+                return shipModule.getName().equals(name);
+            }
+        });
+        return modules.size() > 0 ? modules.get(0) : ShipModule.EMPTY;
+    }
+
     public List<ShipModule> getShipModule(Predicate<ShipModule> predicate) {
         List<ShipModule> modules = new ArrayList<ShipModule>();
+        for (ShipModule emptyModules : technologyLogic.getEmptyShipModules()) {
+            if (predicate.test(emptyModules)) {
+                modules.add(emptyModules);
+            }
+        }
         for (String technologyName : technologies) {
             Technology technology = technologyLogic.getTechnology(technologyName);
             Utils.assertNotNull("Technology " + technologyName + " not exist!", technology);
@@ -58,6 +85,27 @@ public class TechnologiesDb {
             }
         }
         return modules;
+    }
+
+    public ShipModule getLowestArmor() {
+        return select(getShipModule(IS_ARMOR_MODULE), COMPARE_TECH_LEVEL);
+    }
+
+    public ShipModule getLowestEngine() {
+        return select(getShipModule(IS_ENGINE_MODULE), COMPARE_TECH_LEVEL);
+    }
+
+    private ShipModule select(List<ShipModule> modules, Comparator<ShipModule> comparator) {
+        if (modules.isEmpty()) {
+            return ShipModule.EMPTY;
+        }
+        ShipModule best = modules.get(0);
+        for (ShipModule module : modules) {
+            if (comparator.compare(best, module) > 0) {
+                best = module;
+            }
+        }
+        return best;
     }
 
 

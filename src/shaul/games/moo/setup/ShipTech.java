@@ -25,11 +25,11 @@ public class ShipTech {
                     .build());
     }
 
-    public static TechModule computer(final int level) {
+    public static ShipModule computer(final int level) {
         return new ShipModule("Battle Computer " + level, ShipModule.ShipComponent.COMPUTER,
                 new ShipModule.ShipData.Builder()
                     .setCost(20, 80, 120, 400)
-                    .setSize(20, 80, 120, 400)
+                    .setSize(20 * level, 80 * level, 120 * level, 400 * level)
                     .setPower(20, 80, 120, 400)
                     .setAttackLevel(level)
                     .build());

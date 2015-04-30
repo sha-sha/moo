@@ -21,7 +21,7 @@ public class ShipDesigner {
 
     private ShipDesign.Builder builder;
     private int availableSpace;
-    private Utils.Availalbe<ShipModule> computerModule;
+    private Utils.Available<ShipModule> computerModule;
 
     public ShipDesigner(IGameLogic gameLogic, IPlayer player) {
         this.gameLogic = gameLogic;
@@ -35,7 +35,13 @@ public class ShipDesigner {
         return builder.build();
     }
 
-    public void setComputerModule(ShipModule computerModule) {
+    public void setComputerModule(String name) {
+        ShipModule module = player.getPlayerState().getTechnologies().getShipModule(name);
+        Utils.check(module.getShipComponentType().equals(ShipModule.ShipComponent.COMPUTER));
+        builder.setComputerSlot(module);
+    }
+
+    private void setComputerModule(ShipModule computerModule) {
         builder.setComputerSlot(computerModule);
     }
 
@@ -76,6 +82,10 @@ public class ShipDesigner {
         return getTotalSpace() - getUsedSpace();
     }
 
+    public int getAttackLevel() {
+        return builder.build().getAttackLevel();
+    }
+
     private int calcAvailableSpace(int hullSize) {
         //gameLogic.getTechnologyLogic()
         //for ()
@@ -87,25 +97,29 @@ public class ShipDesigner {
         this.builder.setHullSize(hullSize);
     }
 
-    public List<Utils.Availalbe<ShipModule>> getAvailableComputerModules() {
+    public ShipModule getComputerModule() {
+        return builder.getComputerSlot();
+    }
+
+    public List<Utils.Available<ShipModule>> getAvailableComputerModules() {
         ShipModule current = builder.getComputerSlot();
         int maxExtraSpace = getAvailableSpace();
-        List<Utils.Availalbe<ShipModule>> modules = new ArrayList<>();
+        List<Utils.Available<ShipModule>> modules = new ArrayList<>();
         for (ShipModule module : player.getPlayerState().getTechnologies().getShipModule(
                 TechnologiesDb.IS_COMPUTER_MODULE)) {
-            modules.add(new Utils.Availalbe<ShipModule>(module,
+            modules.add(new Utils.Available<ShipModule>(module,
                     getRequiredSpaceForReplacing(current, module) <= maxExtraSpace));
         }
         return modules;
     }
 
-    public List<Utils.Availalbe<ShipModule>> getAvailableArmorModules() {
+    public List<Utils.Available<ShipModule>> getAvailableArmorModules() {
         ShipModule current = builder.getArmorSlot();
         int maxExtraSpace = getAvailableSpace();
-        List<Utils.Availalbe<ShipModule>> modules = new ArrayList<>();
+        List<Utils.Available<ShipModule>> modules = new ArrayList<>();
         for (ShipModule module : player.getPlayerState().getTechnologies().getShipModule(
                 TechnologiesDb.IS_ARMOR_MODULE)) {
-            modules.add(new Utils.Availalbe<ShipModule>(module,
+            modules.add(new Utils.Available<ShipModule>(module,
                     getRequiredSpaceForReplacing(current, module) <= maxExtraSpace));
         }
         return modules;
@@ -148,8 +162,12 @@ public class ShipDesigner {
         if (module == ShipModule.EMPTY) {
             return 0;
         }
-        ShipModule.Base moduleData = module.getModuleData();
-        return (int) (moduleData.getSize(hullSize) *
+        ShipModule.ShipData moduleData = module.getModuleData();
+        int baseSize = moduleData.getSize(hullSize);
+        if (baseSize == 0) {
+            return baseSize;
+        }
+        return (int) (baseSize *
                 gameLogic.getTechnologyLogic().getModuleCostReduction(
                         module.getName(), player.getPlayerState().getTechnologies()));
     }
@@ -157,9 +175,10 @@ public class ShipDesigner {
     private ShipDesign.Builder resetBuilder(int hullSize) {
         return new ShipDesign.Builder()
                 .setHullSize(hullSize)
-                .setArmorSlot(gameLogic.getTechnologyLogic().getLowestArmor())
-                .setEngineSlot(gameLogic.getTechnologyLogic().getLowestEngine())
-                .setWeaponSlots(Arrays.asList(NO_MODULE, NO_MODULE, NO_MODULE, NO_MODULE))
-                .setSpecialSlots(Arrays.asList(ShipModule.EMPTY, ShipModule.EMPTY, ShipModule.EMPTY));
+                .setArmorSlot(player.getPlayerState().getTechnologies().getLowestArmor())
+                .setEngineSlot(player.getPlayerState().getTechnologies().getLowestEngine())
+                .setWeaponSlots(Arrays.asList(
+                ShipModule.ZERO_WEAPON, ShipModule.ZERO_WEAPON, ShipModule.ZERO_WEAPON, ShipModule.ZERO_WEAPON))
+                .setSpecialSlots(Arrays.asList(ShipModule.NO_SPECIAL, ShipModule.NO_SPECIAL, ShipModule.NO_SPECIAL));
     }
 }

@@ -22,6 +22,7 @@ public class ShipDesign {
     private final ShipModule maneuverSlot;
     private final List<Utils.Countable<ShipModule>> weaponSlot;
     private final List<ShipModule> specialSlot;
+    private final int attackLevel;
 
     ShipDesign(int hullSize,
                ShipModule computerSlot,
@@ -33,14 +34,27 @@ public class ShipDesign {
                List<Utils.Countable<ShipModule>> weaponSlot,
                List<ShipModule> specialSlot) {
         this.hullSize = hullSize;
-        this.computerSlot = computerSlot;
-        this.shieldSlot = shieldSlot;
-        this.ecmSlot = ecmSlot;
-        this.armorSlot = armorSlot;
-        this.engineSlot = engineSlot;
-        this.maneuverSlot = maneuverSlot;
+        this.computerSlot = Utils.checkNotNull(computerSlot);
+        this.shieldSlot = Utils.checkNotNull(shieldSlot);
+        this.ecmSlot = Utils.checkNotNull(ecmSlot);
+        this.armorSlot = Utils.checkNotNull(armorSlot);
+        this.engineSlot = Utils.checkNotNull(engineSlot);
+        this.maneuverSlot = Utils.checkNotNull(maneuverSlot);
         this.weaponSlot = new ArrayList<Utils.Countable<ShipModule>>(weaponSlot);
-        this.specialSlot = new ArrayList<ShipModule>(specialSlot);
+        this.specialSlot = new ArrayList<ShipModule>(Utils.checkNotNull(specialSlot));
+
+        List<ShipModule> allModules = new ArrayList<>(Arrays.asList(
+                computerSlot, shieldSlot, ecmSlot, armorSlot, engineSlot, maneuverSlot));
+        allModules.addAll(specialSlot);
+
+        int attackLevel = 0;
+        for (ShipModule module : allModules) {
+            Utils.assertNotNull(module);
+            Utils.check("Module " + module + " has no data", module.getModuleData() != null);
+            attackLevel += module.getModuleData().getAttackLevel();
+        }
+
+        this.attackLevel = attackLevel;
     }
 
     @Override
@@ -73,12 +87,16 @@ public class ShipDesign {
         return sb.toString();
     }
 
+    public int getAttackLevel() {
+        return attackLevel;
+    }
+
     public static class Builder {
 
         private int hullSize;
-        private ShipModule computerSlot = ShipModule.EMPTY;
-        private ShipModule shieldSlot = ShipModule.EMPTY;
-        private ShipModule ecmSlot = ShipModule.EMPTY;
+        private ShipModule computerSlot = ShipModule.NO_COMPUTER;
+        private ShipModule shieldSlot = ShipModule.NO_SHIELD;
+        private ShipModule ecmSlot = ShipModule.NO_ECM;
         private ShipModule armorSlot = ShipModule.EMPTY;
         private ShipModule engineSlot = ShipModule.EMPTY;
         private ShipModule maneuverSlot = ShipModule.EMPTY;
@@ -96,7 +114,8 @@ public class ShipDesign {
             return hullSize;
         }
 
-        public Builder setComputerSlot(ShipModule computerSlot) { this.computerSlot = computerSlot;
+        public Builder setComputerSlot(ShipModule computerSlot) {
+            this.computerSlot = computerSlot;
             return this;
         }
 

@@ -19,8 +19,9 @@ public interface ITechnologyLogic {
 
     Technology getTechnology(String name);
     ShipModule getShipModule(String name);
+    Technology getTechnologyOfTechModule(String techModuleName);
+    List<ShipModule> getEmptyShipModules();
 
-    ShipModule getLowestArmor();
     ShipModule getLowestEngine();
 
     double getModuleCostReduction(String module, TechnologiesDb playerTechs);

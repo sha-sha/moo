@@ -1,5 +1,7 @@
 package shaul.games.moo.model;
 
+import shaul.games.moo.model.Ship.ShipModule;
+
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
@@ -62,6 +64,11 @@ public class Utils {
         fail(null, !exp);
     }
 
+    public static<T> T checkNotNull(T object) {
+        check(object != null);
+        return object;
+    }
+
     public static void check(String str, boolean exp) {
         fail(str, !exp);
     }
@@ -108,19 +115,23 @@ public class Utils {
 
     }
 
-    public static class Availalbe<T> extends Countable<T>{
+    public static class Available<T> extends Countable<T>{
 
-        public Availalbe(T t, boolean available) {
+        public Available(T t, boolean available) {
             super(t, available ? 1 : 0);
         }
 
-        public boolean isAvailalbe() {
+        public static<T> Available<T> of(T t) {
+            return new Available<T>(t, true);
+        }
+
+        public boolean isAvailable() {
             return getCount() > 0;
         }
 
         @Override
         public String toString() {
-            return (isAvailalbe() ? "Availalbe " : "Not Available ") + get().toString();
+            return (isAvailable() ? "Available " : "Not Available ") + get().toString();
         }
     }
 

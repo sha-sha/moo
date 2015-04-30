@@ -86,7 +86,8 @@ public class Moo {
         IPlayer currentPlayer = new PlayerImpl(gameLogic, "shaul");
         currentPlayer.setPlayerState(new PlayerStateImpl(
                 null, new TechnologiesDb(gameLogic.getTechnologyLogic(), Arrays.asList(
-                "Battle Computer Mark 1", "Battle Scanner", "Titanium", "Laser"))));
+                "Battle Computer Mark 1", "Battle Computer Mark 2", "Battle Computer Mark 3",
+                "Battle Scanner", "Titanium", "Laser"))));
 
         new ShipDesignerWindow(gameLogic, currentPlayer);
     }

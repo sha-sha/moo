@@ -1,6 +1,7 @@
 package shaul.games.moo.model.Ship;
 
 import shaul.games.moo.model.Research.TechModule;
+import shaul.games.moo.model.Utils;
 
 import java.util.Arrays;
 
@@ -10,23 +11,27 @@ import java.util.Arrays;
 public class ShipModule extends TechModule {
 
     public static final ShipModule EMPTY = new ShipModule();
+    public static final ShipModule NO_COMPUTER = new EmptyShipModule("No Computer", ShipComponent.COMPUTER);
+    public static final ShipModule NO_SHIELD = new EmptyShipModule("No Shield", ShipComponent.SHIELD);
+    public static final ShipModule NO_ECM = new EmptyShipModule("No ECM", ShipComponent.ECM);
+    public static final ShipModule NO_WEAPON = new EmptyShipModule("No Weapon", ShipComponent.WEAPON);
+    public static final Utils.Countable<ShipModule> ZERO_WEAPON = new Utils.Countable<>(NO_WEAPON, 0);
+    public static final ShipModule NO_SPECIAL = new EmptyShipModule("None", ShipComponent.SPECIAL);
 
     public enum ShipComponent {NONE, COMPUTER, SHIELD, ECM, ARMOR, ENGINE, WEAPON, SPECIAL}
     public enum ShipScanLevel {NONE, BASIC, ADVANCE}
 
-    private final Base moduleData;
+    private final ShipData moduleData;
     private final ShipComponent shipComponent;
 
     public enum WeaponType {None, Laser, Kinetic}
 
-    public interface Base {
+    private interface All {
         int getCost(int hullSize);
         int getSize(int hullSize);
         int getPower(int hullSize);
         int getSpace(int hullSize);
-    }
 
-    public interface All extends Base {
         int getAttackLevel();
 
         int getHitAbsorbs();
@@ -58,43 +63,6 @@ public class ShipModule extends TechModule {
         int getWeaponCoolDown();
     }
 
-    public interface Computer extends Base {
-        int getAttackLevel(int hullSize);
-    }
-
-    public interface Shield extends Base {
-        int getHitAbsorbs(int hullSize);
-    }
-
-    public interface Ecm extends Base {
-        int getMissileDefence(int hullSize);
-    }
-
-    public interface Armor extends Base {
-        int getHitPoints(int hullSize);
-    }
-
-    public interface Engine extends Base {
-        int getWrapSpeed(int hullSize);
-        int getOptionalManeuvers(int hullSize);
-        String getNumberOfEngines(int hullSize);
-    }
-
-    public interface Weapon extends Base {
-        int getWeaponDamage();
-        int getWeaponSpeed();
-        int getWeaponShots();
-        int getWeaponRange();
-        WeaponType getWeaponType();
-        int getWeaponCoolDown();
-    }
-
-    public interface Special extends Base {
-        int getExtraFuelRange();
-        int getMissileDefence();
-        String getEnvironmentColonyType(); //returns the hardest environment
-        ShipScanLevel getShipScanLevel();
-    }
 
     public static class ShipData implements All {
 
@@ -269,69 +237,26 @@ public class ShipModule extends TechModule {
         }
     }
 
-    public static abstract class AbstractSpecial implements Special {
-
-        @Override
-        public int getExtraFuelRange() {
-            return 0;
-        }
-
-        @Override
-        public int getMissileDefence() {
-            return 0;
-        }
-
-        @Override
-        public String getEnvironmentColonyType() {
-            return null;
-        }
-        @Override public ShipScanLevel getShipScanLevel() { return ShipScanLevel.NONE; }
-
-        @Override
-        public String toString() {
-            StringBuilder sb = new StringBuilder();
-            sb.append(getMissileDefence() > 0 ? " missle defence: +" + getMissileDefence() : "");
-            sb.append(getShipScanLevel() != ShipScanLevel.NONE ? " ship scan: " + getShipScanLevel() : "");
-            return sb.toString();
-        }
-
-    }
-
-
-    public ShipModule(String name, ShipComponent shipComponent, Base moduleData) {
+    public ShipModule(String name, ShipComponent shipComponent, ShipData moduleData) {
         super(name, TechModule.Type.Ship);
         this.shipComponent = shipComponent;
         this.moduleData = moduleData;
     }
 
+    private ShipModule(String name, ShipComponent shipComponent) {
+        super(name, TechModule.Type.Ship);
+        this.shipComponent = shipComponent;
+        this.moduleData = new ShipData.Builder().build();
+    }
+
     private ShipModule() {
         super("EMPTY", TechModule.Type.Ship);
         this.shipComponent = ShipComponent.NONE;
-        this.moduleData = new Base() {
-            @Override
-            public int getCost(int hullSize) {
-                return 0;
-            }
-
-            @Override
-            public int getSize(int hullSize) {
-                return 0;
-            }
-
-            @Override
-            public int getPower(int hullSize) {
-                return 0;
-            }
-
-            @Override
-            public int getSpace(int hullSize) {
-                return 0;
-            }
-        };
+        this.moduleData = new ShipData.Builder().build();
     }
 
     public ShipComponent getShipComponentType() { return shipComponent; }
-    public Base getModuleData() { return moduleData; }
+    public ShipData getModuleData() { return moduleData; }
     public boolean isEmpty() { return this == EMPTY; }
 
     @Override
@@ -339,4 +264,13 @@ public class ShipModule extends TechModule {
         return String.format("%s %s data: %s", getType(), getName(), moduleData);
     }
 
+
+    public static class EmptyShipModule extends ShipModule {
+
+        EmptyShipModule(String name, ShipComponent shipComponent) {
+            super(name, shipComponent);
+        }
+
+        public boolean isEmpty() { return true; }
+    }
 }

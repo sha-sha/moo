@@ -17,6 +17,9 @@ public class TechModules {
         init();
     }
 
+    private static List<ShipModule> EMPTY_MODULES = Arrays.asList(
+            ShipModule.NO_COMPUTER, ShipModule.NO_ECM, ShipModule.NO_SHIELD);
+
     public static TechModule getModule(String moduleName) {
         return TECH_NAME_MAP.get(moduleName);
     }
@@ -50,6 +53,10 @@ public class TechModules {
 
     private static void add(TechModule techModule) {
         TECH_NAME_MAP.put(techModule.getName(), techModule);
+    }
+
+    public static List<ShipModule> getEmptyModules() {
+        return EMPTY_MODULES;
     }
 
     //public static List<Technology> getTechnologies() {

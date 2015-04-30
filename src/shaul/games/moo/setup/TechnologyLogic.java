@@ -21,6 +21,8 @@ public class TechnologyLogic implements ITechnologyLogic {
             new HullType(2, "Small"),
             new HullType(3, "Big"),
             new HullType(4, "Huge"));
+    private static final int[] HULL_SIZES = {120, 300, 700, 1200};
+
 
     public TechnologyLogic() {
     }
@@ -37,7 +39,8 @@ public class TechnologyLogic implements ITechnologyLogic {
 
     @Override
     public int getHullTotalSpace(int hullSize) {
-        return 0;
+        Utils.check(hullSize >= 1 && hullSize <= HULL_SIZES.length);
+        return HULL_SIZES[hullSize - 1];
     }
 
     @Override
@@ -55,8 +58,14 @@ public class TechnologyLogic implements ITechnologyLogic {
     }
 
     @Override
-    public ShipModule getLowestArmor() {
-        return null;
+    public Technology getTechnologyOfTechModule(String techModuleName) {
+        Technology tech = TechnologyTree.getModuleToTechnologyMap().get(techModuleName);
+        return Utils.checkNotNull(tech);
+    }
+
+    @Override
+    public List<ShipModule> getEmptyShipModules() {
+        return TechModules.getEmptyModules();
     }
 
     @Override
@@ -68,7 +77,7 @@ public class TechnologyLogic implements ITechnologyLogic {
     public double getModuleCostReduction(String module, TechnologiesDb playerTechs) {
         Utils.assertNotNull(module);
         Utils.assertNotNull(playerTechs);
-        Technology tech = TechnologyTree.getModuleToTechnologyMap().get(module);
+        Technology tech = getTechnologyOfTechModule(module);
         Utils.check("Module " + module + " has no tech!", tech != null);
         int moduleTechLevel = tech.getTechLevel();
         String moduleCategory = tech.getCategory();
