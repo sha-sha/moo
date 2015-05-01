@@ -67,6 +67,16 @@ public class ShipTech {
                         .build());
     }
 
+    public static ShipModule shield(final int level) {
+        return new ShipModule("Shield " + level, ShipModule.ShipComponent.SHIELD,
+                new ShipModule.ShipData.Builder()
+                        .setCost(20, 80, 120, 400)
+                        .setSize(20 * level, 80 * level, 120 * level, 400 * level)
+                        .setPower(20, 80, 120, 400)
+                        .setHitAbsorbs(level)
+                        .build());
+    }
+
     // Ship technology bonuses.
 
     public static TechBonus shipAttack(int value) {

@@ -10,8 +10,6 @@ import shaul.games.moo.model.Utils;
 
 import javax.swing.*;
 import java.awt.*;
-import java.awt.event.ActionEvent;
-import java.awt.event.ActionListener;
 import java.awt.event.MouseEvent;
 import java.awt.event.MouseListener;
 import java.util.*;
@@ -24,6 +22,7 @@ public class ShipDesignerWindow {
 
     private final InfoPanel infoPanel;
     private final AttackLevelInfo attackLevelInfo;
+    private ArrayList<InfoUi> infoUis;
 
     public ShipDesignerWindow(IGameLogic gameLogic, IPlayer player) {
 
@@ -31,6 +30,7 @@ public class ShipDesignerWindow {
         shipDesigner.changeHullSize(2);
 
         JFrame guiFrame = new JFrame();
+        this.infoUis = new ArrayList<InfoUi>();
 
         //make sure the program exits when the frame closes
         guiFrame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
@@ -46,9 +46,23 @@ public class ShipDesignerWindow {
 
 
 
-        double topleftSizes[][] =  {{0.25, 0.4, 0.35}, {0.80, 0.25, 0.25, 0.25}};
+        double topleftSizes[][] =  {{320}, {33, 33, 33}};
         final JPanel topLeftPanel = new JPanel(new TableLayout(topleftSizes));
-        topLeftPanel.add(new JLabel("Computer:"), "0, 0");
+        //topLeftPanel.add(new JLabel("Computer:"), "0, 0");
+
+
+        topLeftPanel.add(createNameSelectAndInfo(shipDesigner,
+                " Computer:",
+                new ComputerSelectorListener(),
+                ShipModuleUiFactory.create(shipDesigner.getComputerModule()),
+                new AttackLevelInfo(shipDesigner)), "0, 0");
+        topLeftPanel.add(createNameSelectAndInfo(shipDesigner,
+                " Shield:",
+                new ShieldSelectorListener(),
+                ShipModuleUiFactory.create(shipDesigner.getShieldModule()),
+                new DefenceLevelInfo(shipDesigner)), "0, 1");
+
+
         final ModuleSelection computerSlot = new ModuleSelection();
         computerSlot.setListener(new ModuleSelection.Listener() {
             @Override
@@ -58,9 +72,9 @@ public class ShipDesignerWindow {
         });
         computerSlot.setBorder(null);
         computerSlot.add(ShipModuleUiFactory.create(shipDesigner.getComputerModule()), BorderLayout.CENTER);
-        topLeftPanel.add(computerSlot, "1, 0");
+        //topLeftPanel.add(computerSlot, "1, 0");
         this.attackLevelInfo = new AttackLevelInfo(shipDesigner);
-        topLeftPanel.add(attackLevelInfo, "2, 0");
+        //topLeftPanel.add(attackLevelInfo, "2, 0");
         guiFrame.add(topLeftPanel, "0, 0");
 
 
@@ -99,6 +113,38 @@ public class ShipDesignerWindow {
 
     }
 
+    private JPanel createNameSelectAndInfo(
+            final ShipDesigner shipDesigner,
+            final String title,
+            final ModuleSelectorListener moduleSelectorListener,
+            final ShipModuleUi initialValue,
+            final InfoUi infoUi) {
+        double[][] sizes = {{80, 140, 100}, {35}};
+        JPanel panel = new JPanel();
+        panel.setLayout(new TableLayout(sizes));
+        panel.add(new JLabel(title), "0, 0");
+        final ModuleSelection slot = new ModuleSelection();
+        slot.setListener(new ModuleSelection.Listener() {
+            @Override
+            public void onClick() {
+                moduleSelectorListener.onSelect(slot, shipDesigner);
+            }
+        });
+        initialValue.setListener(new ShipModuleUi.Listener() {
+            @Override
+            public void onClick(ShipModuleUi shipModuleUi) {
+                moduleSelectorListener.onSelect(slot, shipDesigner);
+            }
+        });
+        slot.setBorder(null);
+        slot.add(initialValue, BorderLayout.CENTER);
+        panel.add(slot, "1, 0");
+        panel.add((JComponent) infoUi, "2, 0");
+        infoUis.add(infoUi);
+        infoUi.update();
+        return panel;
+    }
+
     private void openComputerSelection(ModuleSelection moduleSelection, ShipDesigner shipDesigner) {
         ShipModuleSelectionDialog dialog =
                 new ShipModuleSelectionDialog(
@@ -108,16 +154,50 @@ public class ShipDesignerWindow {
         dialog.setLocationRelativeTo(moduleSelection);
         dialog.pack();
         dialog.setVisible(true);
-        System.out.println(":CLICK: " + dialog.getSelected());
         shipDesigner.setComputerModule(dialog.getSelected().getName() );
         updateAll();
         moduleSelection.removeAll();
         moduleSelection.add(ShipModuleUiFactory.create(shipDesigner.getComputerModule()));
     }
 
+    private void openShieldSelection(ModuleSelection moduleSelection, ShipDesigner shipDesigner) {
+        ShipModuleSelectionDialog dialog =
+                new ShipModuleSelectionDialog(
+                        moduleSelection, shipDesigner.getAvailableShieldModules());
+        dialog.setModal(true);
+        dialog.setSelected(shipDesigner.getShieldModule());
+        dialog.setLocationRelativeTo(moduleSelection);
+        dialog.pack();
+        dialog.setVisible(true);
+        shipDesigner.setShieldModule(dialog.getSelected().getName());
+        updateAll();
+        moduleSelection.removeAll();
+        moduleSelection.add(ShipModuleUiFactory.create(shipDesigner.getShieldModule()));
+    }
+
     private void updateAll() {
         infoPanel.update();
-        attackLevelInfo.update();
+        for (InfoUi infoUi : infoUis) {
+            infoUi.update();
+        }
+    }
+
+    private interface ModuleSelectorListener {
+        void onSelect(ModuleSelection moduleSelection, ShipDesigner shipDesigner);
+    }
+
+    private class ComputerSelectorListener implements ModuleSelectorListener {
+        @Override
+        public void onSelect(ModuleSelection moduleSelection, ShipDesigner shipDesigner) {
+            openComputerSelection(moduleSelection, shipDesigner);
+        }
+    }
+
+    private class ShieldSelectorListener implements ModuleSelectorListener {
+        @Override
+        public void onSelect(ModuleSelection moduleSelection, ShipDesigner shipDesigner) {
+            openShieldSelection(moduleSelection, shipDesigner);
+        }
     }
 
     private JPanel createInfoPanel(ShipDesigner shipDesigner) {
@@ -127,7 +207,11 @@ public class ShipDesignerWindow {
         return infoPanel;
     }
 
-    private static class InfoPanel extends JPanel {
+    private static interface InfoUi {
+        void update();
+    }
+
+    private static class InfoPanel extends JPanel implements InfoUi {
         private final ShipDesigner shipDesigner;
         private final JLabel label;
 
@@ -137,13 +221,13 @@ public class ShipDesignerWindow {
             add(label);
         }
 
-        void update() {
+        public void update() {
             int spaceUsed = shipDesigner.getTotalSpace() - shipDesigner.getAvailableSpace();
             this.label.setText("Space used: " + spaceUsed + " out of " + shipDesigner.getTotalSpace());
         }
     }
 
-    private static class AttackLevelInfo extends JLabel {
+    private static class AttackLevelInfo extends JLabel implements InfoUi {
         private final ShipDesigner shipDesigner;
 
         public AttackLevelInfo(ShipDesigner shipDesigner) {
@@ -152,9 +236,25 @@ public class ShipDesignerWindow {
             setBackground(Color.RED);
         }
 
-        void update() {
+        public void update() {
             int attackLevel = shipDesigner.getAttackLevel();
             setText("Attack Level: " + attackLevel);
+        }
+
+    }
+
+    private static class DefenceLevelInfo extends JLabel implements InfoUi {
+        private final ShipDesigner shipDesigner;
+
+        public DefenceLevelInfo(ShipDesigner shipDesigner) {
+            this.shipDesigner = shipDesigner;
+            setForeground(Color.red);
+            setBackground(Color.RED);
+        }
+
+        public void update() {
+            int hitsAbsorbs = shipDesigner.getHitsAbsorbs();
+            setText("Hit Absorbs: " + hitsAbsorbs);
         }
 
     }
@@ -237,7 +337,6 @@ public class ShipDesignerWindow {
 
         public ModuleSelection() {
             super();
-            setBackground(Color.black);
             addMouseListener(this);
         }
 

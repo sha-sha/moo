@@ -41,6 +41,12 @@ public class ShipDesigner {
         builder.setComputerSlot(module);
     }
 
+    public void setShieldModule(String name) {
+        ShipModule module = player.getPlayerState().getTechnologies().getShipModule(name);
+        Utils.check(module.getShipComponentType().equals(ShipModule.ShipComponent.SHIELD));
+        builder.setShieldSlot(module);
+    }
+
     private void setComputerModule(ShipModule computerModule) {
         builder.setComputerSlot(computerModule);
     }
@@ -71,6 +77,7 @@ public class ShipDesigner {
     private int getUsedSpace(int hullSize) {
         int usedSpace = 0;
         usedSpace += getNonEngineModuleSpace(builder.getComputerSlot(), hullSize);
+        usedSpace += getNonEngineModuleSpace(builder.getShieldSlot(), hullSize);
         return usedSpace;
     }
 
@@ -84,6 +91,10 @@ public class ShipDesigner {
 
     public int getAttackLevel() {
         return builder.build().getAttackLevel();
+    }
+
+    public int getHitsAbsorbs() {
+        return builder.build().getHitsAbsorbs();
     }
 
     private int calcAvailableSpace(int hullSize) {
@@ -101,12 +112,28 @@ public class ShipDesigner {
         return builder.getComputerSlot();
     }
 
+    public ShipModule getShieldModule() {
+        return builder.getShieldSlot();
+    }
+
     public List<Utils.Available<ShipModule>> getAvailableComputerModules() {
         ShipModule current = builder.getComputerSlot();
         int maxExtraSpace = getAvailableSpace();
         List<Utils.Available<ShipModule>> modules = new ArrayList<>();
         for (ShipModule module : player.getPlayerState().getTechnologies().getShipModule(
                 TechnologiesDb.IS_COMPUTER_MODULE)) {
+            modules.add(new Utils.Available<ShipModule>(module,
+                    getRequiredSpaceForReplacing(current, module) <= maxExtraSpace));
+        }
+        return modules;
+    }
+
+    public List<Utils.Available<ShipModule>> getAvailableShieldModules() {
+        ShipModule current = builder.getShieldSlot();
+        int maxExtraSpace = getAvailableSpace();
+        List<Utils.Available<ShipModule>> modules = new ArrayList<>();
+        for (ShipModule module : player.getPlayerState().getTechnologies().getShipModule(
+                TechnologiesDb.IS_SHIELD_MODULE)) {
             modules.add(new Utils.Available<ShipModule>(module,
                     getRequiredSpaceForReplacing(current, module) <= maxExtraSpace));
         }
@@ -178,7 +205,7 @@ public class ShipDesigner {
                 .setArmorSlot(player.getPlayerState().getTechnologies().getLowestArmor())
                 .setEngineSlot(player.getPlayerState().getTechnologies().getLowestEngine())
                 .setWeaponSlots(Arrays.asList(
-                ShipModule.ZERO_WEAPON, ShipModule.ZERO_WEAPON, ShipModule.ZERO_WEAPON, ShipModule.ZERO_WEAPON))
+                        ShipModule.ZERO_WEAPON, ShipModule.ZERO_WEAPON, ShipModule.ZERO_WEAPON, ShipModule.ZERO_WEAPON))
                 .setSpecialSlots(Arrays.asList(ShipModule.NO_SPECIAL, ShipModule.NO_SPECIAL, ShipModule.NO_SPECIAL));
     }
 }

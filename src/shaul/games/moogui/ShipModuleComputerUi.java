@@ -8,10 +8,17 @@ import javax.swing.*;
  * Created by Shaul on 4/26/2015.
  */
 public class ShipModuleComputerUi extends ShipModuleUi {
+    private final JLabel label;
+
     public ShipModuleComputerUi(ShipModule shipModule) {
         super(shipModule);
 
-        add(new JLabel(shipModule.getName()));
+        this.label = new JLabel(shipModule.getName());
+        add(label);
+    }
+
+    public void setEnabled(boolean enabled) {
+        this.label.setEnabled(enabled);
     }
 
     //

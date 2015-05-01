@@ -28,6 +28,11 @@ public class ShipModuleUiFactory {
             this.label = new JLabel(shipModule.getName());
             add(label);
         }
+
+        public void setEnabled(boolean enabled) {
+            this.label.setEnabled(enabled);
+        }
+
     }
 
 }

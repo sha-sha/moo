@@ -30,6 +30,7 @@ public class TechModules {
         for (i = 1; i <= 11; i++) {
             add(ShipTech.ecm(i));
             add(ShipTech.computer(i));
+            add(ShipTech.shield(i));
             if (i > 1 && i <= 7) {
                 add(PlanetTech.roboticsControls(i));
             }

@@ -36,8 +36,10 @@ public class ShipModuleSelectionDialog extends JDialog implements ShipModuleUi.L
 
         for (Utils.Available<ShipModule> optionalModule : optionalModules) {
             ShipModuleUi moduleUi = ShipModuleUiFactory.create(optionalModule.get());
-            final ShipModule selectedModule = optionalModule.get();
-            moduleUi.setListener(this);
+            moduleUi.setEnabled(optionalModule.isAvailable());
+            if (optionalModule.isAvailable()) {
+                moduleUi.setListener(this);
+            }
             moduleUiList.add(moduleUi);
             main.add(moduleUi);
         }

@@ -66,6 +66,8 @@ public final class TechnologyTree {
         add(battleComputer(31, 11));
 
         add(constructionTech(1, "Titanium", "Titanium", "Titanium II"));
+        add(forceFieldsTech(1, "Class I Deflector Shield", "Shield 1"));
+        add(forceFieldsTech(4, "Class II Deflector Shield", "Shield 2"));
         add(weaponTech(1, "Laser", "Laser", "Heavy Laser"));
 
     }}};
@@ -126,6 +128,10 @@ public final class TechnologyTree {
 
     private static Technology constructionTech(int techLevel, String name, String... module) {
         return new Technology(CATEGORY_CONSTRUCTION, techLevel, name, module);
+    }
+
+    private static Technology forceFieldsTech(int techLevel, String name, String... module) {
+        return new Technology(CATEGORY_FORCE_FIELDS, techLevel, name, module);
     }
 
     private static Technology weaponTech(int techLevel, String name, String... module) {

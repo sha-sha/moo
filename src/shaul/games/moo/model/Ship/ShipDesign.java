@@ -23,6 +23,7 @@ public class ShipDesign {
     private final List<Utils.Countable<ShipModule>> weaponSlot;
     private final List<ShipModule> specialSlot;
     private final int attackLevel;
+    private final int hitAbsorbs;
 
     ShipDesign(int hullSize,
                ShipModule computerSlot,
@@ -48,13 +49,16 @@ public class ShipDesign {
         allModules.addAll(specialSlot);
 
         int attackLevel = 0;
+        int hitAbsorbs = 0;
         for (ShipModule module : allModules) {
             Utils.assertNotNull(module);
             Utils.check("Module " + module + " has no data", module.getModuleData() != null);
             attackLevel += module.getModuleData().getAttackLevel();
+            hitAbsorbs += module.getModuleData().getHitAbsorbs();
         }
 
         this.attackLevel = attackLevel;
+        this.hitAbsorbs = hitAbsorbs;
     }
 
     @Override
@@ -89,6 +93,10 @@ public class ShipDesign {
 
     public int getAttackLevel() {
         return attackLevel;
+    }
+
+    public int getHitsAbsorbs() {
+        return hitAbsorbs;
     }
 
     public static class Builder {
@@ -126,6 +134,10 @@ public class ShipDesign {
         public Builder setShieldSlot(ShipModule shieldSlot) {
             this.shieldSlot = shieldSlot;
             return this;
+        }
+
+        public ShipModule getShieldSlot() {
+            return shieldSlot;
         }
 
         public Builder setEcmSlot(ShipModule ecmSlot) {

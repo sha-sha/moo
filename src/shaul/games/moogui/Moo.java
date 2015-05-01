@@ -87,7 +87,7 @@ public class Moo {
         currentPlayer.setPlayerState(new PlayerStateImpl(
                 null, new TechnologiesDb(gameLogic.getTechnologyLogic(), Arrays.asList(
                 "Battle Computer Mark 1", "Battle Computer Mark 2", "Battle Computer Mark 3",
-                "Battle Scanner", "Titanium", "Laser"))));
+                "Battle Scanner", "Titanium", "Laser", "Class I Deflector Shield", "Class II Deflector Shield"))));
 
         new ShipDesignerWindow(gameLogic, currentPlayer);
     }
