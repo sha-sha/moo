@@ -47,6 +47,12 @@ public class ShipDesigner {
         builder.setShieldSlot(module);
     }
 
+    public void setEcmModule(String name) {
+        ShipModule module = player.getPlayerState().getTechnologies().getShipModule(name);
+        Utils.check(module.getShipComponentType().equals(ShipModule.ShipComponent.ECM));
+        builder.setEcmSlot(module);
+    }
+
     private void setComputerModule(ShipModule computerModule) {
         builder.setComputerSlot(computerModule);
     }
@@ -78,6 +84,7 @@ public class ShipDesigner {
         int usedSpace = 0;
         usedSpace += getNonEngineModuleSpace(builder.getComputerSlot(), hullSize);
         usedSpace += getNonEngineModuleSpace(builder.getShieldSlot(), hullSize);
+        usedSpace += getNonEngineModuleSpace(builder.getEcmSlot(), hullSize);
         return usedSpace;
     }
 
@@ -95,6 +102,10 @@ public class ShipDesigner {
 
     public int getHitsAbsorbs() {
         return builder.build().getHitsAbsorbs();
+    }
+
+    public int getMissleDefence() {
+        return builder.build().getMissleDefence();
     }
 
     private int calcAvailableSpace(int hullSize) {
@@ -116,6 +127,10 @@ public class ShipDesigner {
         return builder.getShieldSlot();
     }
 
+    public ShipModule getEcmModule() {
+        return builder.getEcmSlot();
+    }
+
     public List<Utils.Available<ShipModule>> getAvailableComputerModules() {
         ShipModule current = builder.getComputerSlot();
         int maxExtraSpace = getAvailableSpace();
@@ -134,6 +149,18 @@ public class ShipDesigner {
         List<Utils.Available<ShipModule>> modules = new ArrayList<>();
         for (ShipModule module : player.getPlayerState().getTechnologies().getShipModule(
                 TechnologiesDb.IS_SHIELD_MODULE)) {
+            modules.add(new Utils.Available<ShipModule>(module,
+                    getRequiredSpaceForReplacing(current, module) <= maxExtraSpace));
+        }
+        return modules;
+    }
+
+    public List<Utils.Available<ShipModule>> getAvailableEcmModules() {
+        ShipModule current = builder.getEcmSlot();
+        int maxExtraSpace = getAvailableSpace();
+        List<Utils.Available<ShipModule>> modules = new ArrayList<>();
+        for (ShipModule module : player.getPlayerState().getTechnologies().getShipModule(
+                TechnologiesDb.IS_ECM_MODULE)) {
             modules.add(new Utils.Available<ShipModule>(module,
                     getRequiredSpaceForReplacing(current, module) <= maxExtraSpace));
         }

@@ -60,7 +60,12 @@ public class ShipDesignerWindow {
                 " Shield:",
                 new ShieldSelectorListener(),
                 ShipModuleUiFactory.create(shipDesigner.getShieldModule()),
-                new DefenceLevelInfo(shipDesigner)), "0, 1");
+                new HitAbsorbsInfo(shipDesigner)), "0, 1");
+        topLeftPanel.add(createNameSelectAndInfo(shipDesigner,
+                " Ecm:",
+                new EcmSelectorListener(),
+                ShipModuleUiFactory.create(shipDesigner.getEcmModule()),
+                new MissleDefenceInfo(shipDesigner)), "0, 2");
 
 
         final ModuleSelection computerSlot = new ModuleSelection();
@@ -175,6 +180,21 @@ public class ShipDesignerWindow {
         moduleSelection.add(ShipModuleUiFactory.create(shipDesigner.getShieldModule()));
     }
 
+    private void openEcmSelection(ModuleSelection moduleSelection, ShipDesigner shipDesigner) {
+        ShipModuleSelectionDialog dialog =
+                new ShipModuleSelectionDialog(
+                        moduleSelection, shipDesigner.getAvailableEcmModules());
+        dialog.setModal(true);
+        dialog.setSelected(shipDesigner.getEcmModule());
+        dialog.setLocationRelativeTo(moduleSelection);
+        dialog.pack();
+        dialog.setVisible(true);
+        shipDesigner.setEcmModule(dialog.getSelected().getName());
+        updateAll();
+        moduleSelection.removeAll();
+        moduleSelection.add(ShipModuleUiFactory.create(shipDesigner.getEcmModule()));
+    }
+
     private void updateAll() {
         infoPanel.update();
         for (InfoUi infoUi : infoUis) {
@@ -197,6 +217,13 @@ public class ShipDesignerWindow {
         @Override
         public void onSelect(ModuleSelection moduleSelection, ShipDesigner shipDesigner) {
             openShieldSelection(moduleSelection, shipDesigner);
+        }
+    }
+
+    private class EcmSelectorListener implements ModuleSelectorListener {
+        @Override
+        public void onSelect(ModuleSelection moduleSelection, ShipDesigner shipDesigner) {
+            openEcmSelection(moduleSelection, shipDesigner);
         }
     }
 
@@ -243,10 +270,10 @@ public class ShipDesignerWindow {
 
     }
 
-    private static class DefenceLevelInfo extends JLabel implements InfoUi {
+    private static class HitAbsorbsInfo extends JLabel implements InfoUi {
         private final ShipDesigner shipDesigner;
 
-        public DefenceLevelInfo(ShipDesigner shipDesigner) {
+        public HitAbsorbsInfo(ShipDesigner shipDesigner) {
             this.shipDesigner = shipDesigner;
             setForeground(Color.red);
             setBackground(Color.RED);
@@ -255,6 +282,22 @@ public class ShipDesignerWindow {
         public void update() {
             int hitsAbsorbs = shipDesigner.getHitsAbsorbs();
             setText("Hit Absorbs: " + hitsAbsorbs);
+        }
+
+    }
+
+    private static class MissleDefenceInfo extends JLabel implements InfoUi {
+        private final ShipDesigner shipDesigner;
+
+        public MissleDefenceInfo(ShipDesigner shipDesigner) {
+            this.shipDesigner = shipDesigner;
+            setForeground(Color.red);
+            setBackground(Color.RED);
+        }
+
+        public void update() {
+            int missleDefence = shipDesigner.getMissleDefence();
+            setText("Missle Defence: " + missleDefence);
         }
 
     }
