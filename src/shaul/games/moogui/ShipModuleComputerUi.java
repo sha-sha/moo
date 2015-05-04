@@ -7,7 +7,7 @@ import javax.swing.*;
 /**
  * Created by Shaul on 4/26/2015.
  */
-public class ShipModuleComputerUi extends ShipModuleUi {
+public class ShipModuleComputerUi extends GenericUi<ShipModule> {
     private final JLabel label;
 
     public ShipModuleComputerUi(ShipModule shipModule) {

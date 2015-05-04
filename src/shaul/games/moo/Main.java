@@ -52,7 +52,6 @@ public class Main {
 
 
         ShipDesigner shipDesigner = new ShipDesigner(gameLogic, currentPlayer);
-        List<HullType> hullTypes = shipDesigner.getHullTypes();
 
         if (shipDesigner.canChangeHullSize(2)) {
             shipDesigner.changeHullSize(2);

@@ -10,20 +10,21 @@ import java.awt.event.MouseListener;
 /**
  * Created by Shaul on 4/26/2015.
  */
-public class ShipModuleUi extends GenericUi<ShipModule> implements MouseListener {
+public class GenericUi<DATA> extends JPanel implements MouseListener, UiElement {
 
     private Style style;
-    private ShipModule shipModule;
+    private DATA data;
     private UiListener listener;
     private boolean selected;
 
-    public ShipModuleUi(ShipModule shipModule) {
-        this(shipModule, Style.NONE);
+    enum Style { NONE, SELECTED};
+
+    public GenericUi(DATA data) {
+        this(data, Style.NONE);
     }
 
-    public ShipModuleUi(ShipModule shipModule, Style style) {
-        super(shipModule, style);
-        this.shipModule = shipModule;
+    public GenericUi(DATA data, Style style) {
+        this.data = data;
         this.style = style;
         addMouseListener(this);
     }
@@ -33,12 +34,12 @@ public class ShipModuleUi extends GenericUi<ShipModule> implements MouseListener
         this.setBackground(selected ? Color.red : Color.LIGHT_GRAY);
     }
 
-    public ShipModule getShipModule() {
-        return shipModule;
+    public DATA getData() {
+        return data;
     }
 
     @Override
-    public void setListener(UiElement.UiListener listener) {
+    public void setListener(UiListener listener) {
         this.listener = listener;
     }
 

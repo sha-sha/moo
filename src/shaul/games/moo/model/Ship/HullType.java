@@ -8,7 +8,7 @@ public class HullType {
     private final int size;
     private final String name;
 
-    // size - 1-smallest
+    // size - 0-smallest
     public HullType(int size, String name) {
         this.size = size;
         this.name = name;

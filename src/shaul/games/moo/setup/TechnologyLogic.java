@@ -17,10 +17,10 @@ import java.util.List;
 public class TechnologyLogic implements ITechnologyLogic {
 
     private static final List<HullType> HULL_TYPES = Arrays.asList(
-            new HullType(1, "Tiny"),
-            new HullType(2, "Small"),
-            new HullType(3, "Big"),
-            new HullType(4, "Huge"));
+            new HullType(0, "Tiny"),
+            new HullType(1, "Small"),
+            new HullType(2, "Big"),
+            new HullType(3, "Huge"));
     private static final int[] HULL_SIZES = {120, 300, 700, 1200};
 
 
@@ -39,8 +39,8 @@ public class TechnologyLogic implements ITechnologyLogic {
 
     @Override
     public int getHullTotalSpace(int hullSize) {
-        Utils.check(hullSize >= 1 && hullSize <= HULL_SIZES.length);
-        return HULL_SIZES[hullSize - 1];
+        Utils.check(hullSize >= 0 && hullSize < HULL_SIZES.length);
+        return HULL_SIZES[hullSize];
     }
 
     @Override

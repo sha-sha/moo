@@ -61,8 +61,17 @@ public class ShipDesigner {
         builder.setWeaponSlot(weaponSlot, new Utils.Countable<ShipModule>(weapon, count));
     }
 
-    public List<HullType> getHullTypes() {
-        return gameLogic.getTechnologyLogic().getAvailableHullTypes();
+    public List<Utils.Available<HullType>> getAvailableHullTypes() {
+        List<Utils.Available<HullType>> list = new ArrayList<>();
+        for (HullType hull : gameLogic.getTechnologyLogic().getAvailableHullTypes()) {
+            if (hull.getHullSize() == builder.getHullSize() || canChangeHullSize(hull.getHullSize())) {
+                list.add(Utils.Available.of(hull));
+            } else {
+                list.add(Utils.Available.no(hull));
+            }
+        }
+
+        return list;
     }
 
     public boolean canChangeHullSize(int hullSize) {
@@ -129,6 +138,16 @@ public class ShipDesigner {
 
     public ShipModule getEcmModule() {
         return builder.getEcmSlot();
+    }
+
+    public HullType getHullType() {
+        for (HullType hull : gameLogic.getTechnologyLogic().getAvailableHullTypes()) {
+            if (hull.getHullSize() == builder.getHullSize()) {
+                return hull;
+            }
+        }
+        Utils.fail("Unknown hull size: " + builder.getHullSize(), true);
+        return null;
     }
 
     public List<Utils.Available<ShipModule>> getAvailableComputerModules() {

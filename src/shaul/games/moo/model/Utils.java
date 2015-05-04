@@ -121,9 +121,8 @@ public class Utils {
             super(t, available ? 1 : 0);
         }
 
-        public static<T> Available<T> of(T t) {
-            return new Available<T>(t, true);
-        }
+        public static<T> Available<T> of(T t) { return new Available<T>(t, true); }
+        public static<T> Available<T> no(T t) { return new Available<T>(t, false); }
 
         public boolean isAvailable() {
             return getCount() > 0;

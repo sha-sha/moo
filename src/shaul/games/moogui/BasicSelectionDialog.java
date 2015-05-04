@@ -10,17 +10,17 @@ import java.util.ArrayList;
 import java.util.List;
 
 /**
- * Created by Shaul on 4/23/2015.
+ * Created by Shaul on 5/3/2015.
  */
-public class ShipModuleSelectionDialog extends JDialog implements UiElement.UiListener {
+public class BasicSelectionDialog<T> extends JDialog implements UiElement.UiListener {
 
-    private final ArrayList<GenericUi<ShipModule>> moduleUiList;
-    private ShipModule selected = null;
+    private final ArrayList<GenericUi<T>> moduleUiList;
+    private T selected = null;
     private final Timer autoKillTimer;
     private final ActionListener timerKillListener;
     private boolean autoKillInOProgress;
 
-    public ShipModuleSelectionDialog(JComponent parent, List<Utils.Available<ShipModule>> optionalModules) {
+    public BasicSelectionDialog(JComponent parent, List<Utils.Available<T>> optionalTypes) {
         super(SwingUtilities.windowForComponent(parent));
         JPanel main = new JPanel();
         main.setLayout(new BoxLayout(main, BoxLayout.Y_AXIS));
@@ -29,15 +29,15 @@ public class ShipModuleSelectionDialog extends JDialog implements UiElement.UiLi
             @Override
             public void actionPerformed(ActionEvent e) {
                 autoKillTimer.stop();
-                ShipModuleSelectionDialog.this.dispose();
+                BasicSelectionDialog.this.dispose();
             }
         };
         autoKillTimer = new Timer(100, timerKillListener);
 
-        for (Utils.Available<ShipModule> optionalModule : optionalModules) {
-            GenericUi<ShipModule> moduleUi = UiFactory.create(optionalModule.get());
-            moduleUi.setEnabled(optionalModule.isAvailable());
-            if (optionalModule.isAvailable()) {
+        for (Utils.Available<T> optionalType : optionalTypes) {
+            GenericUi<T> moduleUi = UiFactory.create(optionalType.get());
+            moduleUi.setEnabled(optionalType.isAvailable());
+            if (optionalType.isAvailable()) {
                 moduleUi.setListener(this);
             }
             moduleUiList.add(moduleUi);
@@ -47,25 +47,25 @@ public class ShipModuleSelectionDialog extends JDialog implements UiElement.UiLi
         pack();
     }
 
-    public ShipModule getSelected() {
+    public T getSelected() {
         return selected;
     }
 
-    public void setSelected(ShipModule selected) {
-        GenericUi<ShipModule> shipModuleUi = getShipModuleUi(this.selected);
+    public void setSelected(T selected) {
+        GenericUi<T> shipModuleUi = getUi(this.selected);
         if (shipModuleUi != null) {
             shipModuleUi.setSelected(false);
         }
         this.selected = selected;
-        shipModuleUi = getShipModuleUi(this.selected);
+        shipModuleUi = getUi(this.selected);
         if (shipModuleUi != null) {
             shipModuleUi.setSelected(true);
         }
     }
 
-    private GenericUi<ShipModule> getShipModuleUi(ShipModule shipModule) {
-        for (GenericUi<ShipModule> shipModuleUi : moduleUiList) {
-            if (shipModuleUi.getData().equals(shipModule)) {
+    private GenericUi<T> getUi(T selected) {
+        for (GenericUi<T> shipModuleUi : moduleUiList) {
+            if (shipModuleUi.getData().equals(selected)) {
                 return shipModuleUi;
             }
         }
@@ -73,10 +73,10 @@ public class ShipModuleSelectionDialog extends JDialog implements UiElement.UiLi
     }
 
     @Override
-    public void onClick(UiElement shipModuleUi) {
+    public void onClick(UiElement stringUi) {
         if (!autoKillInOProgress) {
             autoKillInOProgress = true;
-            setSelected(((GenericUi<ShipModule>) shipModuleUi).getData());
+            setSelected(((GenericUi<T>) stringUi).getData());
             autoKillTimer.start();
         }
     }
