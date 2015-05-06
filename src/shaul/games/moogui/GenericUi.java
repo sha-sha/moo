@@ -64,7 +64,7 @@ public class GenericUi<DATA> extends JPanel implements MouseListener, UiElement 
         if (listener != null) {
             listener.onClick(this);
         } else {
-            System.out.println("ShipModuleUi has no listener!");
+            System.out.println("GenericUi " + this.getClass().toString() + " has no listener!");
         }
     }
 

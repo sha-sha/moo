@@ -34,6 +34,10 @@ public class TechnologiesDb {
     private ShipModule lowestArmor;
     private ShipModule lowestEngine;
 
+    public static Predicate<ShipModule> isModuleOf(ShipModule.ShipComponent shipComponent) {
+        return new ModuleTypePredicate(shipComponent);
+    }
+
     public TechnologiesDb(final ITechnologyLogic technologyLogic, List<String> technologies) {
         // TODO: create immutable list.
         this.technologies = new ArrayList<String>(technologies);

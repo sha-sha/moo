@@ -1,7 +1,5 @@
 package shaul.games.moo.model;
 
-import shaul.games.moo.model.Ship.ShipModule;
-
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
@@ -61,7 +59,7 @@ public class Utils {
 
 
     public static void check(boolean exp) {
-        fail(null, !exp);
+        failIf(null, !exp);
     }
 
     public static<T> T checkNotNull(T object) {
@@ -70,29 +68,33 @@ public class Utils {
     }
 
     public static void check(String str, boolean exp) {
-        fail(str, !exp);
+        failIf(str, !exp);
     }
 
     public static<V> void assertEquals(V x, V y) {
-        fail(null, (x == null && y != null) || !x.equals(y));
+        failIf(null, (x == null && y != null) || !x.equals(y));
     }
 
     public static<V> void assertEquals(String str, V x, V y) {
-        fail(str, (x == null && y != null) || !x.equals(y));
+        failIf(str, (x == null && y != null) || !x.equals(y));
     }
 
     public static<V> void assertNotNull(String str, V x) {
-        fail(str, (x == null));
+        failIf(str, (x == null));
     }
 
     public static<V> void assertNotNull(V x) {
-        fail("Variable is null" , (x == null));
+        failIf("Variable is null", (x == null));
     }
 
-    public static void fail(String str, boolean exp) {
+    public static void failIf(String str, boolean exp) {
         if (exp) {
             throw new GameRunTimeError(str != null ? str : "Assertion failed");
         }
+    }
+
+    public static void fail(String str) {
+        throw new GameRunTimeError(str != null ? str : "Assertion failed");
     }
 
     public static class Countable<T> {

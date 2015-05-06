@@ -25,6 +25,7 @@ public class ShipDesign {
     private final int attackLevel;
     private final int hitAbsorbs;
     private final int missleDefence;
+    private final int hitPoints;
 
     ShipDesign(int hullSize,
                ShipModule computerSlot,
@@ -52,17 +53,20 @@ public class ShipDesign {
         int attackLevel = 0;
         int hitAbsorbs = 0;
         int missleDefence = 0;
+        int hitPoints = 0;
         for (ShipModule module : allModules) {
             Utils.assertNotNull(module);
             Utils.check("Module " + module + " has no data", module.getModuleData() != null);
             attackLevel += module.getModuleData().getAttackLevel();
             hitAbsorbs += module.getModuleData().getHitAbsorbs();
             missleDefence += module.getModuleData().getMissileDefence();
+            hitPoints += module.getModuleData().getShipHitPoints(hullSize);
         }
 
         this.attackLevel = attackLevel;
         this.hitAbsorbs = hitAbsorbs;
         this.missleDefence = missleDefence;
+        this.hitPoints = hitPoints;
     }
 
     @Override
@@ -97,6 +101,10 @@ public class ShipDesign {
 
     public int getAttackLevel() {
         return attackLevel;
+    }
+
+    public int getHitPoints() {
+        return hitPoints;
     }
 
     public int getHitsAbsorbs() {
@@ -219,6 +227,46 @@ public class ShipDesign {
         public ShipDesign build() {
             return new ShipDesign(hullSize, computerSlot, shieldSlot, ecmSlot, armorSlot, engineSlot,
                     maneuverSlot, weaponSlots, specialSlots);
+        }
+
+        public ShipModule getSlot(ShipModule.ShipComponent shipComponent) {
+            switch (shipComponent) {
+                case COMPUTER:
+                    return computerSlot;
+                case SHIELD:
+                    return shieldSlot;
+                case ECM:
+                    return ecmSlot;
+                case ARMOR:
+                    return armorSlot;
+                case ENGINE:
+                    return engineSlot;
+                default:
+                    Utils.fail("Can't get component of type " + shipComponent);
+            }
+            return null;
+        }
+
+        public void setModule(ShipModule module) {
+            switch (module.getShipComponentType()) {
+                case COMPUTER:
+                    computerSlot = module;
+                    break;
+                case SHIELD:
+                    shieldSlot = module;
+                    break;
+                case ECM:
+                    ecmSlot = module;
+                    break;
+                case ARMOR:
+                    armorSlot = module;
+                    break;
+                case ENGINE:
+                    engineSlot = module;
+                    break;
+                default:
+                    Utils.fail("Can't set component of type " + module.getShipComponentType());
+            }
         }
     }
 }

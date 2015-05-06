@@ -10,6 +10,8 @@ import shaul.games.moo.model.Ship.ShipModule;
 import shaul.games.moo.model.Utils;
 
 import javax.swing.*;
+import javax.swing.border.Border;
+import javax.swing.border.LineBorder;
 import java.awt.*;
 import java.awt.event.MouseEvent;
 import java.awt.event.MouseListener;
@@ -46,28 +48,34 @@ public class ShipDesignerWindow {
 
 
 
-        double topleftSizes[][] =  {{320}, {33, 33, 33}};
+        double topleftSizes[][] =  {{315}, {33, 33, 33}};
         final JPanel topLeftPanel = new JPanel(new TableLayout(topleftSizes));
+        topLeftPanel.setBorder(new LineBorder(Color.BLACK, 1));
 
-        topLeftPanel.add(createNameSelectAndInfo(shipDesigner,
+        topLeftPanel.add(createShipModuleSelectAndInfo(shipDesigner,
+                ShipModule.ShipComponent.COMPUTER,
                 " Computer:",
-                new ComputerSelectorListener(),
-                UiFactory.create(shipDesigner.getComputerModule()),
                 new AttackLevelInfo(shipDesigner)), "0, 0");
-        topLeftPanel.add(createNameSelectAndInfo(shipDesigner,
+        topLeftPanel.add(createShipModuleSelectAndInfo(shipDesigner,
+                ShipModule.ShipComponent.SHIELD,
                 " Shield:",
-                new ShieldSelectorListener(),
-                UiFactory.create(shipDesigner.getShieldModule()),
                 new HitAbsorbsInfo(shipDesigner)), "0, 1");
-        topLeftPanel.add(createNameSelectAndInfo(shipDesigner,
+        topLeftPanel.add(createShipModuleSelectAndInfo(shipDesigner,
+                ShipModule.ShipComponent.ECM,
                 " Ecm:",
-                new EcmSelectorListener(),
-                UiFactory.create(shipDesigner.getEcmModule()),
                 new MissleDefenceInfo(shipDesigner)), "0, 2");
-
         guiFrame.add(topLeftPanel, "0, 0");
 
-        guiFrame.add(new Test(Color.RED), "1, 0");
+        double topRightSizes[][] =  {{315}, {33, 33, 33}};
+        final JPanel topRightPanel = new JPanel(new TableLayout(topRightSizes));
+        topRightPanel.setBorder(new LineBorder(Color.BLACK, 1));
+
+        topRightPanel.add(createShipModuleSelectAndInfo(shipDesigner,
+                ShipModule.ShipComponent.ARMOR,
+                " Armor:",
+                new HitPointsInfo(shipDesigner)), "0, 0");
+        guiFrame.add(topRightPanel, "1, 0");
+
         guiFrame.add(new Test(Color.YELLOW), "0, 1, 1, 1");
         guiFrame.add(new Test(Color.GREEN), "0, 2, 1, 2");
 
@@ -85,37 +93,24 @@ public class ShipDesignerWindow {
         infoPanel.update();
 
 
-/*
-        final JPanel topPanel = new JPanel();
-        topPanel.setBackground(Color.BLUE);
-        topPanel.setMinimumSize(new Dimension(640, 450));
-        guiFrame.add(topPanel, BorderLayout.PAGE_START);
-
-        final JPanel equipmentsPanel = new JPanel();
-        equipmentsPanel.setBackground(Color.GREEN);
-        equipmentsPanel.setSize(640, 150);
-        guiFrame.add(equipmentsPanel, BorderLayout.CENTER);
-
-        final JPanel bottomPanel = new JPanel();
-        bottomPanel.setBackground(Color.RED);
-        bottomPanel.setSize(640, 180);
-        guiFrame.add(bottomPanel, BorderLayout.PAGE_END);
-
-        //        .setLayout(new BoxLayout(listPane, BoxLayout.PAGE_AXIS));
-*/
         //make sure the JFrame is visible
         guiFrame.pack();
         guiFrame.setVisible(true);
 
     }
 
-    private JPanel createNameSelectAndInfo(
+    private JPanel createShipModuleSelectAndInfo(
             final ShipDesigner shipDesigner,
+            final ShipModule.ShipComponent shipComponent,
             final String title,
-            final UiSelectorListener moduleSelectorListener,
-            final GenericUi<ShipModule> initialValue,
             final InfoUi infoUi) {
-        double[][] sizes = {{80, 140, 100}, {35}};
+        double[][] sizes = {{60, 140, 110}, {35}};
+        final UiSelectorListener moduleSelectorListener = new UiSelectorListener() {
+            @Override
+            public void onSelect(UiSelection uiSelection, ShipDesigner shipDesigner) {
+                openShipComponentSelection(uiSelection, shipDesigner, shipComponent);
+            }
+        };
         JPanel panel = new JPanel();
         panel.setLayout(new TableLayout(sizes));
         panel.add(new JLabel(title), "0, 0");
@@ -126,6 +121,7 @@ public class ShipDesignerWindow {
                 moduleSelectorListener.onSelect(slot, shipDesigner);
             }
         });
+        final GenericUi<ShipModule> initialValue = UiFactory.create(shipDesigner.getModule(shipComponent));
         initialValue.setListener(new UiElement.UiListener() {
             @Override
             public void onClick(UiElement shipModuleUi) {
@@ -170,49 +166,20 @@ public class ShipDesignerWindow {
         return panel;
     }
 
-    private void openComputerSelection(UiSelection moduleSelection, ShipDesigner shipDesigner) {
+    private void openShipComponentSelection(
+            UiSelection moduleSelection, ShipDesigner shipDesigner, ShipModule.ShipComponent shipComponent) {
         ShipModuleSelectionDialog dialog =
                 new ShipModuleSelectionDialog(
-                        moduleSelection, shipDesigner.getAvailableComputerModules());
+                        moduleSelection, shipDesigner.getAvailableModules(shipComponent));
         dialog.setModal(true);
-        dialog.setSelected(shipDesigner.getComputerModule());
+        dialog.setSelected(shipDesigner.getModule(shipComponent));
         dialog.setLocationRelativeTo(moduleSelection);
         dialog.pack();
         dialog.setVisible(true);
-        shipDesigner.setComputerModule(dialog.getSelected().getName() );
+        shipDesigner.setModule(dialog.getSelected().getName());
         updateAll();
         moduleSelection.removeAll();
-        moduleSelection.add(UiFactory.create(shipDesigner.getComputerModule()));
-    }
-
-    private void openShieldSelection(UiSelection moduleSelection, ShipDesigner shipDesigner) {
-        ShipModuleSelectionDialog dialog =
-                new ShipModuleSelectionDialog(
-                        moduleSelection, shipDesigner.getAvailableShieldModules());
-        dialog.setModal(true);
-        dialog.setSelected(shipDesigner.getShieldModule());
-        dialog.setLocationRelativeTo(moduleSelection);
-        dialog.pack();
-        dialog.setVisible(true);
-        shipDesigner.setShieldModule(dialog.getSelected().getName());
-        updateAll();
-        moduleSelection.removeAll();
-        moduleSelection.add(UiFactory.create(shipDesigner.getShieldModule()));
-    }
-
-    private void openEcmSelection(UiSelection moduleSelection, ShipDesigner shipDesigner) {
-        ShipModuleSelectionDialog dialog =
-                new ShipModuleSelectionDialog(
-                        moduleSelection, shipDesigner.getAvailableEcmModules());
-        dialog.setModal(true);
-        dialog.setSelected(shipDesigner.getEcmModule());
-        dialog.setLocationRelativeTo(moduleSelection);
-        dialog.pack();
-        dialog.setVisible(true);
-        shipDesigner.setEcmModule(dialog.getSelected().getName());
-        updateAll();
-        moduleSelection.removeAll();
-        moduleSelection.add(UiFactory.create(shipDesigner.getEcmModule()));
+        moduleSelection.add(UiFactory.create(shipDesigner.getModule(shipComponent)));
     }
 
     private void openHullSelection(UiSelection moduleSelection, ShipDesigner shipDesigner) {
@@ -241,39 +208,11 @@ public class ShipDesignerWindow {
         void onSelect(UiSelection<T> moduleSelection, ShipDesigner shipDesigner);
     }
 
-    private class ComputerSelectorListener implements UiSelectorListener {
-        @Override
-        public void onSelect(UiSelection moduleSelection, ShipDesigner shipDesigner) {
-            openComputerSelection(moduleSelection, shipDesigner);
-        }
-    }
-
-    private class ShieldSelectorListener implements UiSelectorListener {
-        @Override
-        public void onSelect(UiSelection moduleSelection, ShipDesigner shipDesigner) {
-            openShieldSelection(moduleSelection, shipDesigner);
-        }
-    }
-
-    private class EcmSelectorListener implements UiSelectorListener {
-        @Override
-        public void onSelect(UiSelection moduleSelection, ShipDesigner shipDesigner) {
-            openEcmSelection(moduleSelection, shipDesigner);
-        }
-    }
-
     private class HullSelectorListener implements UiSelectorListener {
         @Override
         public void onSelect(UiSelection moduleSelection, ShipDesigner shipDesigner) {
             openHullSelection(moduleSelection, shipDesigner);
         }
-    }
-
-    private JPanel createInfoPanel(ShipDesigner shipDesigner) {
-        JPanel infoPanel = new JPanel();
-        infoPanel.add(new JLabel("Test"));
-
-        return infoPanel;
     }
 
     private static interface InfoUi {
@@ -308,6 +247,22 @@ public class ShipDesignerWindow {
         public void update() {
             int attackLevel = shipDesigner.getAttackLevel();
             setText("Attack Level: " + attackLevel);
+        }
+
+    }
+
+    private static class HitPointsInfo extends JLabel implements InfoUi {
+        private final ShipDesigner shipDesigner;
+
+        public HitPointsInfo(ShipDesigner shipDesigner) {
+            this.shipDesigner = shipDesigner;
+            setForeground(Color.red);
+            setBackground(Color.RED);
+        }
+
+        public void update() {
+            int hitPoints = shipDesigner.getHitPoints();
+            setText("Hit Points: " + hitPoints);
         }
 
     }
@@ -351,125 +306,6 @@ public class ShipDesignerWindow {
         }
     }
 
-    private static class AvailableOptions extends JComboBox<String> {
-
-        //private List<Utils.Available<? extends TechModule>> options;
-        private List<Utils.Available<ShipModule>> options;
-
-        AvailableOptions(List<Utils.Available<ShipModule>> options) {
-            super(getList(options));
-            this.options = options;
-            setRenderer(new CellRenderer(options));
-        }
-
-        public void setOptions(List<Utils.Available<ShipModule>> options) {
-            setModel(new DefaultComboBoxModel<String>(getList(options)));
-            this.options = options;
-            setRenderer(new CellRenderer(options));
-        }
-
-        private static String[] getList(List<Utils.Available<ShipModule>> options) {
-            List<String> list = new ArrayList<>();
-            for (Utils.Available<? extends TechModule> option : options) {
-                list.add(option.get().getName());
-            }
-            return list.toArray(new String[list.size()]);
-        }
-
-        @Override
-        public void setSelectedIndex(int index) {
-            if (options.get(index).isAvailable()) {
-                super.setSelectedIndex(index);
-            }
-        }
-
-        private static class CellRenderer extends JLabel implements ListCellRenderer {
-
-            private final List<Utils.Available<ShipModule>> options;
-
-            CellRenderer(List<Utils.Available<ShipModule>> options) {
-                this.options = options;
-            }
-
-            @Override
-            public Component getListCellRendererComponent(
-                    JList list, Object value, int index, boolean isSelected, boolean cellHasFocus) {
-                setText(value.toString());
-                if (index < 0 || options.get(index).isAvailable()) {
-                    setFocusable(true);
-                    setEnabled(true);
-                } else {
-                    setFocusable(false);
-                    setEnabled(false);
-                }
-                return this;
-            }
-        }
-    }
-
-    /*
-    private static class ModuleSelection extends JPanel implements MouseListener, ShipModuleUi.Listener {
-
-        private Listener listener;
-
-        @Override
-        public void onClick(ShipModuleUi shipModuleUi) {
-            doClickAction();
-        }
-
-        public interface Listener {
-            void onClick();
-        }
-
-        public ModuleSelection() {
-            super();
-            addMouseListener(this);
-        }
-
-        public void setListener(Listener listener) {
-            this.listener = listener;
-        }
-
-        public void add(ShipModuleUi shipModuleUi) {
-            super.add(shipModuleUi);
-            shipModuleUi.setListener(this);
-        }
-
-        @Override
-        public void mouseClicked(MouseEvent e) {
-
-        }
-
-        @Override
-        public void mousePressed(MouseEvent e) {
-
-        }
-
-        @Override
-        public void mouseReleased(MouseEvent e) {
-            if(contains(e.getPoint())){
-                doClickAction();
-            }
-        }
-
-        private void doClickAction() {
-            if (listener != null) {
-                listener.onClick();
-            } else {
-                System.out.print("ModuleSelection has mo listener!");
-            }
-        }
-
-        @Override
-        public void mouseEntered(MouseEvent e) {
-
-        }
-
-        @Override
-        public void mouseExited(MouseEvent e) {
-
-        }
-    }*/
 
     private interface UiSelectorListener {
         void onSelect(UiSelection uiSelection, ShipDesigner shipDesigner);
