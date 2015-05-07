@@ -21,7 +21,7 @@ public class TechnologyLogic implements ITechnologyLogic {
             new HullType(1, "Small"),
             new HullType(2, "Big"),
             new HullType(3, "Huge"));
-    private static final int[] HULL_SIZES = {120, 300, 700, 1200};
+    private static final int[] HULL_SIZES = {50, 250, 900, 2600};
 
 
     public TechnologyLogic() {

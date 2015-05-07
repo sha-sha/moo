@@ -69,6 +69,7 @@ public final class TechnologyTree {
         add(forceFieldsTech(1, "Class I Deflector Shield", "Shield 1"));
         add(forceFieldsTech(4, "Class II Deflector Shield", "Shield 2"));
         add(weaponTech(1, "Laser", "Laser", "Heavy Laser"));
+        add(propulsionTech(1, "Nuclear Engine", "Nuclear Engine"));
 
     }}};
     private static Map<String, Technology> TECHNOLOGIES_MAP = null;
@@ -136,6 +137,10 @@ public final class TechnologyTree {
 
     private static Technology weaponTech(int techLevel, String name, String... module) {
         return new Technology(CATEGORY_WEAPONS, techLevel, name, module);
+    }
+
+    private static Technology propulsionTech(int techLevel, String name, String... module) {
+        return new Technology(CATEGORY_PROPULSION, techLevel, name, module);
     }
 
     private static Technology spaceScannerzz(int techLevel, String name, int level, int planetShipSensorRange, int planetStarSensorRange,

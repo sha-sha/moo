@@ -63,8 +63,5 @@ public class Main {
         System.out.println("Available armors: " + shipDesigner.getAvailableArmorModules());
         System.out.println("Available weapons: " + shipDesigner.getAvailableWeaponModulesAtSlot(0));
 
-        shipDesigner.setComputerModule(shipDesigner.getAvailableComputerModules().get(0).get().getName());
-        shipDesigner.setWeaponModule(0, shipDesigner.getAvailableWeaponModulesAtSlot(0).get(0).get(), 1);
-        System.out.println("Ship design:\n " + shipDesigner.complete());
     }
 }

@@ -56,15 +56,15 @@ public class ShipDesignerWindow {
         topLeftPanel.add(createShipModuleSelectAndInfo(shipDesigner,
                 ShipModule.ShipComponent.COMPUTER,
                 " Computer:",
-                new AttackLevelInfo(shipDesigner)), "0, 0");
+                new GenericInfo(shipDesigner, ATTACK_INFO)), "0, 0");
         topLeftPanel.add(createShipModuleSelectAndInfo(shipDesigner,
                 ShipModule.ShipComponent.SHIELD,
                 " Shield:",
-                new HitAbsorbsInfo(shipDesigner)), "0, 1");
+                new GenericInfo(shipDesigner, HIT_ABSORBS)), "0, 1");
         topLeftPanel.add(createShipModuleSelectAndInfo(shipDesigner,
                 ShipModule.ShipComponent.ECM,
                 " Ecm:",
-                new MissleDefenceInfo(shipDesigner)), "0, 2");
+                new GenericInfo(shipDesigner, MISSLE_DEFENCE)), "0, 2");
         guiFrame.add(topLeftPanel, "0, 0");
 
         double topRightSizes[][] =  {{315}, {33, 33, 33}};
@@ -74,7 +74,11 @@ public class ShipDesignerWindow {
         topRightPanel.add(createShipModuleSelectAndInfo(shipDesigner,
                 ShipModule.ShipComponent.ARMOR,
                 " Armor:",
-                new HitPointsInfo(shipDesigner)), "0, 0");
+                new GenericInfo(shipDesigner, HIT_POINT)), "0, 0");
+        topRightPanel.add(createShipModuleSelectAndInfo(shipDesigner,
+                ShipModule.ShipComponent.ENGINE,
+                " Engine:",
+                new GenericInfo(shipDesigner, WRAP_AND_DEFENCE)), "0, 1");
         guiFrame.add(topRightPanel, "1, 0");
 
         guiFrame.add(new Test(Color.YELLOW), "0, 1, 1, 1");
@@ -220,6 +224,26 @@ public class ShipDesignerWindow {
         void update();
     }
 
+    private static class GenericInfo extends JLabel implements InfoUi {
+        private final ShipDesigner shipDesigner;
+        private final Update update;
+
+        private interface Update {
+            String update(ShipDesigner shipDesigner);
+        }
+
+        GenericInfo(ShipDesigner shipDesigner, Update update) {
+            this.shipDesigner = shipDesigner;
+            this.update = update;
+            setForeground(Color.red);
+            setBackground(Color.RED);
+        }
+
+        public void update() {
+            setText(this.update.update(shipDesigner));
+        }
+    }
+
     private static class InfoPanel extends JPanel implements InfoUi {
         private final ShipDesigner shipDesigner;
         private final JLabel label;
@@ -236,69 +260,27 @@ public class ShipDesignerWindow {
         }
     }
 
-    private static class AttackLevelInfo extends JLabel implements InfoUi {
-        private final ShipDesigner shipDesigner;
-
-        public AttackLevelInfo(ShipDesigner shipDesigner) {
-            this.shipDesigner = shipDesigner;
-            setForeground(Color.red);
-            setBackground(Color.RED);
-        }
-
-        public void update() {
-            int attackLevel = shipDesigner.getAttackLevel();
-            setText("Attack Level: " + attackLevel);
-        }
-
-    }
-
-    private static class HitPointsInfo extends JLabel implements InfoUi {
-        private final ShipDesigner shipDesigner;
-
-        public HitPointsInfo(ShipDesigner shipDesigner) {
-            this.shipDesigner = shipDesigner;
-            setForeground(Color.red);
-            setBackground(Color.RED);
-        }
-
-        public void update() {
-            int hitPoints = shipDesigner.getHitPoints();
-            setText("Hit Points: " + hitPoints);
-        }
-
-    }
-
-    private static class HitAbsorbsInfo extends JLabel implements InfoUi {
-        private final ShipDesigner shipDesigner;
-
-        public HitAbsorbsInfo(ShipDesigner shipDesigner) {
-            this.shipDesigner = shipDesigner;
-            setForeground(Color.red);
-            setBackground(Color.RED);
-        }
-
-        public void update() {
+    private static final GenericInfo.Update ATTACK_INFO = new GenericInfo.Update() {
+        @Override public String update(ShipDesigner shipDesigner) {
+            return "Attack Level: " + shipDesigner.getAttackLevel();
+        }};
+    private static final GenericInfo.Update HIT_POINT = new GenericInfo.Update() {
+        @Override public String update(ShipDesigner shipDesigner) {
+            return "Hit Points: " + shipDesigner.getHitPoints();
+        }};
+    private static final GenericInfo.Update HIT_ABSORBS = new GenericInfo.Update() {
+        @Override public String update(ShipDesigner shipDesigner) {
             int hitsAbsorbs = shipDesigner.getHitsAbsorbs();
-            setText("Hit Absorbs: " + hitsAbsorbs);
-        }
-
-    }
-
-    private static class MissleDefenceInfo extends JLabel implements InfoUi {
-        private final ShipDesigner shipDesigner;
-
-        public MissleDefenceInfo(ShipDesigner shipDesigner) {
-            this.shipDesigner = shipDesigner;
-            setForeground(Color.red);
-            setBackground(Color.RED);
-        }
-
-        public void update() {
-            int missleDefence = shipDesigner.getMissleDefence();
-            setText("Missle Defence: " + missleDefence);
-        }
-
-    }
+            return "Hit Absorbs: " + shipDesigner.getHitsAbsorbs();
+        }};
+    private static final GenericInfo.Update MISSLE_DEFENCE = new GenericInfo.Update() {
+        @Override public String update(ShipDesigner shipDesigner) {
+            return "Missle Defence: " + shipDesigner.getMissleDefence();
+        }};
+    private static final GenericInfo.Update WRAP_AND_DEFENCE = new GenericInfo.Update() {
+        @Override public String update(ShipDesigner shipDesigner) {
+            return "Wrap ? Defence ?";
+        }};
 
     private static class Test extends JPanel {
         Test(Color c) {

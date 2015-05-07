@@ -35,37 +35,9 @@ public class ShipDesigner {
         return builder.build();
     }
 
-    public void setComputerModule(String name) {
-        ShipModule module = player.getPlayerState().getTechnologies().getShipModule(name);
-        Utils.check(module.getShipComponentType().equals(ShipModule.ShipComponent.COMPUTER));
-        builder.setComputerSlot(module);
-    }
-
-    public void setShieldModule(String name) {
-        ShipModule module = player.getPlayerState().getTechnologies().getShipModule(name);
-        Utils.check(module.getShipComponentType().equals(ShipModule.ShipComponent.SHIELD));
-        builder.setShieldSlot(module);
-    }
-
-    public void setEcmModule(String name) {
-        ShipModule module = player.getPlayerState().getTechnologies().getShipModule(name);
-        Utils.check(module.getShipComponentType().equals(ShipModule.ShipComponent.ECM));
-        builder.setArmorSlot(module);
-    }
-
-    public void setArmorModule(String name) {
-        ShipModule module = player.getPlayerState().getTechnologies().getShipModule(name);
-        Utils.check(module.getShipComponentType().equals(ShipModule.ShipComponent.ARMOR));
-        builder.setEcmSlot(module);
-    }
-
     public void setModule(String moduleName) {
         ShipModule module = player.getPlayerState().getTechnologies().getShipModule(moduleName);
         builder.setModule(module);
-    }
-
-    private void setComputerModule(ShipModule computerModule) {
-        builder.setComputerSlot(computerModule);
     }
 
     public void setWeaponModule(int weaponSlot, ShipModule weapon, int count) {
