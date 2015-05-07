@@ -1,0 +1,1 @@
+java -javaagent:swag.jar -Xbootclasspath/a:swag.jar -cp swexpl.jar;..\out\artifacts\moo_jar\moo.jar org.swingexplorer.Launcher shaul.games.moogui.Moo

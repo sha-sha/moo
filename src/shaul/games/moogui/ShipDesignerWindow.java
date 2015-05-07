@@ -25,13 +25,14 @@ public class ShipDesignerWindow {
 
     private final InfoPanel infoPanel;
     private ArrayList<InfoUi> infoUis;
+    private final JFrame guiFrame;
 
     public ShipDesignerWindow(IGameLogic gameLogic, IPlayer player) {
 
         final ShipDesigner shipDesigner = new ShipDesigner(gameLogic, player);
         shipDesigner.changeHullSize(2);
 
-        JFrame guiFrame = new JFrame();
+        guiFrame = new JFrame();
         this.infoUis = new ArrayList<InfoUi>();
 
         //make sure the program exits when the frame closes
@@ -104,7 +105,7 @@ public class ShipDesignerWindow {
             final ShipModule.ShipComponent shipComponent,
             final String title,
             final InfoUi infoUi) {
-        double[][] sizes = {{60, 140, 110}, {35}};
+        double[][] sizes = {{70, 135, 105}, {35}};
         final UiSelectorListener moduleSelectorListener = new UiSelectorListener() {
             @Override
             public void onSelect(UiSelection uiSelection, ShipDesigner shipDesigner) {
@@ -114,7 +115,7 @@ public class ShipDesignerWindow {
         JPanel panel = new JPanel();
         panel.setLayout(new TableLayout(sizes));
         panel.add(new JLabel(title), "0, 0");
-        final UiSelection<ShipModuleUi> slot = new UiSelection<>();
+        final UiSelection<GenericUi<ShipModule>> slot = new UiSelection<>();
         slot.setListener(new UiSelection.Listener() {
             @Override
             public void onClick() {
@@ -176,10 +177,14 @@ public class ShipDesignerWindow {
         dialog.setLocationRelativeTo(moduleSelection);
         dialog.pack();
         dialog.setVisible(true);
-        shipDesigner.setModule(dialog.getSelected().getName());
-        updateAll();
-        moduleSelection.removeAll();
-        moduleSelection.add(UiFactory.create(shipDesigner.getModule(shipComponent)));
+        System.out.println(" res: " + dialog.getSelected());
+        if (dialog.hasResult() && !shipDesigner.getModule(shipComponent).equals(dialog.getSelected())) {
+            shipDesigner.setModule(dialog.getSelected().getName());
+            updateAll();
+            moduleSelection.removeAll();
+            moduleSelection.add(UiFactory.create(shipDesigner.getModule(shipComponent)));
+            guiFrame.pack();
+        }
     }
 
     private void openHullSelection(UiSelection moduleSelection, ShipDesigner shipDesigner) {
@@ -202,10 +207,6 @@ public class ShipDesignerWindow {
         for (InfoUi infoUi : infoUis) {
             infoUi.update();
         }
-    }
-
-    private interface ModuleSelectorListener<T extends JComponent & UiElement> {
-        void onSelect(UiSelection<T> moduleSelection, ShipDesigner shipDesigner);
     }
 
     private class HullSelectorListener implements UiSelectorListener {
@@ -357,6 +358,7 @@ public class ShipDesignerWindow {
         }
 
         private void doClickAction() {
+            System.out.println("UiSelection.doClickAction");
             if (listener != null) {
                 listener.onClick();
             } else {

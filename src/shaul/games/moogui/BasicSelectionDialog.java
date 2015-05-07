@@ -19,6 +19,7 @@ public class BasicSelectionDialog<T> extends JDialog implements UiElement.UiList
     private final Timer autoKillTimer;
     private final ActionListener timerKillListener;
     private boolean autoKillInOProgress;
+    private boolean hasResult;
 
     public BasicSelectionDialog(JComponent parent, List<Utils.Available<T>> optionalTypes) {
         super(SwingUtilities.windowForComponent(parent));
@@ -50,6 +51,9 @@ public class BasicSelectionDialog<T> extends JDialog implements UiElement.UiList
     public T getSelected() {
         return selected;
     }
+    public boolean hasResult() {
+        return hasResult;
+    }
 
     public void setSelected(T selected) {
         GenericUi<T> shipModuleUi = getUi(this.selected);
@@ -77,6 +81,7 @@ public class BasicSelectionDialog<T> extends JDialog implements UiElement.UiList
         if (!autoKillInOProgress) {
             autoKillInOProgress = true;
             setSelected(((GenericUi<T>) stringUi).getData());
+            hasResult = true;
             autoKillTimer.start();
         }
     }

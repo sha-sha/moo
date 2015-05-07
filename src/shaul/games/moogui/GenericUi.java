@@ -61,6 +61,7 @@ public class GenericUi<DATA> extends JPanel implements MouseListener, UiElement 
     }
 
     private void doClickAction() {
+        System.out.println("doClickAction " + this.getData());
         if (listener != null) {
             listener.onClick(this);
         } else {

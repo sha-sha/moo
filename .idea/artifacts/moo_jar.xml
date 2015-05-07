@@ -1,0 +1,9 @@
+<component name="ArtifactManager">
+  <artifact type="jar" name="moo:jar">
+    <output-path>$PROJECT_DIR$/out/artifacts/moo_jar</output-path>
+    <root id="archive" name="moo.jar">
+      <element id="module-output" name="moo" />
+      <element id="extracted-dir" path="$PROJECT_DIR$/libs/tablelayout.jar" path-in-jar="/" />
+    </root>
+  </artifact>
+</component>
