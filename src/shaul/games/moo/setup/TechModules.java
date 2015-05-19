@@ -28,7 +28,7 @@ public class TechModules {
     private static void init() {
         int i;
         for (i = 1; i <= 11; i++) {
-            add(ShipTech.ecm(i));
+            add(new ShipTech.Ecm(i));
             add(ShipTech.computer(i));
             add(ShipTech.shield(i));
             if (i > 1 && i <= 7) {

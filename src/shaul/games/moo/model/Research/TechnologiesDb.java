@@ -1,6 +1,5 @@
 package shaul.games.moo.model.Research;
 
-import com.sun.org.apache.xpath.internal.operations.Mod;
 import shaul.games.moo.model.Ship.ShipModule;
 import shaul.games.moo.model.Utils;
 
@@ -29,8 +28,10 @@ public class TechnologiesDb {
 
     private final Comparator<ShipModule> COMPARE_TECH_LEVEL;
 
-    private final List<String> technologies;
+    private final List<String> technologiesNames;
     private final ITechnologyLogic technologyLogic;
+    private final ArrayList<Technology> technologies;
+    private final List<ShipModule> emptyModules;
     private ShipModule lowestArmor;
     private ShipModule lowestEngine;
 
@@ -40,7 +41,11 @@ public class TechnologiesDb {
 
     public TechnologiesDb(final ITechnologyLogic technologyLogic, List<String> technologies) {
         // TODO: create immutable list.
-        this.technologies = new ArrayList<String>(technologies);
+        this.technologiesNames = new ArrayList<String>(technologies);
+        this.technologies = new ArrayList<Technology>();
+        for (String technology : technologies) {
+            this.technologies.add(technologyLogic.getTechnology(technology));
+        }
         this.technologyLogic = technologyLogic;
         COMPARE_TECH_LEVEL = new Comparator<ShipModule>() {
             @Override
@@ -49,12 +54,21 @@ public class TechnologiesDb {
                         technologyLogic.getTechnologyOfTechModule(o2.getName()).getTechLevel();
             }
         };
+        emptyModules = new ArrayList<>(technologyLogic.getEmptyShipModules());
+    }
+
+    public List<Technology> getTechnologies() {
+        return technologies;
+    }
+
+    public List<ShipModule> getEmptyModules() {
+        return emptyModules;
     }
 
     public int getTechLevel(String category) {
         int highestTechLevel = 0;
         Utils.assertNotNull(category);
-        for (String tech : technologies) {
+        for (String tech : technologiesNames) {
             Technology technology = technologyLogic.getTechnology(tech);
             Utils.assertNotNull("Technology " + tech + " is not in tree!", technology);
             if (category.equals(technology.getCategory())) {
@@ -81,7 +95,7 @@ public class TechnologiesDb {
                 modules.add(emptyModules);
             }
         }
-        for (String technologyName : technologies) {
+        for (String technologyName : technologiesNames) {
             Technology technology = technologyLogic.getTechnology(technologyName);
             Utils.assertNotNull("Technology " + technologyName + " not exist!", technology);
             for (String moduleName : technology.getModules()) {

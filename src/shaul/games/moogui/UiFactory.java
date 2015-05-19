@@ -1,5 +1,6 @@
 package shaul.games.moogui;
 
+import shaul.games.moo.model.GameRunTimeError;
 import shaul.games.moo.model.Ship.HullType;
 import shaul.games.moo.model.Ship.ShipModule;
 
@@ -18,7 +19,7 @@ public class UiFactory {
         } else if (data instanceof HullType) {
             return (GenericUi<T>) new HullUi((HullType) data);
         } else {
-            return null;
+            throw new GameRunTimeError("Failed to create UI for : " + data);
         }
     }
 

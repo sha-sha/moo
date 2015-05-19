@@ -4,6 +4,9 @@ import shaul.games.moo.model.Research.TechModule;
 import shaul.games.moo.model.Utils;
 
 import java.util.Arrays;
+import java.util.Collections;
+import java.util.HashSet;
+import java.util.Set;
 
 /**
  * Created by Shaul on 3/8/2015.
@@ -11,18 +14,20 @@ import java.util.Arrays;
 public class ShipModule extends TechModule {
 
     public static final ShipModule EMPTY = new ShipModule();
-    public static final ShipModule NO_COMPUTER = new EmptyShipModule("No Computer", ShipComponent.COMPUTER);
-    public static final ShipModule NO_SHIELD = new EmptyShipModule("No Shield", ShipComponent.SHIELD);
-    public static final ShipModule NO_ECM = new EmptyShipModule("No ECM", ShipComponent.ECM);
-    public static final ShipModule NO_WEAPON = new EmptyShipModule("No Weapon", ShipComponent.WEAPON);
+    public static final ShipData NO_DATA = new ShipData.Builder().build();
+    public static final ShipModule NO_COMPUTER = new ComputerShipModule("No Computer", NO_DATA);
+    public static final ShipModule NO_SHIELD = new ShieldShipModule("No Shield", NO_DATA);
+    public static final ShipModule NO_ECM = new EcmShipModule("No ECM", NO_DATA);
+    public static final ShipModule NO_WEAPON = new WeaponShipModule("No Weapon", NO_DATA);
     public static final Utils.Countable<ShipModule> ZERO_WEAPON = new Utils.Countable<>(NO_WEAPON, 0);
-    public static final ShipModule NO_SPECIAL = new EmptyShipModule("None", ShipComponent.SPECIAL);
+    public static final ShipModule NO_SPECIAL = new SpecialShipModule("None", NO_DATA);
 
     public enum ShipComponent {NONE, COMPUTER, SHIELD, ECM, ARMOR, ENGINE, WEAPON, SPECIAL}
     public enum ShipScanLevel {NONE, BASIC, ADVANCE}
 
     private final ShipData moduleData;
     private final ShipComponent shipComponent;
+    private final Set<ShipDesign.SlotType> possibleSlotType;
 
     public enum WeaponType {None, Laser, Kinetic}
 
@@ -236,7 +241,7 @@ public class ShipModule extends TechModule {
             }
         }
     }
-
+/*
     public ShipModule(String name, ShipComponent shipComponent, ShipData moduleData) {
         super(name, TechModule.Type.Ship);
         this.shipComponent = shipComponent;
@@ -248,16 +253,25 @@ public class ShipModule extends TechModule {
         this.shipComponent = shipComponent;
         this.moduleData = new ShipData.Builder().build();
     }
+*/
+    private ShipModule(String name, Set<ShipDesign.SlotType> possibleSlotTypes, ShipComponent shipComponent, ShipData moduleData) {
+        super(name, TechModule.Type.Ship);
+        this.possibleSlotType = possibleSlotTypes;
+        this.shipComponent = shipComponent;
+        this.moduleData = moduleData;
+    }
 
     private ShipModule() {
         super("EMPTY", TechModule.Type.Ship);
         this.shipComponent = ShipComponent.NONE;
+        this.possibleSlotType = new HashSet<>();
         this.moduleData = new ShipData.Builder().build();
     }
 
     public ShipComponent getShipComponentType() { return shipComponent; }
     public ShipData getModuleData() { return moduleData; }
     public boolean isEmpty() { return this == EMPTY; }
+    public Set<ShipDesign.SlotType> getPossibleSlotType() { return possibleSlotType; }
 
     @Override
     public String toString() {
@@ -265,12 +279,65 @@ public class ShipModule extends TechModule {
     }
 
 
-    public static class EmptyShipModule extends ShipModule {
+//    public static class EmptyShipModule extends ShipModule {
+//
+//        EmptyShipModule(String name, ShipComponent shipComponent) {
+//            super(name, shipComponent);
+//        }
+//
+//        public boolean isEmpty() { return true; }
+//    }
 
-        EmptyShipModule(String name, ShipComponent shipComponent) {
-            super(name, shipComponent);
+    public static class ComputerShipModule extends ShipModule {
+        public ComputerShipModule(String name, ShipData moduleData) {
+            super(name, Utils.setOf(ShipDesign.SlotType.Computer), ShipComponent.COMPUTER, moduleData);
         }
+    }
 
-        public boolean isEmpty() { return true; }
+    public static class ShieldShipModule extends ShipModule {
+        public ShieldShipModule(String name, ShipData moduleData) {
+            super(name, Utils.setOf(ShipDesign.SlotType.Shield), ShipComponent.SHIELD, moduleData);
+        }
+    }
+
+    public static class ArmorShipModule extends ShipModule {
+        public ArmorShipModule(String name, ShipData moduleData) {
+            super(name, Utils.setOf(ShipDesign.SlotType.Armor), ShipComponent.ARMOR, moduleData);
+        }
+    }
+
+    public static class EcmShipModule extends ShipModule {
+        public EcmShipModule(String name, ShipData moduleData) {
+            super(name, Utils.setOf(ShipDesign.SlotType.Ecm), ShipComponent.ECM, moduleData);
+        }
+    }
+
+    public static class EngineShipModule extends ShipModule {
+        public EngineShipModule(String name, ShipData moduleData) {
+            super(name, Utils.setOf(ShipDesign.SlotType.Engine), ShipComponent.ENGINE, moduleData);
+        }
+    }
+
+    public static class WeaponShipModule extends ShipModule {
+        public WeaponShipModule(String name, ShipData moduleData) {
+            super(name,
+                    Utils.setOf(ShipDesign.SlotType.Weapon1,
+                            ShipDesign.SlotType.Weapon2,
+                            ShipDesign.SlotType.Weapon3,
+                            ShipDesign.SlotType.Weapon4),
+                    ShipComponent.WEAPON,
+                    moduleData);
+        }
+    }
+
+    public static class SpecialShipModule extends ShipModule {
+        public SpecialShipModule(String name, ShipData moduleData) {
+            super(name,
+                    Utils.setOf(ShipDesign.SlotType.Special1,
+                            ShipDesign.SlotType.Special2,
+                            ShipDesign.SlotType.Special3),
+                    ShipComponent.SPECIAL,
+                    moduleData);
+        }
     }
 }

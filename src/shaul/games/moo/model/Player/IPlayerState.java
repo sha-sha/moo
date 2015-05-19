@@ -1,7 +1,9 @@
 package shaul.games.moo.model.Player;
 
 import shaul.games.moo.model.Fleet;
+import shaul.games.moo.model.Research.TechModule;
 import shaul.games.moo.model.Research.TechnologiesDb;
+import shaul.games.moo.model.Ship.ShipModule;
 
 import java.util.List;
 
@@ -11,4 +13,5 @@ import java.util.List;
 public interface IPlayerState {
     TechnologiesDb getTechnologies();
     List<Fleet> getFleets();
+    List<TechModule> getModulesOfType(final Class<? extends TechModule> type);
 }

@@ -1,14 +1,14 @@
 package shaul.games.moo.model;
 
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
+import java.util.function.Predicate;
 
 /**
  * Created by Shaul on 2/25/2015.
  */
 public class Utils {
+    private static final String ROMAN_NUMBERS[] = {
+            "I", "II", "III", "IV", "V", "VI", "VII", "VIII", "IX", "X", "XI", "XII", "XIII", "XIV", "XV", "XV", "XVI"};
 
     public static interface ElementKey<K, V> {
         K getKey(V v);
@@ -20,6 +20,20 @@ public class Utils {
 
     public static interface Int2Int {
         int apply(int a);
+    }
+
+    public static<T> Set<T> setOf(T... t) {
+        return new HashSet<>(Arrays.asList(t));
+    }
+
+    public static<K> List<K> filter(List<K> list, Predicate<K> predicate) {
+        List<K> newList = new ArrayList<>();
+        for (K k : list) {
+            if (predicate.test(k)) {
+                newList.add(k);
+            }
+        }
+        return newList;
     }
 
     public static<K, V> Map<K, V> map(List<V> list, Function<V, K> elementKey) {
@@ -40,6 +54,14 @@ public class Utils {
             map.get(key).add(v);
         }
         return map;
+    }
+
+
+    public static String toRomanNumber(int i) {
+        if (i <= 0 || i > ROMAN_NUMBERS.length) {
+            throw new GameRunTimeError("Cannot convert " + i + " to roman number");
+        }
+        return ROMAN_NUMBERS[i - 1];
     }
 
     public static<K, V, W extends V> Map<K, List<W>> collectByClass(
