@@ -66,11 +66,11 @@ public final class TechnologyTree {
         // Technology Nullifier - Decreases the enemy's attack rating by 2 - 6 each time it is fired.
         add(new BattleComputer(31, 11));
 
-        add(constructionTech(1, "Titanium", "Titanium", "Titanium II"));
+        add(new Armor(1, 1, "Titanium"));
         add(new DeflectorShield(1, 1));
         add(new DeflectorShield(4, 2));
         add(weaponTech(1, "Laser", "Laser", "Heavy Laser"));
-        add(propulsionTech(1, "Nuclear Engine", "Nuclear Engine"));
+        add(new Engine(1, 1, "Nuclear"));
 
     }}};
     private static Map<String, Technology> TECHNOLOGIES_MAP = null;
@@ -169,6 +169,20 @@ public final class TechnologyTree {
     private static class DeflectorShield extends Technology.ForceField {
         public DeflectorShield(int techLevel, int level) {
             super(techLevel, "Class " + Utils.toRomanNumber(level) + " Deflector Shield", new ShipTech.Shield(level));
+        }
+    }
+
+    private static class Armor extends Technology.Construction {
+        public Armor(int techLevel, int level, String name) {
+            super(techLevel, name + " Armor",
+                    new ShipTech.Armor(name, level, false),
+                    new ShipTech.Armor(name + " II", level, true));
+        }
+    }
+
+    private static class Engine extends Technology.Propulsion {
+        public Engine(int techLevel, int level, String name) {
+            super(techLevel, name + " Engine", new ShipTech.Engine(name, level));
         }
     }
 }

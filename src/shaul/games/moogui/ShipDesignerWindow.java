@@ -3,12 +3,10 @@ package shaul.games.moogui;
 import layout.TableLayout;
 import shaul.games.moo.model.IGameLogic;
 import shaul.games.moo.model.Player.IPlayer;
-import shaul.games.moo.model.Research.TechModule;
 import shaul.games.moo.model.Ship.*;
 import shaul.games.moo.model.Utils;
 
 import javax.swing.*;
-import javax.swing.border.Border;
 import javax.swing.border.LineBorder;
 import java.awt.*;
 import java.awt.event.MouseEvent;
@@ -21,7 +19,7 @@ import java.util.List;
  */
 public class ShipDesignerWindow {
 
-    //private final InfoPanel infoPanel;
+    private final InfoPanel infoPanel;
     private ArrayList<InfoUi> infoUis;
     private final JFrame guiFrame;
 
@@ -55,15 +53,15 @@ public class ShipDesignerWindow {
         topLeftPanel.add(createShipModuleSelectAndInfo2(shipDesigner,
                 ShipDesign.SlotType.Computer,
                 " Computer:",
-                new GenericInfo2(shipDesigner, ATTACK_INFO2)), "0, 0");
+                new GenericInfo2(shipDesigner, ATTACK_INFO)), "0, 0");
         topLeftPanel.add(createShipModuleSelectAndInfo2(shipDesigner,
                 ShipDesign.SlotType.Shield,
                 " Shield:",
-                new GenericInfo2(shipDesigner, HIT_ABSORBS2)), "0, 1");
+                new GenericInfo2(shipDesigner, HIT_ABSORBS)), "0, 1");
         topLeftPanel.add(createShipModuleSelectAndInfo2(shipDesigner,
                 ShipDesign.SlotType.Ecm,
                 " Ecm:",
-                new GenericInfo2(shipDesigner, MISSLE_DEFENCE2)), "0, 2");
+                new GenericInfo2(shipDesigner, MISSLE_DEFENCE)), "0, 2");
         guiFrame.add(topLeftPanel, "0, 0");
 
         double topRightSizes[][] =  {{315}, {33, 33, 33}};
@@ -73,11 +71,11 @@ public class ShipDesignerWindow {
         topRightPanel.add(createShipModuleSelectAndInfo2(shipDesigner,
                 ShipDesign.SlotType.Armor,
                 " Armor:",
-                new GenericInfo2(shipDesigner, HIT_POINT2)), "0, 0");
+                new GenericInfo2(shipDesigner, HIT_POINT)), "0, 0");
         topRightPanel.add(createShipModuleSelectAndInfo2(shipDesigner,
                 ShipDesign.SlotType.Engine,
                 " Engine:",
-                new GenericInfo2(shipDesigner, WRAP_AND_DEFENCE2)), "0, 1");
+                new GenericInfo2(shipDesigner, WRAP_AND_DEFENCE)), "0, 1");
         guiFrame.add(topRightPanel, "1, 0");
 
         guiFrame.add(new Test(Color.YELLOW), "0, 1, 1, 1");
@@ -92,10 +90,10 @@ public class ShipDesignerWindow {
                         new HullSelectorListener(),
                         shipDesigner.getHullType().getName()), "0, 0");
         guiFrame.add(hullPanel, "0, 3");
+        */
         infoPanel = new InfoPanel(shipDesigner);
         guiFrame.add(infoPanel, "1, 3");
         infoPanel.update();
-        */
 
 
         //make sure the JFrame is visible
@@ -337,61 +335,39 @@ public class ShipDesignerWindow {
     }
 
     private static class InfoPanel extends JPanel implements InfoUi {
-        private final ShipDesigner shipDesigner;
+        private final NewShipDesigner shipDesigner;
         private final JLabel label;
 
-        InfoPanel(ShipDesigner shipDesigner) {
+        InfoPanel(NewShipDesigner shipDesigner) {
             this.shipDesigner = shipDesigner;
             this.label = new JLabel("Empty");
             add(label);
         }
 
         public void update() {
-            int spaceUsed = shipDesigner.getTotalSpace() - shipDesigner.getAvailableSpace();
+            int spaceUsed = shipDesigner.getUsedSpace();
             this.label.setText("Space used: " + spaceUsed + " out of " + shipDesigner.getTotalSpace());
         }
     }
 
-    private static final GenericInfo.Update ATTACK_INFO = new GenericInfo.Update() {
-        @Override public String update(ShipDesigner shipDesigner) {
-            return "Attack Level: " + shipDesigner.getAttackLevel();
-        }};
-    private static final GenericInfo.Update HIT_POINT = new GenericInfo.Update() {
-        @Override public String update(ShipDesigner shipDesigner) {
-            return "Hit Points: " + shipDesigner.getHitPoints();
-        }};
-    private static final GenericInfo.Update HIT_ABSORBS = new GenericInfo.Update() {
-        @Override public String update(ShipDesigner shipDesigner) {
-            int hitsAbsorbs = shipDesigner.getHitsAbsorbs();
-            return "Hit Absorbs: " + shipDesigner.getHitsAbsorbs();
-        }};
-    private static final GenericInfo.Update MISSLE_DEFENCE = new GenericInfo.Update() {
-        @Override public String update(ShipDesigner shipDesigner) {
-            return "Missle Defence: " + shipDesigner.getMissleDefence();
-        }};
-    private static final GenericInfo.Update WRAP_AND_DEFENCE = new GenericInfo.Update() {
-        @Override public String update(ShipDesigner shipDesigner) {
-            return "Wrap ? Defence ?";
-        }};
-
-    private static final GenericInfo2.Update ATTACK_INFO2 = new GenericInfo2.Update() {
+    private static final GenericInfo2.Update ATTACK_INFO = new GenericInfo2.Update() {
         @Override public String update(NewShipDesigner shipDesigner) {
             return "Attack Level: " + shipDesigner.getAttackLevel();
         }};
-    private static final GenericInfo2.Update HIT_POINT2 = new GenericInfo2.Update() {
+    private static final GenericInfo2.Update HIT_POINT = new GenericInfo2.Update() {
         @Override public String update(NewShipDesigner shipDesigner) {
             return "Hit Points: " + shipDesigner.getHitPoints();
         }};
-    private static final GenericInfo2.Update HIT_ABSORBS2 = new GenericInfo2.Update() {
+    private static final GenericInfo2.Update HIT_ABSORBS = new GenericInfo2.Update() {
         @Override public String update(NewShipDesigner shipDesigner) {
             int hitsAbsorbs = shipDesigner.getHitsAbsorbs();
             return "Hit Absorbs: " + shipDesigner.getHitsAbsorbs();
         }};
-    private static final GenericInfo2.Update MISSLE_DEFENCE2 = new GenericInfo2.Update() {
+    private static final GenericInfo2.Update MISSLE_DEFENCE = new GenericInfo2.Update() {
         @Override public String update(NewShipDesigner shipDesigner) {
             return "Missle Defence: " + shipDesigner.getMissleDefence();
         }};
-    private static final GenericInfo2.Update WRAP_AND_DEFENCE2 = new GenericInfo2.Update() {
+    private static final GenericInfo2.Update WRAP_AND_DEFENCE = new GenericInfo2.Update() {
         @Override public String update(NewShipDesigner shipDesigner) {
             return "Wrap ? Defence ?";
         }};
@@ -477,68 +453,4 @@ public class ShipDesignerWindow {
         }
     }
 
-    private static class UiSelection2<T extends JComponent & UiElement>
-            extends JPanel implements MouseListener, UiElement.UiListener {
-
-        private Listener listener;
-
-        @Override
-        public void onClick(UiElement ui) {
-            doClickAction();
-        }
-
-        public interface Listener {
-            void onClick();
-        }
-
-        public UiSelection2() {
-            super();
-            addMouseListener(this);
-        }
-
-        public void setListener(Listener listener) {
-            this.listener = listener;
-        }
-
-        public void add(T ui) {
-            super.add(ui);
-            ui.setListener(this);
-        }
-
-        @Override
-        public void mouseClicked(MouseEvent e) {
-
-        }
-
-        @Override
-        public void mousePressed(MouseEvent e) {
-
-        }
-
-        @Override
-        public void mouseReleased(MouseEvent e) {
-            if(contains(e.getPoint())){
-                doClickAction();
-            }
-        }
-
-        private void doClickAction() {
-            System.out.println("UiSelection.doClickAction");
-            if (listener != null) {
-                listener.onClick();
-            } else {
-                System.out.print("ModuleSelection has mo listener!");
-            }
-        }
-
-        @Override
-        public void mouseEntered(MouseEvent e) {
-
-        }
-
-        @Override
-        public void mouseExited(MouseEvent e) {
-
-        }
-    }
 }

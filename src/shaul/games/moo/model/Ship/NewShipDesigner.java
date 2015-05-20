@@ -2,6 +2,7 @@ package shaul.games.moo.model.Ship;
 
 import shaul.games.moo.model.IGameLogic;
 import shaul.games.moo.model.Player.IPlayer;
+import shaul.games.moo.model.Research.Category;
 import shaul.games.moo.model.Research.TechModule;
 import shaul.games.moo.model.Utils;
 
@@ -18,14 +19,15 @@ public class NewShipDesigner {
             new Utils.Countable<ShipModule>(ShipModule.EMPTY, 0);
 
     private ShipDesign.Builder builder;
-    private int availableSpace;
+    private int totalSpace;
+    private int usedSpace;
 
 
     public NewShipDesigner(IGameLogic gameLogic, IPlayer player) {
         this.gameLogic = gameLogic;
         this.player = player;
         this.builder = resetBuilder(1);
-        this.availableSpace = getAvailableSpace(builder.getHullSize());
+        update();
     }
 
     public int getAttackLevel() {
@@ -42,14 +44,6 @@ public class NewShipDesigner {
 
     public int getMissleDefence() {
         return builder.build().getMissleDefence();
-    }
-
-    private int getAvailableSpace(int hullSize) {
-        return 0;
-    }
-
-    private int getRequiredSpace(int hullSize) {
-        return 0;
     }
 
     private ShipDesign.Builder resetBuilder(int hullSize) {
@@ -103,12 +97,13 @@ public class NewShipDesigner {
         int currentModuleSpace = getSpaceOfModule(getCurrentModule(slotType), builder.getHullSize());
         int newModuleSpace = getSpaceOfModule(module, builder.getHullSize());
 
-        return availableSpace >= (newModuleSpace - currentModuleSpace);
+        return (totalSpace - usedSpace) >= (newModuleSpace - currentModuleSpace);
     }
 
     public boolean install(ShipDesign.SlotType slotType, ShipModule module) {
         if (canInstall(slotType, module)) {
             builder.shipModules.put(slotType, module);
+            update();
             return true;
         }
         return false;
@@ -119,7 +114,29 @@ public class NewShipDesigner {
     }
 
     private int getSpaceOfModule(ShipModule shipModule, int hullSize) {
-        return shipModule.getModuleData().getSpace(hullSize);
+        return shipModule.getSpace(player.getPlayerState(), hullSize);
+    }
+
+    public int getTotalSpace() {
+        return totalSpace;
+    }
+
+    public int getUsedSpace() {
+        return usedSpace;
+    }
+    private void update() {
+        totalSpace = getTotalSpace(builder.getHullSize());
+        usedSpace = 0;
+        for (ShipModule module : builder.shipModules.values()) {
+            usedSpace += getSpaceOfModule(module, builder.getHullSize());
+        }
+    }
+
+    private int getTotalSpace(int hullSize) {
+        int constructionTechLevel =
+                player.getPlayerState().getTechnologies().getTechLevel(Category.Construction.getName());
+        // XXX: Fix
+        return gameLogic.getTechnologyLogic().getHullTotalSpace(hullSize) * (100 + constructionTechLevel) / 100;
     }
 
 }

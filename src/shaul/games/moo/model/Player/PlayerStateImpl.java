@@ -57,4 +57,21 @@ public class PlayerStateImpl implements IPlayerState {
         }));
         return modules;
     }
+
+    @Override
+    public double getModuleCostReduction(String module) {
+        return 1.0;
+
+        /*
+                Utils.assertNotNull(module);
+        Utils.assertNotNull(playerTechs);
+        Technology tech = getTechnologyOfTechModule(module);
+        Utils.check("Module " + module + " has no tech!", tech != null);
+        int moduleTechLevel = tech.getTechLevel();
+        String moduleCategory = tech.getCategory();
+        int currentTechLevel = playerTechs.getTechLevel(moduleCategory);
+        return getCostReduction(currentTechLevel - moduleTechLevel);
+
+         */
+    }
 }

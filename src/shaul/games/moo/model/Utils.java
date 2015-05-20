@@ -84,8 +84,17 @@ public class Utils {
         failIf(null, !exp);
     }
 
+    public static void check(boolean exp, String message) {
+        failIf(message, !exp);
+    }
+
     public static<T> T checkNotNull(T object) {
         check(object != null);
+        return object;
+    }
+
+    public static<T> T checkNotNull(T object, String errorStr) {
+        check(object != null, errorStr);
         return object;
     }
 

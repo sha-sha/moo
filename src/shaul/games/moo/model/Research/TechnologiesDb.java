@@ -44,7 +44,8 @@ public class TechnologiesDb {
         this.technologiesNames = new ArrayList<String>(technologies);
         this.technologies = new ArrayList<Technology>();
         for (String technology : technologies) {
-            this.technologies.add(technologyLogic.getTechnology(technology));
+            this.technologies.add(
+                    Utils.checkNotNull(technologyLogic.getTechnology(technology), "Can't find " + technology));
         }
         this.technologyLogic = technologyLogic;
         COMPARE_TECH_LEVEL = new Comparator<ShipModule>() {
@@ -95,14 +96,10 @@ public class TechnologiesDb {
                 modules.add(emptyModules);
             }
         }
-        for (String technologyName : technologiesNames) {
-            Technology technology = technologyLogic.getTechnology(technologyName);
-            Utils.assertNotNull("Technology " + technologyName + " not exist!", technology);
-            for (String moduleName : technology.getModules()) {
-                ShipModule module = technologyLogic.getShipModule(moduleName);
-                Utils.assertNotNull("Module " + moduleName + " not exist!", module);
-                if (predicate.test(module)) {
-                    modules.add(module);
+        for (Technology technology : technologies) {
+            for (TechModule module : technology.getTechModules()) {
+                if (module instanceof ShipModule && predicate.test((ShipModule) module)) {
+                    modules.add((ShipModule) module);
                 }
             }
         }

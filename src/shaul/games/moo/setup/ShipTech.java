@@ -4,6 +4,7 @@ import static shaul.games.moo.model.Research.TechModule.HullFunction;
 
 import shaul.games.moo.model.Research.TechBonus;
 import shaul.games.moo.model.Research.TechModule;
+import shaul.games.moo.model.Research.Technology;
 import shaul.games.moo.model.Ship.ShipModule;
 
 import java.util.ArrayList;
@@ -23,18 +24,6 @@ public class ShipTech {
                     .setPower(20, 80, 120, 400)
                     .setAttackLevel(level)
                     .build());
-    }
-
-    public static TechModule scanner() {
-        return new ShipModule.SpecialShipModule("Battle Scanner",
-                new ShipModule.ShipData.Builder()
-                        .setCost(20, 80, 120, 400)
-                        .setSize(20, 80, 120, 400)
-                        .setPower(20, 80, 120, 400)
-                        .setShipInitiative(3)
-                        .setMissleDefence(1)
-                        .setShipScanLevel(ShipModule.ShipScanLevel.BASIC)
-                        .build());
     }
 
     public static ShipModule engine(final int level, final String name) {
@@ -99,7 +88,8 @@ public class ShipTech {
     public static class BattleScanner extends ShipModule.SpecialShipModule {
 
         public BattleScanner() {
-            super("Battle Scanner", new ShipModule.ShipData.Builder()
+            super(Technology.CATEGORY_COMPUTERS,
+                    "Battle Scanner", new ShipModule.ShipData.Builder()
                     .setCost(20, 80, 120, 400)
                     .setSize(20, 80, 120, 400)
                     .setPower(20, 80, 120, 400)
@@ -142,6 +132,29 @@ public class ShipTech {
                     .setSize(20 * level, 80 * level, 120 * level, 400 * level)
                     .setPower(20, 80, 120, 400)
                     .setHitAbsorbs(level)
+                    .build());
+        }
+    }
+
+    public static class Armor extends ShipModule.ArmorShipModule {
+
+        public Armor(String name, int level, boolean extra) {
+            super(name, new ShipModule.ShipData.Builder()
+                    .setCost(20 * (level - 1), 80 * level, 120 * level, 400 * level)
+                    .setSize(20 * level, 80 * level, 120 * level, 400 * level)
+                    .setShipHitPoints(3, 60, 200, 4000)
+                    .build());
+        }
+    }
+
+    public static class Engine extends ShipModule.EngineShipModule{
+
+        public Engine(String name, int level) {
+            super(name, new ShipModule.ShipData.Builder()
+                    .setCost(20, 80, 120, 400)
+                    .setSize(20 * level, 80 * level, 120 * level, 400 * level)
+                    .setPower(20, 80, 120, 400)
+                    .setWrapSpeed(level)
                     .build());
         }
     }

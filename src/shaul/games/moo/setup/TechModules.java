@@ -35,7 +35,7 @@ public class TechModules {
                 add(PlanetTech.roboticsControls(i));
             }
         }
-        add(ShipTech.scanner());
+        //add(ShipTech.scanner());
         add(GlobalTech.spaceScanner(1, 5, 0, 1, false));
         add(GlobalTech.spaceScanner(2, 7, 0, 2, true));
         add(GlobalTech.spaceScanner(3, 9, 9, 3, true));

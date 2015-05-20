@@ -70,4 +70,18 @@ public class Technology {
             super(CATEGORY_FORCE_FIELDS, techLevel, name, modules);
         }
     }
+
+    public static class Construction extends Technology {
+
+        public Construction(int techLevel, String name, TechModule... modules) {
+            super(CATEGORY_CONSTRUCTION, techLevel, name, modules);
+        }
+    }
+
+    public static class Propulsion extends Technology {
+
+        public Propulsion(int techLevel, String name, TechModule... modules) {
+            super(CATEGORY_PROPULSION, techLevel, name, modules);
+        }
+    }
 }

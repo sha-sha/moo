@@ -14,4 +14,5 @@ public interface IPlayerState {
     TechnologiesDb getTechnologies();
     List<Fleet> getFleets();
     List<TechModule> getModulesOfType(final Class<? extends TechModule> type);
+    double getModuleCostReduction(String module);
 }
