@@ -7,12 +7,8 @@ import shaul.games.moo.model.Player.PlayerImpl;
 import shaul.games.moo.model.Player.PlayerStateImpl;
 import shaul.games.moo.model.Research.TechModule;
 import shaul.games.moo.model.Research.TechnologiesDb;
-import shaul.games.moo.model.Ship.ShipModule;
 import shaul.games.moo.model.Research.Technology;
-import shaul.games.moo.model.Ship.HullType;
-import shaul.games.moo.model.Ship.ShipDesigner;
 import shaul.games.moo.model.Star;
-import shaul.games.moo.model.Utils;
 import shaul.games.moo.setup.GameLogic;
 import shaul.games.moo.setup.TechModules;
 import shaul.games.moo.setup.TechnologyTree;
@@ -49,19 +45,6 @@ public class Main {
         currentPlayer.setPlayerState(new PlayerStateImpl(
                 null, new TechnologiesDb(gameLogic.getTechnologyLogic(), Arrays.asList(
                 "Battle Computer Mark 1", "Battle Scanner", "Titanium", "Laser"))));
-
-
-        ShipDesigner shipDesigner = new ShipDesigner(gameLogic, currentPlayer);
-
-        if (shipDesigner.canChangeHullSize(2)) {
-            shipDesigner.changeHullSize(2);
-        }
-
-        System.out.println("================");
-
-        System.out.println("Available computers: " + shipDesigner.getAvailableComputerModules());
-        System.out.println("Available armors: " + shipDesigner.getAvailableArmorModules());
-        System.out.println("Available weapons: " + shipDesigner.getAvailableWeaponModulesAtSlot(0));
 
     }
 }

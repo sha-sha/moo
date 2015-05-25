@@ -5,8 +5,6 @@ import shaul.games.moo.model.Player.IPlayer;
 import shaul.games.moo.model.Player.PlayerImpl;
 import shaul.games.moo.model.Player.PlayerStateImpl;
 import shaul.games.moo.model.Research.TechnologiesDb;
-import shaul.games.moo.model.Ship.HullType;
-import shaul.games.moo.model.Ship.ShipDesigner;
 import shaul.games.moo.setup.GameLogic;
 
 import javax.swing.*;
