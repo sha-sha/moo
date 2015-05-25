@@ -15,4 +15,5 @@ public interface IPlayerState {
     List<Fleet> getFleets();
     List<TechModule> getModulesOfType(final Class<? extends TechModule> type);
     double getModuleCostReduction(String module);
+    double getModuleSizeReduction(String module);
 }

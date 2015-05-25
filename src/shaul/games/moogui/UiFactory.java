@@ -26,6 +26,8 @@ public class UiFactory {
         switch (data.getShipComponentType()) {
             case COMPUTER:
                 return new ShipModuleComputerUi(data);
+            case WEAPON:
+                return new ShipModuleWeaponUi(data);
             default:
                 return new Stub(data);
         }
@@ -40,6 +42,28 @@ public class UiFactory {
             super(shipModule);
 
             this.label = new JLabel(shipModule.getName());
+            add(label);
+        }
+
+        public void setEnabled(boolean enabled) {
+            this.label.setEnabled(enabled);
+        }
+
+    }
+
+    private static class ShipModuleWeaponUi extends GenericUi<ShipModule> {
+
+        private final JLabel label;
+
+        public ShipModuleWeaponUi(ShipModule shipModule) {
+            super(shipModule);
+
+            String text = shipModule.getName() + " DMG: " + shipModule.getModuleData().getWeaponDamage();
+            if (shipModule.isEmpty()) {
+                text = shipModule.getName();
+            }
+
+            this.label = new JLabel(text);
             add(label);
         }
 

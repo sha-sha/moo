@@ -83,7 +83,15 @@ public class ShipModule extends TechModule {
         if (baseSize == 0) {
             return baseSize;
         }
-        return (int) (baseSize * playerState.getModuleCostReduction(technologyCategory));
+        return (int) (baseSize * playerState.getModuleSizeReduction(technologyCategory));
+    }
+
+    public int getCost(IPlayerState playerState, HullType hull) {
+        int baseCost = moduleData.getCost(hull);
+        if (baseCost == 0) {
+            return baseCost;
+        }
+        return (int) (baseCost * playerState.getModuleCostReduction(technologyCategory));
     }
 
     @Override

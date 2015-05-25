@@ -59,7 +59,7 @@ public class PlayerStateImpl implements IPlayerState {
     }
 
     @Override
-    public double getModuleCostReduction(String module) {
+    public double getModuleSizeReduction(String module) {
         return 1.0;
 
         /*
@@ -73,5 +73,10 @@ public class PlayerStateImpl implements IPlayerState {
         return getCostReduction(currentTechLevel - moduleTechLevel);
 
          */
+    }
+
+    @Override
+    public double getModuleCostReduction(String module) {
+        return 1.0;
     }
 }

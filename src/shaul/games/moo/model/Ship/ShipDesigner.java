@@ -21,6 +21,7 @@ public class ShipDesigner {
     private ShipDesign.Builder builder;
     private int totalSpace;
     private int usedSpace;
+    private int cost;
 
 
     public ShipDesigner(IGameLogic gameLogic, IPlayer player) {
@@ -150,9 +151,16 @@ public class ShipDesigner {
     private void update() {
         totalSpace = getTotalSpace(builder.getHull());
         usedSpace = 0;
+        cost = 0; // should be hull cost.
         for (Utils.Countable<ShipModule> module : builder.getModules()) {
             usedSpace += module.getCount() * getSpaceOfModule(module.get(), builder.getHull());
+            cost += module.getCount() * getCostOfModule(module.get(), builder.getHull());
         }
+
+    }
+
+    private int getCostOfModule(ShipModule shipModule, ShipModule.HullType hull) {
+        return shipModule.getCost(player.getPlayerState(), hull);
     }
 
     private int getTotalSpace(ShipModule.HullType hull) {
@@ -168,5 +176,9 @@ public class ShipDesigner {
             usedSpace += module.getCount() * getSpaceOfModule(module.get(), hull);
         }
         return getTotalSpace(hull) >= usedSpace;
+    }
+
+    public int getCost() {
+        return cost;
     }
 }

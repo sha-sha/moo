@@ -80,14 +80,12 @@ public class ShipDesignerWindow {
         guiFrame.add(topRightPanel, "1, 0");
 
 
-        double weaponLayoutSizes[][] =  {{80, 40, 80, 80, 80, 80, 80, 80}, {20, 30, 30, 30, 30}};
+        double weaponLayoutSizes[][] =  {{80, 40, 400, 80}, {20, 30, 30, 30, 30}};
         final JPanel weaponPanel = new JPanel(new TableLayout(weaponLayoutSizes));
         weaponPanel.setBackground(new Color(160, 190, 190));
         weaponPanel.add(new JLabel("Count"), "1, 0");
         weaponPanel.add(new JLabel("Weapon"), "2, 0");
-        weaponPanel.add(new JLabel("Damage"), "3, 0");
-        weaponPanel.add(new JLabel("Range"), "4, 0");
-        weaponPanel.add(new JLabel("Notes"), "5, 0");
+        weaponPanel.add(new JLabel("Notes"), "3, 0");
         initWeapon(shipDesigner, ShipDesign.SlotType.Weapon1, 1, weaponPanel);
         initWeapon(shipDesigner,ShipDesign.SlotType.Weapon2, 2, weaponPanel);
         initWeapon(shipDesigner,ShipDesign.SlotType.Weapon3, 3, weaponPanel);
@@ -334,7 +332,13 @@ public class ShipDesignerWindow {
 
         public void update() {
             int spaceUsed = shipDesigner.getUsedSpace();
-            this.label.setText("Space used: " + spaceUsed + " out of " + shipDesigner.getTotalSpace());
+            StringBuilder sb = new StringBuilder();
+            sb.append("<html>");
+            sb.append("Space used: " + spaceUsed + " out of " + shipDesigner.getTotalSpace());
+            sb.append("<br>");
+            sb.append("Cost: " + shipDesigner.getCost());
+            sb.append("</html>");
+            this.label.setText(sb.toString());
         }
     }
 
