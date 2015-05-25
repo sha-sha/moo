@@ -84,4 +84,11 @@ public class Technology {
             super(CATEGORY_PROPULSION, techLevel, name, modules);
         }
     }
+
+    public static class Weapons extends Technology {
+
+        public Weapons(int techLevel, String name, TechModule... modules) {
+            super(CATEGORY_WEAPONS, techLevel, name, modules);
+        }
+    }
 }

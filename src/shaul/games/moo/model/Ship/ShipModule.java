@@ -73,7 +73,9 @@ public class ShipModule extends TechModule {
 
     public ShipComponent getShipComponentType() { return shipComponent; }
     public ShipModuleData getModuleData() { return moduleData; }
-    public boolean isEmpty() { return this == EMPTY; }
+    public boolean isEmpty() {
+        return this == EMPTY || moduleData == NO_DATA;
+    }
     public Set<ShipDesign.SlotType> getPossibleSlotType() { return possibleSlotType; }
 
     public int getSpace(IPlayerState playerState, HullType hull) {

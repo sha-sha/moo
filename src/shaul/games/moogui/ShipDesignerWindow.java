@@ -7,7 +7,11 @@ import shaul.games.moo.model.Ship.*;
 import shaul.games.moo.model.Utils;
 
 import javax.swing.*;
+import javax.swing.border.EmptyBorder;
 import javax.swing.border.LineBorder;
+import javax.swing.event.ChangeEvent;
+import javax.swing.event.ChangeListener;
+import javax.swing.plaf.basic.BasicArrowButton;
 import java.awt.*;
 import java.awt.event.MouseEvent;
 import java.awt.event.MouseListener;
@@ -43,7 +47,6 @@ public class ShipDesignerWindow {
         guiFrame.setLayout(new TableLayout(size));
 
 
-
         double topleftSizes[][] =  {{315}, {33, 33, 33}};
         final JPanel topLeftPanel = new JPanel(new TableLayout(topleftSizes));
         topLeftPanel.setBorder(new LineBorder(Color.BLACK, 1));
@@ -76,7 +79,21 @@ public class ShipDesignerWindow {
                 new GenericInfo(shipDesigner, WRAP_AND_DEFENCE)), "0, 1");
         guiFrame.add(topRightPanel, "1, 0");
 
-        guiFrame.add(new Test(Color.YELLOW), "0, 1, 1, 1");
+
+        double weaponLayoutSizes[][] =  {{80, 40, 80, 80, 80, 80, 80, 80}, {20, 30, 30, 30, 30}};
+        final JPanel weaponPanel = new JPanel(new TableLayout(weaponLayoutSizes));
+        weaponPanel.setBackground(new Color(160, 190, 190));
+        weaponPanel.add(new JLabel("Count"), "1, 0");
+        weaponPanel.add(new JLabel("Weapon"), "2, 0");
+        weaponPanel.add(new JLabel("Damage"), "3, 0");
+        weaponPanel.add(new JLabel("Range"), "4, 0");
+        weaponPanel.add(new JLabel("Notes"), "5, 0");
+        initWeapon(shipDesigner, ShipDesign.SlotType.Weapon1, 1, weaponPanel);
+        initWeapon(shipDesigner,ShipDesign.SlotType.Weapon2, 2, weaponPanel);
+        initWeapon(shipDesigner,ShipDesign.SlotType.Weapon3, 3, weaponPanel);
+        initWeapon(shipDesigner,ShipDesign.SlotType.Weapon4, 4, weaponPanel);
+
+        guiFrame.add(weaponPanel, "0, 1, 1, 1");
         guiFrame.add(new Test(Color.GREEN), "0, 2, 1, 2");
 
         final JPanel hullPanel = new JPanel(new TableLayout(new double[][] {{320}, {120}}));
@@ -97,6 +114,48 @@ public class ShipDesignerWindow {
         guiFrame.pack();
         guiFrame.setVisible(true);
 
+    }
+
+    private void initWeapon(final ShipDesigner shipDesigner, final ShipDesign.SlotType slot, int row, JPanel weaponPanel) {
+        weaponPanel.add(new JLabel("Weapon " + row), "0, " + row);
+        final UpDown upDown = new UpDown(weaponPanel.getBackground());
+        upDown.setListener(new UpDown.Listener() {
+            @Override
+            public boolean onChange(UpDown upDown, int newValue) {
+                if (newValue >= 0 && shipDesigner.canChangeCount(slot, newValue)) {
+                    shipDesigner.changeCount(slot, newValue);
+                    updateAll();
+                    return true;
+                }
+                return false;
+            }
+        });
+        weaponPanel.add(upDown, "1, " + row);
+
+        final UiSelection<GenericUi<ShipModule>> weapon = new UiSelection<>();
+        weapon.setListener(new UiSelection.Listener() {
+            @Override
+            public void onClick() {
+                if (openShipComponentSelection(weapon, shipDesigner, slot)) {
+                    upDown.setValue(shipDesigner.getCurrentModule(slot).isEmpty() ? 0 : 1);
+                }
+                //moduleSelectorListener.onSelect(weapon, shipDesigner);
+            }
+        });
+        final GenericUi<ShipModule> initialValue = UiFactory.create(shipDesigner.getCurrentModule(slot));
+        initialValue.setListener(new UiElement.UiListener() {
+            @Override
+            public void onClick(UiElement shipModuleUi) {
+                if (openShipComponentSelection(weapon, shipDesigner, slot)) {
+                    upDown.setValue(shipDesigner.getCurrentModule(slot).isEmpty() ? 0 : 1);
+                }
+            }
+        });
+        initialValue.setBackground(weaponPanel.getBackground());
+        weapon.setBackground(weaponPanel.getBackground());
+        weapon.setBorder(null);
+        weapon.add(initialValue, BorderLayout.CENTER);
+        weaponPanel.add(weapon, "2, " + row);
     }
 
     private JPanel createShipModuleSelectAndInfo(
@@ -152,7 +211,7 @@ public class ShipDesignerWindow {
         return availableList;
     }
 
-    private void openShipComponentSelection(
+    private boolean openShipComponentSelection(
             UiSelection moduleSelection, ShipDesigner shipDesigner, ShipDesign.SlotType slotType) {
         ShipModuleSelectionDialog dialog =
                 new ShipModuleSelectionDialog(moduleSelection, buildAvailableModuleList(shipDesigner, slotType));
@@ -166,9 +225,15 @@ public class ShipDesignerWindow {
             shipDesigner.install(slotType, dialog.getSelected());
             updateAll();
             moduleSelection.removeAll();
+            moduleSelection.revalidate();
+            moduleSelection.repaint();
             moduleSelection.add(UiFactory.create(shipDesigner.getCurrentModule(slotType)));
             guiFrame.pack();
+            guiFrame.invalidate();
+            moduleSelection.invalidate();
+            return true;
         }
+        return false;
     }
 
     private JPanel createNameSelect(
@@ -369,6 +434,88 @@ public class ShipDesignerWindow {
         public void mouseExited(MouseEvent e) {
 
         }
+    }
+
+    private static class UpDown extends JPanel implements MouseListener {
+
+        @Override
+        public void mouseClicked(MouseEvent e) {
+
+        }
+
+        @Override
+        public void mousePressed(MouseEvent e) {
+
+        }
+
+        @Override
+        public void mouseReleased(MouseEvent e) {
+            int newVal = current;
+            if (e.getSource() == up) {
+                newVal++;
+            } else if (e.getSource() == down) {
+                newVal--;
+            }
+            if (listener != null && listener.onChange(this, newVal)) {
+                setValue(newVal);
+            }
+        }
+
+        @Override
+        public void mouseEntered(MouseEvent e) {
+
+        }
+
+        @Override
+        public void mouseExited(MouseEvent e) {
+
+        }
+
+        interface Listener {
+            boolean onChange(UpDown upDown, int newValue);
+        }
+
+        private final BasicArrowButton up;
+        private final BasicArrowButton down;
+        private final JLabel text;
+        private Listener listener;
+        private int current = 0;
+
+        UpDown(Color back) {
+            JPanel buttons = new JPanel();
+            double buttonSizes[][] = {{TableLayout.FILL}, {0.5, 0.5}};
+            buttons.setLayout(new TableLayout(buttonSizes));
+            this.up = new BasicArrowButton(SwingConstants.NORTH);
+            up.addMouseListener(this);
+            buttons.add(up, "0, 0");
+
+            down = new BasicArrowButton(SwingConstants.SOUTH);
+            down.addMouseListener(this);
+            buttons.add(down, "0, 1");
+            buttons.setBackground(back);
+
+            double sizes[][] = {{16, TableLayout.FILL}, {TableLayout.FILL}};
+            setLayout(new TableLayout(sizes));
+            setBorder(new EmptyBorder(2, 2, 2, 2));
+            setBackground(back);
+            add(buttons, "0, 0");
+            text = new JLabel("0");
+            add(text, "1, 0");
+        }
+
+        void setListener(Listener listener) {
+            this.listener = listener;
+        }
+
+        void setValue(int val) {
+            this.current = val;
+            text.setText("" + val);
+        }
+
+        int getValue() {
+            return this.current;
+        }
+
     }
 
 }

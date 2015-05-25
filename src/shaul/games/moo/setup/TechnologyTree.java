@@ -69,7 +69,7 @@ public final class TechnologyTree {
         add(new Armor(1, 1, "Titanium"));
         add(new DeflectorShield(1, 1));
         add(new DeflectorShield(4, 2));
-        add(weaponTech(1, "Laser", "Laser", "Heavy Laser"));
+        add(new Laser(1, 1));
         add(new Engine(1, 1, "Nuclear"));
 
     }}};
@@ -114,39 +114,6 @@ public final class TechnologyTree {
         return new Technology(CATEGORY_COMPUTERS, techLevel, name, module);
     }
 
-    private static Technology constructionTech(int techLevel, String name, String... module) {
-        return new Technology(CATEGORY_CONSTRUCTION, techLevel, name, module);
-    }
-
-    private static Technology forceFieldsTech(int techLevel, String name, String... module) {
-        return new Technology(CATEGORY_FORCE_FIELDS, techLevel, name, module);
-    }
-
-    private static Technology weaponTech(int techLevel, String name, String... module) {
-        return new Technology(CATEGORY_WEAPONS, techLevel, name, module);
-    }
-
-    private static Technology propulsionTech(int techLevel, String name, String... module) {
-        return new Technology(CATEGORY_PROPULSION, techLevel, name, module);
-    }
-
-    private static Technology spaceScannerzz(int techLevel, String name, int level, int planetShipSensorRange, int planetStarSensorRange,
-                                           int shipSensorRange, boolean enemyShipDestinationAndEta) {
-        return new Technology(CATEGORY_COMPUTERS, techLevel, "Space Scanner",
-                "Planet Sensor " + level,
-                "Ship Sensor " + level);
-
-        //return new Technology(CATEGORY_COMPUTERS, name, "",
-        //        GlobalTech.spaceScanner(level, planetShipSensorRange, planetStarSensorRange,
-        //                shipSensorRange, enemyShipDestinationAndEta));
-    }
-
-    private static Technology armor(int techLevel, String type, int small, int medium, int large, int huge, int missleBase) {
-        return null;
-        //return new Technology(CATEGORY_CONSTRUCTION, type + " Armor", "",
-        //        ShipTech.roboticsControls(factoryPerPopulation));
-    }
-
 
     private static class BattleScanner extends Technology.Computer {
         public BattleScanner(int techLevel) {
@@ -185,4 +152,11 @@ public final class TechnologyTree {
             super(techLevel, name + " Engine", new ShipTech.Engine(name, level));
         }
     }
+
+    private static class Laser extends Technology.Weapons {
+        public Laser(int techLevel, int level) {
+            super(techLevel, "Laser " + Utils.toRomanNumber(level), new ShipTech.Laser(level));
+        }
+    }
+
 }

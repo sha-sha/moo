@@ -38,6 +38,7 @@ public class UiFactory {
 
         public Stub(ShipModule shipModule) {
             super(shipModule);
+
             this.label = new JLabel(shipModule.getName());
             add(label);
         }

@@ -18,7 +18,7 @@ public class TechModules {
     }
 
     private static List<ShipModule> EMPTY_MODULES = Arrays.asList(
-            ShipModule.NO_COMPUTER, ShipModule.NO_ECM, ShipModule.NO_SHIELD);
+            ShipModule.NO_COMPUTER, ShipModule.NO_ECM, ShipModule.NO_SHIELD, ShipModule.NO_WEAPON);
 
     public static TechModule getModule(String moduleName) {
         return TECH_NAME_MAP.get(moduleName);

@@ -12,7 +12,24 @@ public class ShipDesign {
             new Utils.Countable<ShipModule>(ShipModule.EMPTY, 0);
 
     public enum SlotType {
-        Computer, Shield, Ecm, Armor, Engine, Weapon1, Weapon2, Weapon3, Weapon4, Special1, Special2, Special3
+        Computer(false),
+        Shield(false),
+        Ecm(false),
+        Armor(false),
+        Engine(false),
+        Weapon1(true),
+        Weapon2(true),
+        Weapon3(true),
+        Weapon4(true),
+        Special1(false),
+        Special2(false),
+        Special3(false);
+
+        final boolean canStack;
+
+        SlotType(boolean canStack) {
+            this.canStack = canStack;
+        }
     };
 
     private static final Map<SlotType, Class> ALLOWED_MODULES = new HashMap<>();

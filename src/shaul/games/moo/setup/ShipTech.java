@@ -159,4 +159,17 @@ public class ShipTech {
                     .build());
         }
     }
+
+    public static class Laser extends ShipModule.WeaponShipModule {
+
+        public Laser(int level) {
+            super("Laser " + level, new ShipModuleData.Builder()
+                    .setCost(20, 80, 120, 400)
+                    .setSize(20, 30, 40, 50)
+                    .setPower(20, 80, 120, 400)
+                    .setWeaponDamage(1)
+                    .build());
+        }
+    }
+
 }

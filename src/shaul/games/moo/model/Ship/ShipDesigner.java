@@ -48,7 +48,7 @@ public class ShipDesigner {
 
     private ShipDesign.Builder resetBuilder(int hullSize) {
         ShipDesign.Builder builder = new ShipDesign.Builder();
-        builder.hull = ShipModule.HullType.Tiny;
+        builder.hull = ShipModule.HullType.Small;
         builder.set(ShipDesign.SlotType.Armor,
                 player.getPlayerState().getTechnologies().getLowestArmor());
         builder.set(ShipDesign.SlotType.Computer, ShipModule.NO_COMPUTER);
@@ -72,6 +72,24 @@ public class ShipDesigner {
 
     public List<TechModule> getAvailableModules(Class<? extends ShipModule> type) {
         return player.getPlayerState().getModulesOfType(type);
+    }
+
+    public boolean canChangeCount(ShipDesign.SlotType slotType, int newCount) {
+        if (!slotType.canStack) { return false; }
+        if (getCurrentModule(slotType).isEmpty()) { return false; }
+        int currentModuleSpace = getCurrentModuleCount(slotType) *
+                getSpaceOfModule(getCurrentModule(slotType), builder.getHull());
+        int newModuleSpace = newCount * getSpaceOfModule(getCurrentModule(slotType), builder.getHull());
+        return (totalSpace - usedSpace) >= (newModuleSpace - currentModuleSpace);
+    }
+
+    public boolean changeCount(ShipDesign.SlotType slotType, int count) {
+        if (canChangeCount(slotType, count)) {
+            builder.set(slotType, builder.get(slotType), count);
+            update();
+            return true;
+        }
+        return false;
     }
 
     public boolean canInstall(ShipDesign.SlotType slotType, ShipModule module) {
@@ -100,7 +118,10 @@ public class ShipDesigner {
 
     public ShipModule getCurrentModule(ShipDesign.SlotType slotType) {
         return builder.get(slotType);
+    }
 
+    public int getCurrentModuleCount(ShipDesign.SlotType slotType) {
+        return builder.getCount(slotType);
     }
 
     public ShipModule.HullType getHull() {
