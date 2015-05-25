@@ -34,44 +34,13 @@ public class ShipModule extends TechModule {
 
     public enum WeaponType {None, Laser, Kinetic}
 
-    private interface All {
-        int getCost(int hullSize);
-        int getSize(int hullSize);
-        int getPower(int hullSize);
-
-        int getAttackLevel();
-
-        int getHitAbsorbs();
-
-        int getMissileDefence();
-
-        int getShipHitPoints(int hullSize);
-
-        int getWrapSpeed();
-
-        int getOptionalManeuvers();
-
-        String getNumberOfEngines(int hullSize);
-
-        int getShipInitiative();
-
-        ShipScanLevel getShipScanLevel();
-
-        int getWeaponDamage();
-
-        int getWeaponSpeed();
-
-        int getWeaponShots();
-
-        int getWeaponRange();
-
-        WeaponType getWeaponType();
-
-        int getWeaponCoolDown();
-    }
+    public enum HullType {
+        Tiny, Small, Medium, Huge
+    };
 
 
-    public static class ShipData implements All {
+
+    public static class ShipData {
 
         private final String desc;
         private final int[] cost;
@@ -139,41 +108,41 @@ public class ShipModule extends TechModule {
                     .toString();
         }
 
-        @Override public int getAttackLevel() { return attackLevel; }
+        public int getAttackLevel() { return attackLevel; }
 
-        @Override public int getHitAbsorbs() { return hitAbsorbs; }
+        public int getHitAbsorbs() { return hitAbsorbs; }
 
-        @Override public int getMissileDefence() { return missileDefence; }
+        public int getMissileDefence() { return missileDefence; }
 
-        @Override public int getShipHitPoints(int hullSize) { return shipHitPoints[hullSize]; }
+        public int getShipHitPoints(HullType hull) { return shipHitPoints[hull.ordinal()]; }
 
-        @Override public int getWrapSpeed() { return wrapSpeed; }
+        public int getWrapSpeed() { return wrapSpeed; }
 
-        @Override public int getOptionalManeuvers() { return optionalManeuvers; }
+        public int getOptionalManeuvers() { return optionalManeuvers; }
 
-        @Override public String getNumberOfEngines(int hullSize) { return String.valueOf(numberOfEngine); }
+        public String getNumberOfEngines(int hullSize) { return String.valueOf(numberOfEngine); }
 
-        @Override public int getShipInitiative() { return shipInitiative; }
+        public int getShipInitiative() { return shipInitiative; }
 
-        @Override public ShipScanLevel getShipScanLevel() { return shipScanLevel;}
+        public ShipScanLevel getShipScanLevel() { return shipScanLevel;}
 
-        @Override public int getWeaponDamage() { return weaponDamage; }
+        public int getWeaponDamage() { return weaponDamage; }
 
-        @Override public int getWeaponSpeed() { return weaponSpeed; }
+        public int getWeaponSpeed() { return weaponSpeed; }
 
-        @Override public int getWeaponShots() { return weaponShots; }
+        public int getWeaponShots() { return weaponShots; }
 
-        @Override public int getWeaponRange() { return weaponRange; }
+        public int getWeaponRange() { return weaponRange; }
 
-        @Override public WeaponType getWeaponType() { return weaponType; }
+        public WeaponType getWeaponType() { return weaponType; }
 
-        @Override public int getWeaponCoolDown() { return weaponCooldown; }
+        public int getWeaponCoolDown() { return weaponCooldown; }
 
-        @Override public int getCost(int hullSize) { return cost[hullSize]; }
+        public int getCost(HullType hull) { return cost[hull.ordinal()]; }
 
-        @Override public int getSize(int hullSize) { return size[hullSize]; }
+        public int getSize(HullType hull) { return size[hull.ordinal()]; }
 
-        @Override public int getPower(int hullSize) { return power[hullSize]; }
+        public int getPower(HullType hull) { return power[hull.ordinal()]; }
 
         @Override
         public String toString() {
@@ -279,8 +248,8 @@ public class ShipModule extends TechModule {
     public boolean isEmpty() { return this == EMPTY; }
     public Set<ShipDesign.SlotType> getPossibleSlotType() { return possibleSlotType; }
 
-    public int getSpace(IPlayerState playerState, int hullSize) {
-        int baseSize = moduleData.getSize(hullSize);
+    public int getSpace(IPlayerState playerState, HullType hull) {
+        int baseSize = moduleData.getSize(hull);
         if (baseSize == 0) {
             return baseSize;
         }

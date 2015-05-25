@@ -81,14 +81,13 @@ public class ShipDesignerWindow {
 
         final JPanel hullPanel = new JPanel(new TableLayout(new double[][] {{320}, {120}}));
 
-        /*
         hullPanel.add(createNameSelect(
                         shipDesigner,
                         " Hull: ",
                         new HullSelectorListener(),
-                        shipDesigner.getHullType().getName()), "0, 0");
+                        shipDesigner.getHull().toString()), "0, 0");
         guiFrame.add(hullPanel, "0, 3");
-        */
+
         infoPanel = new InfoPanel(shipDesigner);
         guiFrame.add(infoPanel, "1, 3");
         infoPanel.update();
@@ -172,13 +171,68 @@ public class ShipDesignerWindow {
         }
     }
 
+    private JPanel createNameSelect(
+            final ShipDesigner shipDesigner,
+            final String title,
+            final UiSelectorListener moduleSelectorListener,
+            final String initialValue) {
+        double[][] sizes = {{160, 160}, {35}};
+        JPanel panel = new JPanel();
+        panel.setLayout(new TableLayout(sizes));
+        panel.add(new JLabel(title), "0, 0");
+        final UiSelection<GenericUi<String>> slot = new UiSelection<>();
+        slot.setListener(new UiSelection.Listener() {
+            @Override
+            public void onClick() {
+                moduleSelectorListener.onSelect(slot, shipDesigner);
+            }
+        });
+        GenericUi<String> initialValueUi = UiFactory.create(initialValue);
+        initialValueUi.setListener(new UiElement.UiListener() {
+            @Override
+            public void onClick(UiElement shipModuleUi) {
+                moduleSelectorListener.onSelect(slot, shipDesigner);
+            }
+        });
+        slot.setBorder(null);
+        slot.add(initialValueUi, BorderLayout.CENTER);
+        panel.add(slot, "1, 0");
+        return panel;
+    }
+
     private void updateAll() {
-        //infoPanel.update();
+        infoPanel.update();
         for (InfoUi infoUi : infoUis) {
             infoUi.update();
         }
     }
 
+    private void openHullSelection(UiSelection moduleSelection, ShipDesigner shipDesigner) {
+        List<Utils.Available<ShipModule.HullType>> availableHullTypes = new ArrayList<>();
+        for (ShipModule.HullType hull : ShipModule.HullType.values()) {
+            availableHullTypes.add(new Utils.Available<ShipModule.HullType>(
+                    hull, shipDesigner.getHull().equals(hull) || shipDesigner.canChangeHull(hull)));
+        }
+        BasicSelectionDialog<ShipModule.HullType> dialog =
+                new BasicSelectionDialog<ShipModule.HullType>(
+                        moduleSelection, availableHullTypes);
+        dialog.setModal(true);
+        dialog.setSelected(shipDesigner.getHull());
+        dialog.setLocationRelativeTo(moduleSelection);
+        dialog.pack();
+        dialog.setVisible(true);
+        shipDesigner.setHull(dialog.getSelected());
+        updateAll();
+        moduleSelection.removeAll();
+        moduleSelection.add(UiFactory.create(shipDesigner.getHull()));
+    }
+
+    private class HullSelectorListener implements UiSelectorListener {
+        @Override
+        public void onSelect(UiSelection moduleSelection, ShipDesigner shipDesigner) {
+            openHullSelection(moduleSelection, shipDesigner);
+        }
+    }
     private static interface InfoUi {
         void update();
     }

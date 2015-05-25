@@ -39,97 +39,31 @@ public class ShipDesign {
         return ALLOWED_MODULES.get(slotType);
     }
 
-    private final Map<SlotType, ShipModule> shipModules;
+    private final Map<SlotType, Utils.Countable<ShipModule>> shipModules;
 
-    private final int hullSize;
-    private final ShipModule computerSlot;
-    private final ShipModule shieldSlot;
-    private final ShipModule ecmSlot;
-    private final ShipModule armorSlot;
-    private final ShipModule engineSlot;
-    private final ShipModule maneuverSlot;
-    private final List<Utils.Countable<ShipModule>> weaponSlot;
-    private final List<ShipModule> specialSlot;
+    private final ShipModule.HullType hull;
     private final int attackLevel;
     private final int hitAbsorbs;
     private final int missleDefence;
     private final int hitPoints;
 
-    ShipDesign(int hullSize, Map<SlotType, ShipModule> shipModules) {
-        this.hullSize = hullSize;
+    ShipDesign(ShipModule.HullType hull, Map<SlotType, Utils.Countable<ShipModule>> shipModules) {
+        this.hull = hull;
         this.shipModules = new HashMap<>(shipModules);
-        List<ShipModule> allModules = new ArrayList<>(shipModules.values());
+        List<Utils.Countable<ShipModule>> allModules = new ArrayList<>(shipModules.values());
 
         int attackLevel = 0;
         int hitAbsorbs = 0;
         int missleDefence = 0;
         int hitPoints = 0;
-        for (ShipModule module : allModules) {
-            Utils.assertNotNull(module);
+        for (Utils.Countable<ShipModule> moduleCountable : allModules) {
+            Utils.assertNotNull(moduleCountable);
+            ShipModule module = Utils.checkNotNull(moduleCountable.get());
             Utils.check("Module " + module + " has no data", module.getModuleData() != null);
             attackLevel += module.getModuleData().getAttackLevel();
             hitAbsorbs += module.getModuleData().getHitAbsorbs();
             missleDefence += module.getModuleData().getMissileDefence();
-            hitPoints += module.getModuleData().getShipHitPoints(hullSize);
-        }
-
-        this.attackLevel = attackLevel;
-        this.hitAbsorbs = hitAbsorbs;
-        this.missleDefence = missleDefence;
-        this.hitPoints = hitPoints;
-
-        this.computerSlot = null;
-        this.shieldSlot = null;
-        this.ecmSlot = null;
-        this.armorSlot = null;
-        this.engineSlot = null;
-        this.maneuverSlot = null;
-        this.weaponSlot = null;
-        this.specialSlot = null;
-
-    }
-
-    ShipDesign(int hullSize,
-               ShipModule computerSlot,
-               ShipModule shieldSlot,
-               ShipModule ecmSlot,
-               ShipModule armorSlot,
-               ShipModule engineSlot,
-               ShipModule maneuverSlot,
-               List<Utils.Countable<ShipModule>> weaponSlot,
-               List<ShipModule> specialSlot) {
-        this.hullSize = hullSize;
-        this.computerSlot = Utils.checkNotNull(computerSlot);
-        this.shieldSlot = Utils.checkNotNull(shieldSlot);
-        this.ecmSlot = Utils.checkNotNull(ecmSlot);
-        this.armorSlot = Utils.checkNotNull(armorSlot);
-        this.engineSlot = Utils.checkNotNull(engineSlot);
-        this.maneuverSlot = Utils.checkNotNull(maneuverSlot);
-        this.weaponSlot = new ArrayList<Utils.Countable<ShipModule>>(weaponSlot);
-        this.specialSlot = new ArrayList<ShipModule>(Utils.checkNotNull(specialSlot));
-        shipModules = new HashMap<>();
-        shipModules.put(SlotType.Computer, computerSlot);
-        shipModules.put(SlotType.Shield, shieldSlot);
-        shipModules.put(SlotType.Ecm, ecmSlot);
-        shipModules.put(SlotType.Armor, armorSlot);
-        shipModules.put(SlotType.Engine, engineSlot);
-
-
-        List<ShipModule> allModules = new ArrayList<>(Arrays.asList(
-                computerSlot, shieldSlot, ecmSlot, armorSlot, engineSlot, maneuverSlot));
-        allModules.addAll(specialSlot);
-
-        int attackLevel = 0;
-        int hitAbsorbs = 0;
-        int missleDefence = 0;
-        int hitPoints = 0;
-        for (ShipModule module : allModules) {
-            Utils.assertNotNull(module);
-            Utils.check("Module " + module + " has no data", module.getModuleData() != null);
-            attackLevel += module.getModuleData().getAttackLevel();
-            hitAbsorbs += module.getModuleData().getHitAbsorbs();
-            missleDefence += module.getModuleData().getMissileDefence();
-            hitPoints += module.getModuleData().getShipHitPoints(hullSize);
+            hitPoints += module.getModuleData().getShipHitPoints(hull);
         }
 
         this.attackLevel = attackLevel;
@@ -141,30 +75,15 @@ public class ShipDesign {
     @Override
     public String toString() {
         StringBuilder sb = new StringBuilder();
-        sb.append("Ship: {hull: " + hullSize);
-        if (computerSlot != null) { sb.append(", computer: " + computerSlot.getName()); }
-        if (shieldSlot != null) { sb.append(", shield: " + shieldSlot.getName()); }
-        if (ecmSlot != null) { sb.append(", ecm: " + ecmSlot.getName()); }
-        if (armorSlot != null) { sb.append(", armor: " + armorSlot.getName()); }
-        if (engineSlot != null) { sb.append(", engine: " + engineSlot.getName()); }
-        if (maneuverSlot != null) { sb.append(", maneuver: " + maneuverSlot.getName()); }
-        sb.append(", weapons: { ");
-        for (int i = 0 ; i < weaponSlot.size(); i++) {
-            Utils.Countable<ShipModule> weapon = weaponSlot.get(i);
-            if (weapon.getCount() > 0 && weapon.get() != ShipModule.EMPTY) {
-                sb.append(weapon.getCount() + ":'" + weapon.get().getName() + "' ");
+        sb.append("Ship: {hull: " + hull);
+        for (SlotType t : shipModules.keySet()) {
+            if (shipModules.get(t).getCount() > 1) {
+                sb.append(String.format(
+                        " , %s: %d of %s", t, shipModules.get(t).getCount(), shipModules.get(t).get().getName()));
+            } else {
+                sb.append(String.format(" , %s: %s", t, shipModules.get(t).get().getName()));
             }
         }
-        sb.append("} ");
-        sb.append(", special: { ");
-        for (int i = 0 ; i < specialSlot.size(); i++) {
-            ShipModule special = specialSlot.get(i);
-            if (special != ShipModule.EMPTY) {
-                sb.append("'" + special.getName() + "' ");
-            }
-        }
-        sb.append("} ");
-        sb.append("}");
         return sb.toString();
     }
 
@@ -185,161 +104,43 @@ public class ShipDesign {
     }
 
     public static class Builder {
+        public ShipModule.HullType hull;
+        private Map<SlotType, Utils.Countable<ShipModule>> shipModules = new HashMap<>();
 
-        public int hullSize;
-        public Map<SlotType, ShipModule> shipModules = new HashMap<>();
-        public ShipModule computerSlot = ShipModule.NO_COMPUTER;
-        public ShipModule shieldSlot = ShipModule.NO_SHIELD;
-        public ShipModule ecmSlot = ShipModule.NO_ECM;
-        public ShipModule armorSlot = ShipModule.EMPTY;
-        public ShipModule engineSlot = ShipModule.EMPTY;
-        public ShipModule maneuverSlot = ShipModule.EMPTY;
-        public List<Utils.Countable<ShipModule>> weaponSlots =
-                Arrays.asList(NO_WEAPON, NO_WEAPON, NO_WEAPON, NO_WEAPON);
-        public List<ShipModule> specialSlots =
-                Arrays.asList(ShipModule.EMPTY, ShipModule.EMPTY, ShipModule.EMPTY);
-
-        public Builder setHullSize(int hullSize) {
-            this.hullSize = hullSize;
+        public Builder set(SlotType slotType, ShipModule shipModule) {
+            shipModules.put(slotType, Utils.Countable.of(shipModule));
             return this;
         }
 
-        public int getHullSize() {
-            return hullSize;
-        }
-
-        public Builder setComputerSlot(ShipModule computerSlot) {
-            this.computerSlot = computerSlot;
+        public Builder set(SlotType slotType, ShipModule shipModule, int count) {
+            shipModules.put(slotType, Utils.Countable.of(shipModule, count));
             return this;
         }
 
-        public ShipModule getComputerSlot() {
-            return computerSlot;
+        public ShipModule get(SlotType slotType) {
+            return shipModules.get(slotType).get();
         }
 
-        public Builder setShieldSlot(ShipModule shieldSlot) {
-            this.shieldSlot = shieldSlot;
+        public int getCount(SlotType slotType) {
+            return shipModules.get(slotType).getCount();
+        }
+
+        public Collection<Utils.Countable<ShipModule>> getModules() {
+            return shipModules.values();
+        }
+
+        public Builder setHull(ShipModule.HullType hull) {
+            this.hull = hull;
             return this;
         }
 
-        public ShipModule getShieldSlot() {
-            return shieldSlot;
-        }
-
-        public Builder setEcmSlot(ShipModule ecmSlot) {
-            this.ecmSlot = ecmSlot;
-            return this;
-        }
-
-        public ShipModule getEcmSlot() {
-            return ecmSlot;
-        }
-
-        public Builder setArmorSlot(ShipModule armorSlot) {
-            this.armorSlot = armorSlot;
-            return this;
-        }
-
-        public ShipModule getArmorSlot() {
-            return armorSlot;
-        }
-
-        public Builder setEngineSlot(ShipModule engineSlot) {
-            this.engineSlot = engineSlot;
-            return this;
-        }
-
-        public Builder setManeuverSlot(ShipModule maneuverSlot) {
-            this.maneuverSlot = maneuverSlot;
-            return this;
-        }
-
-        public Builder setWeaponSlots(List<Utils.Countable<ShipModule>> weaponSlots) {
-            this.weaponSlots = weaponSlots;
-            return this;
-        }
-
-        public Builder setWeaponSlot(int index, Utils.Countable<ShipModule> weaponSlot) {
-            Utils.check(index >= 0 && index < weaponSlots.size());
-            this.weaponSlots.set(index, weaponSlot);
-            return this;
-        }
-
-        public int getWeaponSlotCount(int index) {
-            Utils.check(index >= 0 && index < weaponSlots.size());
-            return this.weaponSlots.get(index).getCount();
-        }
-
-        public ShipModule getWeaponSlot(int index) {
-            Utils.check(index >= 0 && index < weaponSlots.size());
-            return this.weaponSlots.get(index).get();
-        }
-
-        public Builder setWeaponSlotCount(int index, int newCount) {
-            Utils.check(index >= 0 && index < weaponSlots.size());
-            Utils.check(newCount >= 0);
-            this.weaponSlots.set(index, new Utils.Countable<ShipModule>(
-                    this.weaponSlots.get(index).get(), newCount));
-            return this;
-        }
-
-        public Builder setSpecialSlots(List<ShipModule> specialSlots) {
-            this.specialSlots = specialSlots;
-            return this;
-        }
-
-        public Builder setSpecialSlot(int index, ShipModule specialSlot) {
-            Utils.check(index >= 0 && index < specialSlots.size());
-            this.specialSlots.set(index, specialSlot);
-            return this;
+        public ShipModule.HullType getHull() {
+            return hull;
         }
 
         public ShipDesign build() {
-            if (shipModules.values().size() > 0) {
-                return new ShipDesign(hullSize, shipModules);
-            }
-            return new ShipDesign(hullSize, computerSlot, shieldSlot, ecmSlot, armorSlot, engineSlot,
-                    maneuverSlot, weaponSlots, specialSlots);
+            return new ShipDesign(hull, shipModules);
         }
 
-        public ShipModule getSlot(ShipModule.ShipComponent shipComponent) {
-            switch (shipComponent) {
-                case COMPUTER:
-                    return computerSlot;
-                case SHIELD:
-                    return shieldSlot;
-                case ECM:
-                    return ecmSlot;
-                case ARMOR:
-                    return armorSlot;
-                case ENGINE:
-                    return engineSlot;
-                default:
-                    Utils.fail("Can't get component of type " + shipComponent);
-            }
-            return null;
-        }
-
-        public void setModule(ShipModule module) {
-            switch (module.getShipComponentType()) {
-                case COMPUTER:
-                    computerSlot = module;
-                    break;
-                case SHIELD:
-                    shieldSlot = module;
-                    break;
-                case ECM:
-                    ecmSlot = module;
-                    break;
-                case ARMOR:
-                    armorSlot = module;
-                    break;
-                case ENGINE:
-                    engineSlot = module;
-                    break;
-                default:
-                    Utils.fail("Can't set component of type " + module.getShipComponentType());
-            }
-        }
     }
 }

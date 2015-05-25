@@ -48,21 +48,21 @@ public class ShipDesigner {
 
     private ShipDesign.Builder resetBuilder(int hullSize) {
         ShipDesign.Builder builder = new ShipDesign.Builder();
-        builder.hullSize = 1;
-        builder.shipModules.put(ShipDesign.SlotType.Armor,
+        builder.hull = ShipModule.HullType.Tiny;
+        builder.set(ShipDesign.SlotType.Armor,
                 player.getPlayerState().getTechnologies().getLowestArmor());
-        builder.shipModules.put(ShipDesign.SlotType.Computer, ShipModule.NO_COMPUTER);
-        builder.shipModules.put(ShipDesign.SlotType.Engine,
+        builder.set(ShipDesign.SlotType.Computer, ShipModule.NO_COMPUTER);
+        builder.set(ShipDesign.SlotType.Engine,
                 player.getPlayerState().getTechnologies().getLowestEngine());
-        builder.shipModules.put(ShipDesign.SlotType.Ecm, ShipModule.NO_ECM);
-        builder.shipModules.put(ShipDesign.SlotType.Shield, ShipModule.NO_SHIELD);
-        builder.shipModules.put(ShipDesign.SlotType.Special1, ShipModule.NO_SPECIAL);
-        builder.shipModules.put(ShipDesign.SlotType.Special2, ShipModule.NO_SPECIAL);
-        builder.shipModules.put(ShipDesign.SlotType.Special3, ShipModule.NO_SPECIAL);
-        builder.shipModules.put(ShipDesign.SlotType.Weapon1, ShipModule.NO_WEAPON);
-        builder.shipModules.put(ShipDesign.SlotType.Weapon2, ShipModule.NO_WEAPON);
-        builder.shipModules.put(ShipDesign.SlotType.Weapon3, ShipModule.NO_WEAPON);
-        builder.shipModules.put(ShipDesign.SlotType.Weapon4, ShipModule.NO_WEAPON);
+        builder.set(ShipDesign.SlotType.Ecm, ShipModule.NO_ECM);
+        builder.set(ShipDesign.SlotType.Shield, ShipModule.NO_SHIELD);
+        builder.set(ShipDesign.SlotType.Special1, ShipModule.NO_SPECIAL);
+        builder.set(ShipDesign.SlotType.Special2, ShipModule.NO_SPECIAL);
+        builder.set(ShipDesign.SlotType.Special3, ShipModule.NO_SPECIAL);
+        builder.set(ShipDesign.SlotType.Weapon1, ShipModule.NO_WEAPON);
+        builder.set(ShipDesign.SlotType.Weapon2, ShipModule.NO_WEAPON);
+        builder.set(ShipDesign.SlotType.Weapon3, ShipModule.NO_WEAPON);
+        builder.set(ShipDesign.SlotType.Weapon4, ShipModule.NO_WEAPON);
         return builder;
     }
 
@@ -74,17 +74,6 @@ public class ShipDesigner {
         return player.getPlayerState().getModulesOfType(type);
     }
 
-    public List<ShipModule> getInstalledModules(Class<? extends ShipModule> type) {
-        List<ShipModule> shipModules = new ArrayList<>();
-        ShipModule[] singleSlots = {builder.computerSlot, builder.ecmSlot};
-        for (ShipModule module : singleSlots) {
-            if (type.isInstance(module)) {
-                shipModules.add(module);
-            }
-        }
-        return shipModules;
-    }
-
     public boolean canInstall(ShipDesign.SlotType slotType, ShipModule module) {
         // Check if module can be installed in the slot.
         if (!ShipDesign.isModuleAllowed(slotType, module)) {
@@ -94,15 +83,15 @@ public class ShipDesigner {
         if (getCurrentModule(slotType).equals(module)) {
             return true;
         }
-        int currentModuleSpace = getSpaceOfModule(getCurrentModule(slotType), builder.getHullSize());
-        int newModuleSpace = getSpaceOfModule(module, builder.getHullSize());
+        int currentModuleSpace = getSpaceOfModule(getCurrentModule(slotType), builder.getHull());
+        int newModuleSpace = getSpaceOfModule(module, builder.getHull());
 
         return (totalSpace - usedSpace) >= (newModuleSpace - currentModuleSpace);
     }
 
     public boolean install(ShipDesign.SlotType slotType, ShipModule module) {
         if (canInstall(slotType, module)) {
-            builder.shipModules.put(slotType, module);
+            builder.set(slotType, module);
             update();
             return true;
         }
@@ -110,11 +99,23 @@ public class ShipDesigner {
     }
 
     public ShipModule getCurrentModule(ShipDesign.SlotType slotType) {
-        return builder.shipModules.get(slotType);
+        return builder.get(slotType);
+
     }
 
-    private int getSpaceOfModule(ShipModule shipModule, int hullSize) {
-        return shipModule.getSpace(player.getPlayerState(), hullSize);
+    public ShipModule.HullType getHull() {
+        return builder.getHull();
+    }
+
+    public boolean setHull(ShipModule.HullType hull) {
+        if (!canChangeHull(hull)) { return false; }
+        builder.setHull(hull);
+        update();
+        return true;
+    }
+
+    private int getSpaceOfModule(ShipModule shipModule, ShipModule.HullType hull) {
+        return shipModule.getSpace(player.getPlayerState(), hull);
     }
 
     public int getTotalSpace() {
@@ -124,19 +125,27 @@ public class ShipDesigner {
     public int getUsedSpace() {
         return usedSpace;
     }
+
     private void update() {
-        totalSpace = getTotalSpace(builder.getHullSize());
+        totalSpace = getTotalSpace(builder.getHull());
         usedSpace = 0;
-        for (ShipModule module : builder.shipModules.values()) {
-            usedSpace += getSpaceOfModule(module, builder.getHullSize());
+        for (Utils.Countable<ShipModule> module : builder.getModules()) {
+            usedSpace += module.getCount() * getSpaceOfModule(module.get(), builder.getHull());
         }
     }
 
-    private int getTotalSpace(int hullSize) {
+    private int getTotalSpace(ShipModule.HullType hull) {
         int constructionTechLevel =
                 player.getPlayerState().getTechnologies().getTechLevel(Category.Construction.getName());
         // XXX: Fix
-        return gameLogic.getTechnologyLogic().getHullTotalSpace(hullSize) * (100 + constructionTechLevel) / 100;
+        return gameLogic.getTechnologyLogic().getHullTotalSpace(hull) * (100 + constructionTechLevel) / 100;
     }
 
+    public boolean canChangeHull(ShipModule.HullType hull) {
+        int usedSpace = 0;
+        for (Utils.Countable<ShipModule> module : builder.getModules()) {
+            usedSpace += module.getCount() * getSpaceOfModule(module.get(), hull);
+        }
+        return getTotalSpace(hull) >= usedSpace;
+    }
 }

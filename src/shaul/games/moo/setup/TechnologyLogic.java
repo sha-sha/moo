@@ -4,7 +4,6 @@ import shaul.games.moo.model.Research.ITechnologyLogic;
 import shaul.games.moo.model.Research.TechModule;
 import shaul.games.moo.model.Research.TechnologiesDb;
 import shaul.games.moo.model.Research.Technology;
-import shaul.games.moo.model.Ship.HullType;
 import shaul.games.moo.model.Ship.ShipModule;
 import shaul.games.moo.model.Utils;
 
@@ -16,11 +15,6 @@ import java.util.List;
  */
 public class TechnologyLogic implements ITechnologyLogic {
 
-    private static final List<HullType> HULL_TYPES = Arrays.asList(
-            new HullType(0, "Tiny"),
-            new HullType(1, "Small"),
-            new HullType(2, "Big"),
-            new HullType(3, "Huge"));
     private static final int[] HULL_SIZES = {50, 250, 900, 2600};
 
 
@@ -33,14 +27,8 @@ public class TechnologyLogic implements ITechnologyLogic {
     }
 
     @Override
-    public List<HullType> getAvailableHullTypes() {
-        return HULL_TYPES;
-    }
-
-    @Override
-    public int getHullTotalSpace(int hullSize) {
-        Utils.check(hullSize >= 0 && hullSize < HULL_SIZES.length);
-        return HULL_SIZES[hullSize];
+    public int getHullTotalSpace(ShipModule.HullType hull) {
+        return HULL_SIZES[hull.ordinal()];
     }
 
     @Override

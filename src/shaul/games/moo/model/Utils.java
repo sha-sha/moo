@@ -130,6 +130,14 @@ public class Utils {
 
     public static class Countable<T> {
 
+        public static<T> Countable<T> of(T t) {
+            return new Countable<>(t, 1);
+        }
+
+        public static<T> Countable<T> of(T t, int count) {
+            return new Countable<>(t, count);
+        }
+
         private final T t;
         private final int count;
 

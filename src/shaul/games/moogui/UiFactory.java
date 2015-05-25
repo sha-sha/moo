@@ -1,7 +1,6 @@
 package shaul.games.moogui;
 
 import shaul.games.moo.model.GameRunTimeError;
-import shaul.games.moo.model.Ship.HullType;
 import shaul.games.moo.model.Ship.ShipModule;
 
 import javax.swing.*;
@@ -16,8 +15,8 @@ public class UiFactory {
             return (GenericUi<T>) createShipModuleUi((ShipModule) data);
         } else if (data instanceof String) {
             return (GenericUi<T>) new StringStub((String) data);
-        } else if (data instanceof HullType) {
-            return (GenericUi<T>) new HullUi((HullType) data);
+        } else if (data instanceof ShipModule.HullType) {
+            return (GenericUi<T>) new HullUi((ShipModule.HullType) data);
         } else {
             throw new GameRunTimeError("Failed to create UI for : " + data);
         }
@@ -66,13 +65,13 @@ public class UiFactory {
 
     }
 
-    private static class HullUi extends GenericUi<HullType> {
+    private static class HullUi extends GenericUi<ShipModule.HullType> {
 
         private final JLabel label;
 
-        public HullUi(HullType data) {
+        public HullUi(ShipModule.HullType data) {
             super(data);
-            this.label = new JLabel(data.getName());
+            this.label = new JLabel(data.toString());
             add(label);
         }
 
