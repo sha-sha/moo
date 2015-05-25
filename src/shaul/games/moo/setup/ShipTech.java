@@ -6,6 +6,7 @@ import shaul.games.moo.model.Research.TechBonus;
 import shaul.games.moo.model.Research.TechModule;
 import shaul.games.moo.model.Research.Technology;
 import shaul.games.moo.model.Ship.ShipModule;
+import shaul.games.moo.model.Ship.ShipModuleData;
 
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -18,7 +19,7 @@ public class ShipTech {
 
     public static ShipModule computer(final int level) {
         return new ShipModule.ComputerShipModule("Battle Computer " + level,
-                new ShipModule.ShipData.Builder()
+                new ShipModuleData.Builder()
                     .setCost(20, 80, 120, 400)
                     .setSize(20 * level, 80 * level, 120 * level, 400 * level)
                     .setPower(20, 80, 120, 400)
@@ -28,7 +29,7 @@ public class ShipTech {
 
     public static ShipModule engine(final int level, final String name) {
         return new ShipModule.EngineShipModule(name,
-                new ShipModule.ShipData.Builder()
+                new ShipModuleData.Builder()
                         .setCost(20, 80, 120, 400)
                         .setSize(20 * level, 80 * level, 120 * level, 400 * level)
                         .setPower(20, 80, 120, 400)
@@ -38,7 +39,7 @@ public class ShipTech {
 
     public static TechModule energyWeapon(String name) {
         return new ShipModule.WeaponShipModule(name,
-                new ShipModule.ShipData.Builder()
+                new ShipModuleData.Builder()
                         .setCost(20, 80, 120, 400)
                         .setSize(20, 80, 120, 400)
                         .setPower(20, 80, 120, 400)
@@ -49,7 +50,7 @@ public class ShipTech {
     public static TechModule armor(final String name, final int level, final boolean extraThick) {
 
         return new ShipModule.ArmorShipModule(name,
-                new ShipModule.ShipData.Builder()
+                new ShipModuleData.Builder()
                         .setCost(20 * (level - 1), 80 * level, 120 * level, 400 * level)
                         .setSize(20 * level, 80 * level, 120 * level, 400 * level)
                         .setShipHitPoints(3, 60, 200, 4000)
@@ -58,7 +59,7 @@ public class ShipTech {
 
     public static ShipModule shield(final int level) {
         return new ShipModule.ShieldShipModule("Shield " + level,
-                new ShipModule.ShipData.Builder()
+                new ShipModuleData.Builder()
                         .setCost(20, 80, 120, 400)
                         .setSize(20 * level, 80 * level, 120 * level, 400 * level)
                         .setPower(20, 80, 120, 400)
@@ -89,7 +90,7 @@ public class ShipTech {
 
         public BattleScanner() {
             super(Technology.CATEGORY_COMPUTERS,
-                    "Battle Scanner", new ShipModule.ShipData.Builder()
+                    "Battle Scanner", new ShipModuleData.Builder()
                     .setCost(20, 80, 120, 400)
                     .setSize(20, 80, 120, 400)
                     .setPower(20, 80, 120, 400)
@@ -103,7 +104,7 @@ public class ShipTech {
     public static class Ecm extends ShipModule.EcmShipModule {
 
         public Ecm(int level) {
-            super("ECM " + level, new ShipModule.ShipData.Builder()
+            super("ECM " + level, new ShipModuleData.Builder()
                     .setCost(20, 80, 120, 400)
                     .setSize(20, 80, 120, 400)
                     .setPower(20, 80, 120, 400)
@@ -115,7 +116,7 @@ public class ShipTech {
     public static class BattleComputer extends ShipModule.ComputerShipModule {
 
         public BattleComputer(int level) {
-            super("Battle Computer " + level, new ShipModule.ShipData.Builder()
+            super("Battle Computer " + level, new ShipModuleData.Builder()
                     .setCost(20, 80, 120, 400)
                     .setSize(20 * level, 80 * level, 120 * level, 400 * level)
                     .setPower(20, 80, 120, 400)
@@ -127,7 +128,7 @@ public class ShipTech {
     public static class Shield extends ShipModule.ShieldShipModule {
 
         public Shield(int level) {
-            super("Shield " + level, new ShipModule.ShipData.Builder()
+            super("Shield " + level, new ShipModuleData.Builder()
                     .setCost(20, 80, 120, 400)
                     .setSize(20 * level, 80 * level, 120 * level, 400 * level)
                     .setPower(20, 80, 120, 400)
@@ -139,7 +140,7 @@ public class ShipTech {
     public static class Armor extends ShipModule.ArmorShipModule {
 
         public Armor(String name, int level, boolean extra) {
-            super(name, new ShipModule.ShipData.Builder()
+            super(name, new ShipModuleData.Builder()
                     .setCost(20 * (level - 1), 80 * level, 120 * level, 400 * level)
                     .setSize(20 * level, 80 * level, 120 * level, 400 * level)
                     .setShipHitPoints(3, 60, 200, 4000)
@@ -150,7 +151,7 @@ public class ShipTech {
     public static class Engine extends ShipModule.EngineShipModule{
 
         public Engine(String name, int level) {
-            super(name, new ShipModule.ShipData.Builder()
+            super(name, new ShipModuleData.Builder()
                     .setCost(20, 80, 120, 400)
                     .setSize(20 * level, 80 * level, 120 * level, 400 * level)
                     .setPower(20, 80, 120, 400)
