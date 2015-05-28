@@ -56,6 +56,7 @@ public class Technology {
     public static final String CATEGORY_PLANETOLOGY = "Planetology";
     public static final String CATEGORY_PROPULSION = "Propulsion";
     public static final String CATEGORY_WEAPONS = "Weapons";
+    public static final String CATEGORY_NONE = "None";
 
     public static class Computer extends Technology {
 

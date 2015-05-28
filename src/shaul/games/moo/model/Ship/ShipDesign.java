@@ -12,23 +12,26 @@ public class ShipDesign {
             new Utils.Countable<ShipModule>(ShipModule.EMPTY, 0);
 
     public enum SlotType {
-        Computer(false),
-        Shield(false),
-        Ecm(false),
-        Armor(false),
-        Engine(false),
-        Weapon1(true),
-        Weapon2(true),
-        Weapon3(true),
-        Weapon4(true),
-        Special1(false),
-        Special2(false),
-        Special3(false);
+        Computer(false, false),
+        Shield(false, false),
+        Ecm(false, false),
+        Armor(false, false),
+        Engine(false, false),
+        Maneuver(false, false),
+        Weapon1(true, true),
+        Weapon2(true, true),
+        Weapon3(true, true),
+        Weapon4(true, true),
+        Special1(false, false),
+        Special2(false, false),
+        Special3(false, false);
 
         final boolean canStack;
+        final boolean canExistInOtherSlots;
 
-        SlotType(boolean canStack) {
+        SlotType(boolean canStack, boolean canExistInOtherSlots) {
             this.canStack = canStack;
+            this.canExistInOtherSlots = canExistInOtherSlots;
         }
     };
 
@@ -39,6 +42,7 @@ public class ShipDesign {
         ALLOWED_MODULES.put(SlotType.Ecm, ShipModule.EcmShipModule.class);
         ALLOWED_MODULES.put(SlotType.Armor, ShipModule.ArmorShipModule.class);
         ALLOWED_MODULES.put(SlotType.Engine, ShipModule.EngineShipModule.class);
+        ALLOWED_MODULES.put(SlotType.Maneuver, ShipModule.ManeuverShipModule.class);
         ALLOWED_MODULES.put(SlotType.Weapon1, ShipModule.WeaponShipModule.class);
         ALLOWED_MODULES.put(SlotType.Weapon2, ShipModule.WeaponShipModule.class);
         ALLOWED_MODULES.put(SlotType.Weapon3, ShipModule.WeaponShipModule.class);
@@ -53,7 +57,7 @@ public class ShipDesign {
     }
 
     public static Class getAllowedModule(SlotType slotType) {
-        return ALLOWED_MODULES.get(slotType);
+        return Utils.checkNotNull(ALLOWED_MODULES.get(slotType), "Slot " + slotType + " allows no module!");
     }
 
     private final Map<SlotType, Utils.Countable<ShipModule>> shipModules;
@@ -63,6 +67,9 @@ public class ShipDesign {
     private final int hitAbsorbs;
     private final int missleDefence;
     private final int hitPoints;
+    private final int wrapSpeed;
+    private final int combatSpeed;
+
 
     ShipDesign(ShipModule.HullType hull, Map<SlotType, Utils.Countable<ShipModule>> shipModules) {
         this.hull = hull;
@@ -73,6 +80,8 @@ public class ShipDesign {
         int hitAbsorbs = 0;
         int missleDefence = 0;
         int hitPoints = 0;
+        int wrapSpeed = 0;
+        int combatSpeed = 0;
         for (Utils.Countable<ShipModule> moduleCountable : allModules) {
             Utils.assertNotNull(moduleCountable);
             ShipModule module = Utils.checkNotNull(moduleCountable.get());
@@ -81,12 +90,16 @@ public class ShipDesign {
             hitAbsorbs += module.getModuleData().getHitAbsorbs();
             missleDefence += module.getModuleData().getMissileDefence();
             hitPoints += module.getModuleData().getShipHitPoints(hull);
+            wrapSpeed += module.getModuleData().getWrapSpeed();
+            combatSpeed += module.getModuleData().getCombatSpeed();
         }
 
         this.attackLevel = attackLevel;
         this.hitAbsorbs = hitAbsorbs;
         this.missleDefence = missleDefence;
         this.hitPoints = hitPoints;
+        this.wrapSpeed = wrapSpeed;
+        this.combatSpeed = combatSpeed;
     }
 
     @Override
@@ -118,6 +131,14 @@ public class ShipDesign {
 
     public int getMissleDefence() {
         return missleDefence;
+    }
+
+    public int getWrapSpeed() {
+        return wrapSpeed;
+    }
+
+    public int getCombatSpeed() {
+        return combatSpeed;
     }
 
     public static class Builder {

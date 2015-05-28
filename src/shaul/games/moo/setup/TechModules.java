@@ -17,8 +17,13 @@ public class TechModules {
         init();
     }
 
-    private static List<ShipModule> EMPTY_MODULES = Arrays.asList(
-            ShipModule.NO_COMPUTER, ShipModule.NO_ECM, ShipModule.NO_SHIELD, ShipModule.NO_WEAPON);
+    private static final List<ShipModule> EMPTY_MODULES = Arrays.asList(
+            ShipModule.NO_COMPUTER, ShipModule.NO_ECM, ShipModule.NO_SHIELD, ShipModule.NO_WEAPON, ShipModule.NO_SPECIAL);
+    private static final List<ShipTech.Maneuver> MANEUVER_MODULES = Arrays.asList(
+            new ShipTech.Maneuver(1), new ShipTech.Maneuver(2), new ShipTech.Maneuver(3), new ShipTech.Maneuver(4),
+            new ShipTech.Maneuver(5), new ShipTech.Maneuver(5), new ShipTech.Maneuver(6), new ShipTech.Maneuver(7),
+            new ShipTech.Maneuver(8), new ShipTech.Maneuver(9), new ShipTech.Maneuver(10), new ShipTech.Maneuver(11));
+    private static final List<ShipModule> BASE_MODULES = new ArrayList<>();
 
     public static TechModule getModule(String moduleName) {
         return TECH_NAME_MAP.get(moduleName);
@@ -57,8 +62,12 @@ public class TechModules {
         TECH_NAME_MAP.put(techModule.getName(), techModule);
     }
 
-    public static List<ShipModule> getEmptyModules() {
-        return EMPTY_MODULES;
+    public static List<ShipModule> getBaseModules() {
+        if (BASE_MODULES.isEmpty()) {
+            BASE_MODULES.addAll(EMPTY_MODULES);
+            BASE_MODULES.addAll(MANEUVER_MODULES);
+        }
+        return BASE_MODULES;
     }
 
     //public static List<Technology> getTechnologies() {

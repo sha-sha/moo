@@ -86,7 +86,7 @@ public class Moo {
                 null, new TechnologiesDb(gameLogic.getTechnologyLogic(), Arrays.asList(
                 "Battle Computer Mark 1", "Battle Computer Mark 2", "Battle Computer Mark 3",
                 "Battle Scanner", "Titanium Armor", "Laser I", "Class I Deflector Shield", "Class II Deflector Shield",
-                "ECM Jammer Mark 1", "Nuclear Engine"))));
+                "ECM Jammer Mark 1", "Retros Engine", "Nuclear Engine"))));
 
         new ShipDesignerWindow(gameLogic, currentPlayer);
     }

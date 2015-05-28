@@ -24,7 +24,7 @@ public class ShipModule extends TechModule {
     public static final Utils.Countable<ShipModule> ZERO_WEAPON = new Utils.Countable<>(NO_WEAPON, 0);
     public static final ShipModule NO_SPECIAL = new SpecialShipModule(Technology.CATEGORY_COMPUTERS, "None", NO_DATA);
 
-    public enum ShipComponent {NONE, COMPUTER, SHIELD, ECM, ARMOR, ENGINE, WEAPON, SPECIAL}
+    public enum ShipComponent {NONE, COMPUTER, SHIELD, ECM, ARMOR, ENGINE, MANEUVER, WEAPON, SPECIAL}
     public enum ShipScanLevel {NONE, BASIC, ADVANCE}
 
     private final String technologyCategory;
@@ -38,19 +38,6 @@ public class ShipModule extends TechModule {
         Tiny, Small, Medium, Huge
     };
 
-/*
-    public ShipModule(String name, ShipComponent shipComponent, ShipData moduleData) {
-        super(name, TechModule.Type.Ship);
-        this.shipComponent = shipComponent;
-        this.moduleData = moduleData;
-    }
-
-    private ShipModule(String name, ShipComponent shipComponent) {
-        super(name, TechModule.Type.Ship);
-        this.shipComponent = shipComponent;
-        this.moduleData = new ShipData.Builder().build();
-    }
-*/
     private ShipModule(String technologyCategory,
                        String name,
                        Set<ShipDesign.SlotType> possibleSlotTypes,
@@ -177,6 +164,15 @@ public class ShipModule extends TechModule {
                             ShipDesign.SlotType.Special3),
                     ShipComponent.SPECIAL,
                     moduleData);
+        }
+    }
+    
+    public static class ManeuverShipModule extends ShipModule {
+        public ManeuverShipModule(String name, ShipModuleData moduleData) {
+            super(Technology.CATEGORY_NONE,
+                    name,
+                    Utils.setOf(ShipDesign.SlotType.Maneuver),
+                    ShipComponent.MANEUVER, moduleData);
         }
     }
 }

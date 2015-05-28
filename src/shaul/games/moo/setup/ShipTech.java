@@ -7,6 +7,7 @@ import shaul.games.moo.model.Research.TechModule;
 import shaul.games.moo.model.Research.Technology;
 import shaul.games.moo.model.Ship.ShipModule;
 import shaul.games.moo.model.Ship.ShipModuleData;
+import shaul.games.moo.model.Utils;
 
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -156,6 +157,7 @@ public class ShipTech {
                     .setSize(20 * level, 80 * level, 120 * level, 400 * level)
                     .setPower(20, 80, 120, 400)
                     .setWrapSpeed(level)
+                    .setOptionalManeuvers(level)
                     .build());
         }
     }
@@ -172,4 +174,14 @@ public class ShipTech {
         }
     }
 
+    public static class Maneuver extends ShipModule.ManeuverShipModule {
+
+        public Maneuver(int level) {
+            super("Class " + Utils.toRomanNumber(level), new ShipModuleData.Builder()
+                    .setSize(20, 30, 40, 50)
+                    .setPower(20, 80, 120, 400)
+                    .setCombatSpeed(level)
+                    .build());
+        }
+    }
 }

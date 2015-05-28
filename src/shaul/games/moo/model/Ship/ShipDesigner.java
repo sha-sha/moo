@@ -7,6 +7,7 @@ import shaul.games.moo.model.Research.TechModule;
 import shaul.games.moo.model.Utils;
 
 import java.util.*;
+import java.util.function.Predicate;
 
 /**
  * Created by Shaul on 5/16/2015.
@@ -15,6 +16,7 @@ public class ShipDesigner {
     private final IPlayer player;
     private final IGameLogic gameLogic;
 
+    private static final int MIN_MANEUVER = 1;
     private static final Utils.Countable<ShipModule> NO_MODULE =
             new Utils.Countable<ShipModule>(ShipModule.EMPTY, 0);
 
@@ -22,11 +24,12 @@ public class ShipDesigner {
     private int totalSpace;
     private int usedSpace;
     private int cost;
-
+    private int maxManeuverability = MIN_MANEUVER;
 
     public ShipDesigner(IGameLogic gameLogic, IPlayer player) {
         this.gameLogic = gameLogic;
         this.player = player;
+        this.maxManeuverability = MIN_MANEUVER;
         this.builder = resetBuilder(1);
         update();
     }
@@ -55,6 +58,7 @@ public class ShipDesigner {
         builder.set(ShipDesign.SlotType.Computer, ShipModule.NO_COMPUTER);
         builder.set(ShipDesign.SlotType.Engine,
                 player.getPlayerState().getTechnologies().getLowestEngine());
+        builder.set(ShipDesign.SlotType.Maneuver, getManeuverModule(1));
         builder.set(ShipDesign.SlotType.Ecm, ShipModule.NO_ECM);
         builder.set(ShipDesign.SlotType.Shield, ShipModule.NO_SHIELD);
         builder.set(ShipDesign.SlotType.Special1, ShipModule.NO_SPECIAL);
@@ -71,8 +75,16 @@ public class ShipDesigner {
         return 0;
     }
 
-    public List<TechModule> getAvailableModules(Class<? extends ShipModule> type) {
-        return player.getPlayerState().getModulesOfType(type);
+    public List<ShipModule> getAvailableModules(Class<? extends ShipModule> type) {
+        List<ShipModule> modules = new ArrayList<>();
+        for (TechModule techModule : player.getPlayerState().getModulesOfType(type)) {
+            if (techModule instanceof ShipModule) {
+                if (((ShipModule) techModule).getModuleData().getCombatSpeed() <= maxManeuverability) {
+                    modules.add((ShipModule) techModule);
+                }
+            }
+        }
+        return modules;
     }
 
     public boolean canChangeCount(ShipDesign.SlotType slotType, int newCount) {
@@ -98,10 +110,26 @@ public class ShipDesigner {
         if (!ShipDesign.isModuleAllowed(slotType, module)) {
             return false;
         }
-        // Check if already installed.
+        // Check if already installed in this slot.
         if (getCurrentModule(slotType).equals(module)) {
             return true;
         }
+
+        if (module.isEmpty()) {
+            return true;
+        }
+
+        if (!slotType.canExistInOtherSlots) {
+            for (ShipDesign.SlotType otherSlot : ShipDesign.SlotType.values()) {
+                if (getCurrentModule(otherSlot).equals(module)) {
+                    return false;
+                }
+            }
+        }
+
+
+
+
         int currentModuleSpace = getSpaceOfModule(getCurrentModule(slotType), builder.getHull());
         int newModuleSpace = getSpaceOfModule(module, builder.getHull());
 
@@ -152,11 +180,26 @@ public class ShipDesigner {
         totalSpace = getTotalSpace(builder.getHull());
         usedSpace = 0;
         cost = 0; // should be hull cost.
+        maxManeuverability = MIN_MANEUVER;
         for (Utils.Countable<ShipModule> module : builder.getModules()) {
             usedSpace += module.getCount() * getSpaceOfModule(module.get(), builder.getHull());
             cost += module.getCount() * getCostOfModule(module.get(), builder.getHull());
+            maxManeuverability = Math.max(maxManeuverability, module.get().getModuleData().getOptionalManeuvers());
         }
+        // Reduce maneuverability if it exceeded the max.
+        if (builder.get(ShipDesign.SlotType.Maneuver).getModuleData().getCombatSpeed() > maxManeuverability) {
+            builder.set(ShipDesign.SlotType.Maneuver, getManeuverModule(maxManeuverability));
+        }
+    }
 
+    private ShipModule getManeuverModule(int combatSpeed) {
+        for (ShipModule shipModule : getAvailableModules(ShipModule.ManeuverShipModule.class)) {
+            if (maxManeuverability == shipModule.getModuleData().getCombatSpeed()) {
+                return shipModule;
+            }
+        }
+        Utils.fail("No maneuver of combat speed " + combatSpeed);
+        return null;
     }
 
     private int getCostOfModule(ShipModule shipModule, ShipModule.HullType hull) {
@@ -180,5 +223,13 @@ public class ShipDesigner {
 
     public int getCost() {
         return cost;
+    }
+
+    public int getWrapSpeed() {
+        return builder.build().getWrapSpeed();
+    }
+
+    public int getCombatSpeed() {
+        return builder.build().getCombatSpeed();
     }
 }

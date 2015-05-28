@@ -43,7 +43,7 @@ public class PlayerStateImpl implements IPlayerState {
     @Override
     public List<TechModule> getModulesOfType(final Class<? extends TechModule> type) {
         List<TechModule> modules = new ArrayList<>();
-        modules.addAll(Utils.filter(technologies.getEmptyModules(), new Predicate<ShipModule>() {
+        modules.addAll(Utils.filter(technologies.getBaseModules(), new Predicate<ShipModule>() {
             @Override
             public boolean test(ShipModule techModule) {
                 return type.isInstance(techModule);

@@ -55,14 +55,14 @@ public class TechnologiesDb {
                         technologyLogic.getTechnologyOfTechModule(o2.getName()).getTechLevel();
             }
         };
-        emptyModules = new ArrayList<>(technologyLogic.getEmptyShipModules());
+        emptyModules = new ArrayList<>(technologyLogic.getBaseShipModules());
     }
 
     public List<Technology> getTechnologies() {
         return technologies;
     }
 
-    public List<ShipModule> getEmptyModules() {
+    public List<ShipModule> getBaseModules() {
         return emptyModules;
     }
 
@@ -91,7 +91,7 @@ public class TechnologiesDb {
 
     public List<ShipModule> getShipModule(Predicate<ShipModule> predicate) {
         List<ShipModule> modules = new ArrayList<ShipModule>();
-        for (ShipModule emptyModules : technologyLogic.getEmptyShipModules()) {
+        for (ShipModule emptyModules : technologyLogic.getBaseShipModules()) {
             if (predicate.test(emptyModules)) {
                 modules.add(emptyModules);
             }

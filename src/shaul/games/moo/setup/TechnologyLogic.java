@@ -52,8 +52,8 @@ public class TechnologyLogic implements ITechnologyLogic {
     }
 
     @Override
-    public List<ShipModule> getEmptyShipModules() {
-        return TechModules.getEmptyModules();
+    public List<ShipModule> getBaseShipModules() {
+        return TechModules.getBaseModules();
     }
 
     @Override

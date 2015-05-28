@@ -9,8 +9,6 @@ import shaul.games.moo.model.Utils;
 import javax.swing.*;
 import javax.swing.border.EmptyBorder;
 import javax.swing.border.LineBorder;
-import javax.swing.event.ChangeEvent;
-import javax.swing.event.ChangeListener;
 import javax.swing.plaf.basic.BasicArrowButton;
 import java.awt.*;
 import java.awt.event.MouseEvent;
@@ -24,7 +22,8 @@ import java.util.List;
 public class ShipDesignerWindow {
 
     private final InfoPanel infoPanel;
-    private ArrayList<InfoUi> infoUis;
+    //private ArrayList<InfoUi> infoUis;
+    private Updater uiUpdater = new Updater();
     private final JFrame guiFrame;
 
     public ShipDesignerWindow(IGameLogic gameLogic, IPlayer player) {
@@ -32,7 +31,6 @@ public class ShipDesignerWindow {
         final ShipDesigner shipDesigner = new ShipDesigner(gameLogic, player);
 
         guiFrame = new JFrame();
-        this.infoUis = new ArrayList<InfoUi>();
 
         //make sure the program exits when the frame closes
         guiFrame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
@@ -54,15 +52,15 @@ public class ShipDesignerWindow {
         topLeftPanel.add(createShipModuleSelectAndInfo(shipDesigner,
                 ShipDesign.SlotType.Computer,
                 " Computer:",
-                new GenericInfo(shipDesigner, ATTACK_INFO)), "0, 0");
+                new GenericInfo(shipDesigner, ATTACK_INFO), uiUpdater), "0, 0");
         topLeftPanel.add(createShipModuleSelectAndInfo(shipDesigner,
                 ShipDesign.SlotType.Shield,
                 " Shield:",
-                new GenericInfo(shipDesigner, HIT_ABSORBS)), "0, 1");
+                new GenericInfo(shipDesigner, HIT_ABSORBS), uiUpdater), "0, 1");
         topLeftPanel.add(createShipModuleSelectAndInfo(shipDesigner,
                 ShipDesign.SlotType.Ecm,
                 " Ecm:",
-                new GenericInfo(shipDesigner, MISSLE_DEFENCE)), "0, 2");
+                new GenericInfo(shipDesigner, MISSLE_DEFENCE), uiUpdater), "0, 2");
         guiFrame.add(topLeftPanel, "0, 0");
 
         double topRightSizes[][] =  {{315}, {33, 33, 33}};
@@ -72,11 +70,16 @@ public class ShipDesignerWindow {
         topRightPanel.add(createShipModuleSelectAndInfo(shipDesigner,
                 ShipDesign.SlotType.Armor,
                 " Armor:",
-                new GenericInfo(shipDesigner, HIT_POINT)), "0, 0");
+                new GenericInfo(shipDesigner, HIT_POINT), uiUpdater), "0, 0");
         topRightPanel.add(createShipModuleSelectAndInfo(shipDesigner,
                 ShipDesign.SlotType.Engine,
                 " Engine:",
-                new GenericInfo(shipDesigner, WRAP_AND_DEFENCE)), "0, 1");
+                new GenericInfo(shipDesigner, WRAP_AND_DEFENCE), uiUpdater), "0, 1");
+        topRightPanel.add(createShipModuleSelectAndInfo(shipDesigner,
+                ShipDesign.SlotType.Maneuver,
+                " Maneuver:",
+                new GenericInfo(shipDesigner, COMBAT_SPEED),
+                uiUpdater), "0, 2");
         guiFrame.add(topRightPanel, "1, 0");
 
 
@@ -92,7 +95,15 @@ public class ShipDesignerWindow {
         initWeapon(shipDesigner,ShipDesign.SlotType.Weapon4, 4, weaponPanel);
 
         guiFrame.add(weaponPanel, "0, 1, 1, 1");
-        guiFrame.add(new Test(Color.GREEN), "0, 2, 1, 2");
+
+        double specialLayoutSizes[][] =  {{80, 40, 400, 80}, {40, 40, 40}};
+        final JPanel specialPanel = new JPanel(new TableLayout(specialLayoutSizes));
+        specialPanel.setBackground(new Color(160, 190, 160));
+        initSpecial(shipDesigner, ShipDesign.SlotType.Special1, 0, specialPanel);
+        initSpecial(shipDesigner, ShipDesign.SlotType.Special2, 1, specialPanel);
+        initSpecial(shipDesigner, ShipDesign.SlotType.Special3, 2, specialPanel);
+
+        guiFrame.add(specialPanel, "0, 2, 1, 2");
 
         final JPanel hullPanel = new JPanel(new TableLayout(new double[][] {{320}, {120}}));
 
@@ -156,11 +167,35 @@ public class ShipDesignerWindow {
         weaponPanel.add(weapon, "2, " + row);
     }
 
+    private void initSpecial(final ShipDesigner shipDesigner, final ShipDesign.SlotType slot, int row, JPanel panel) {
+        panel.add(new JLabel("Special " + row), "0, " + row);
+        final UiSelection<GenericUi<ShipModule>> special = new UiSelection<>();
+        special.setListener(new UiSelection.Listener() {
+            @Override
+            public void onClick() {
+                openShipComponentSelection(special, shipDesigner, slot);
+            }
+        });
+        final GenericUi<ShipModule> initialValue = UiFactory.create(shipDesigner.getCurrentModule(slot));
+        initialValue.setListener(new UiElement.UiListener() {
+            @Override
+            public void onClick(UiElement shipModuleUi) {
+                openShipComponentSelection(special, shipDesigner, slot);
+            }
+        });
+        initialValue.setBackground(panel.getBackground());
+        special.setBackground(panel.getBackground());
+        special.setBorder(null);
+        special.add(initialValue, BorderLayout.CENTER);
+        panel.add(special, "2, " + row);
+    }
+
     private JPanel createShipModuleSelectAndInfo(
             final ShipDesigner shipDesigner,
             final ShipDesign.SlotType slotType,
             final String title,
-            final InfoUi infoUi) {
+            final InfoUi infoUi,
+            Updater uiUpdater) {
         double[][] sizes = {{70, 135, 105}, {35}};
         final UiSelectorListener moduleSelectorListener = new UiSelectorListener() {
             @Override
@@ -189,7 +224,17 @@ public class ShipDesignerWindow {
         slot.add(initialValue, BorderLayout.CENTER);
         panel.add(slot, "1, 0");
         panel.add((JComponent) infoUi, "2, 0");
-        infoUis.add(infoUi);
+        uiUpdater.register(new InfoUi() {
+            @Override
+            public void update() {
+                infoUi.update();
+                slot.removeAll();
+                slot.revalidate();
+                slot.repaint();
+                slot.add(UiFactory.create(shipDesigner.getCurrentModule(slotType)));
+
+            }
+        });
         infoUi.update();
         return panel;
     }
@@ -222,10 +267,10 @@ public class ShipDesignerWindow {
         if (dialog.hasResult() && !shipDesigner.getCurrentModule(slotType).equals(dialog.getSelected())) {
             shipDesigner.install(slotType, dialog.getSelected());
             updateAll();
-            moduleSelection.removeAll();
-            moduleSelection.revalidate();
-            moduleSelection.repaint();
-            moduleSelection.add(UiFactory.create(shipDesigner.getCurrentModule(slotType)));
+//            moduleSelection.removeAll();
+//            moduleSelection.revalidate();
+//            moduleSelection.repaint();
+//            moduleSelection.add(UiFactory.create(shipDesigner.getCurrentModule(slotType)));
             guiFrame.pack();
             guiFrame.invalidate();
             moduleSelection.invalidate();
@@ -265,9 +310,7 @@ public class ShipDesignerWindow {
 
     private void updateAll() {
         infoPanel.update();
-        for (InfoUi infoUi : infoUis) {
-            infoUi.update();
-        }
+        uiUpdater.update();
     }
 
     private void openHullSelection(UiSelection moduleSelection, ShipDesigner shipDesigner) {
@@ -361,7 +404,15 @@ public class ShipDesignerWindow {
         }};
     private static final GenericInfo.Update WRAP_AND_DEFENCE = new GenericInfo.Update() {
         @Override public String update(ShipDesigner shipDesigner) {
-            return "Wrap ? Defence ?";
+            return "Wrap: " + shipDesigner.getWrapSpeed() + " Defence ?";
+        }};
+    private static final GenericInfo.Update COMBAT_SPEED = new GenericInfo.Update() {
+        @Override public String update(ShipDesigner shipDesigner) {
+            return "Combat Speed: " + shipDesigner.getCombatSpeed();
+        }};
+    private static final GenericInfo.Update MANEUVER = new GenericInfo.Update() {
+        @Override public String update(ShipDesigner shipDesigner) {
+            return "Wrap: " + shipDesigner.getWrapSpeed() + " Defence ?";
         }};
 
     private static class Test extends JPanel {
@@ -520,6 +571,18 @@ public class ShipDesignerWindow {
             return this.current;
         }
 
+    }
+
+    private static class Updater {
+        List<InfoUi> infoUiList = new ArrayList<>();
+
+        void register(InfoUi infoUi) { infoUiList.add(infoUi); }
+
+        void update() {
+            for (InfoUi infoUi : infoUiList) {
+                infoUi.update();
+            }
+        }
     }
 
 }

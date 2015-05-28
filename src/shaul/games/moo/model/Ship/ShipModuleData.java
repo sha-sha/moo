@@ -27,6 +27,7 @@ public class ShipModuleData {
     private final int weaponRange;
     private final ShipModule.WeaponType weaponType;
     private final int weaponCooldown;
+    private final int combatSpeed;
 
     public ShipModuleData(Builder builder) {
         this.cost = builder.cost;
@@ -48,6 +49,7 @@ public class ShipModuleData {
         this.weaponRange = builder.weaponRange;
         this.weaponType = builder.weaponType;
         this.weaponCooldown = builder.weaponCooldown;
+        this.combatSpeed = builder.combatSpeed;
 
         desc = new StringBuilder()
                 .append(getAttribute("cost", cost))
@@ -103,6 +105,8 @@ public class ShipModuleData {
 
     public int getWeaponCoolDown() { return weaponCooldown; }
 
+    public int getCombatSpeed() { return combatSpeed; }
+
     public int getCost(ShipModule.HullType hull) { return cost[hull.ordinal()]; }
 
     public int getSize(ShipModule.HullType hull) { return size[hull.ordinal()]; }
@@ -146,6 +150,7 @@ public class ShipModuleData {
         private int weaponRange = 0;
         private ShipModule.WeaponType weaponType = ShipModule.WeaponType.None;
         private int weaponCooldown = 0;
+        private int combatSpeed = 0;
 
         public Builder setCost(int... cost) { this.cost = cost; return this; }
         public Builder setSize(int... size) { this.size = size; return this; }
@@ -169,6 +174,7 @@ public class ShipModuleData {
         public Builder setWeaponRange(int weaponRange) { this.weaponRange = weaponRange; return this; }
         public Builder setWeaponType(ShipModule.WeaponType weaponType) { this.weaponType = weaponType; return this; }
         public Builder setWeaponCooldown(int weaponCooldown) { this.weaponCooldown = weaponCooldown; return this; }
+        public Builder setCombatSpeed(int combatSpeed) { this.combatSpeed = combatSpeed; return this; }
 
         public ShipModuleData build() {
             return new ShipModuleData(this);

@@ -70,7 +70,8 @@ public final class TechnologyTree {
         add(new DeflectorShield(1, 1));
         add(new DeflectorShield(4, 2));
         add(new Laser(1, 1));
-        add(new Engine(1, 1, "Nuclear"));
+        add(new Engine(1, 1, "Retros"));
+        add(new Engine(4, 2, "Nuclear"));
 
     }}};
     private static Map<String, Technology> TECHNOLOGIES_MAP = null;
