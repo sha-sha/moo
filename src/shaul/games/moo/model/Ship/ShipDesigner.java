@@ -52,7 +52,7 @@ public class ShipDesigner {
 
     private ShipDesign.Builder resetBuilder(int hullSize) {
         ShipDesign.Builder builder = new ShipDesign.Builder();
-        builder.hull = ShipModule.HullType.Small;
+        builder.hull = Hull.Small;
         builder.set(ShipDesign.SlotType.Armor,
                 player.getPlayerState().getTechnologies().getLowestArmor());
         builder.set(ShipDesign.SlotType.Computer, ShipModule.NO_COMPUTER);
@@ -153,18 +153,18 @@ public class ShipDesigner {
         return builder.getCount(slotType);
     }
 
-    public ShipModule.HullType getHull() {
+    public Hull getHull() {
         return builder.getHull();
     }
 
-    public boolean setHull(ShipModule.HullType hull) {
+    public boolean setHull(Hull hull) {
         if (!canChangeHull(hull)) { return false; }
         builder.setHull(hull);
         update();
         return true;
     }
 
-    private int getSpaceOfModule(ShipModule shipModule, ShipModule.HullType hull) {
+    private int getSpaceOfModule(ShipModule shipModule, Hull hull) {
         return shipModule.getSpace(player.getPlayerState(), hull);
     }
 
@@ -177,7 +177,7 @@ public class ShipDesigner {
     }
 
     private void update() {
-        totalSpace = getTotalSpace(builder.getHull());
+        totalSpace = builder.getHull().getSpace(player.getPlayerState());
         usedSpace = 0;
         cost = 0; // should be hull cost.
         maxManeuverability = MIN_MANEUVER;
@@ -202,23 +202,23 @@ public class ShipDesigner {
         return null;
     }
 
-    private int getCostOfModule(ShipModule shipModule, ShipModule.HullType hull) {
+    private int getCostOfModule(ShipModule shipModule, Hull hull) {
         return shipModule.getCost(player.getPlayerState(), hull);
     }
 
-    private int getTotalSpace(ShipModule.HullType hull) {
-        int constructionTechLevel =
-                player.getPlayerState().getTechnologies().getTechLevel(Category.Construction.getName());
-        // XXX: Fix
-        return gameLogic.getTechnologyLogic().getHullTotalSpace(hull) * (100 + constructionTechLevel) / 100;
-    }
+    //private int getTotalSpace(Hull hull) {
+    //    int constructionTechLevel =
+    //            player.getPlayerState().getTechnologies().getTechLevel(Category.Construction.getName());
+    //    // XXX: Fix
+    //    return gameLogic.getTechnologyLogic().getHullTotalSpace(hull) * (100 + constructionTechLevel) / 100;
+    //}
 
-    public boolean canChangeHull(ShipModule.HullType hull) {
+    public boolean canChangeHull(Hull hull) {
         int usedSpace = 0;
         for (Utils.Countable<ShipModule> module : builder.getModules()) {
             usedSpace += module.getCount() * getSpaceOfModule(module.get(), hull);
         }
-        return getTotalSpace(hull) >= usedSpace;
+        return hull.getSpace(player.getPlayerState()) >= usedSpace;
     }
 
     public int getCost() {

@@ -1,5 +1,6 @@
 package shaul.games.moo.model.Research;
 
+import shaul.games.moo.model.Ship.Hull;
 import shaul.games.moo.model.Ship.ShipDesign;
 import shaul.games.moo.model.Ship.ShipModule;
 
@@ -12,14 +13,7 @@ public interface ITechnologyLogic {
 
     double getCostReduction(int deltaTechLevel);
 
-    int getHullTotalSpace(ShipModule.HullType hullSize);
-
     Technology getTechnology(String name);
-    ShipModule getShipModule(String name);
     Technology getTechnologyOfTechModule(String techModuleName);
     List<ShipModule> getBaseShipModules();
-
-    ShipModule getLowestEngine();
-
-    double getModuleCostReduction(String module, TechnologiesDb playerTechs);
 }

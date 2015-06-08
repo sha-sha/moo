@@ -1,13 +1,11 @@
 package shaul.games.moo.setup;
 
 import shaul.games.moo.model.Research.ITechnologyLogic;
-import shaul.games.moo.model.Research.TechModule;
-import shaul.games.moo.model.Research.TechnologiesDb;
 import shaul.games.moo.model.Research.Technology;
+import shaul.games.moo.model.Ship.Hull;
 import shaul.games.moo.model.Ship.ShipModule;
 import shaul.games.moo.model.Utils;
 
-import java.util.Arrays;
 import java.util.List;
 
 /**
@@ -15,7 +13,7 @@ import java.util.List;
  */
 public class TechnologyLogic implements ITechnologyLogic {
 
-    private static final int[] HULL_SIZES = {50, 250, 900, 2600};
+    //private static final int[] HULL_SPACE = {40, 200, 1000, 5000 };
 
 
     public TechnologyLogic() {
@@ -27,22 +25,8 @@ public class TechnologyLogic implements ITechnologyLogic {
     }
 
     @Override
-    public int getHullTotalSpace(ShipModule.HullType hull) {
-        return HULL_SIZES[hull.ordinal()];
-    }
-
-    @Override
     public Technology getTechnology(String name) {
         return TechnologyTree.getTechnologiesMap().get(name);
-    }
-
-    @Override
-    public ShipModule getShipModule(String name) {
-        TechModule module = TechModules.getModule(name);
-        if (module == null || module.getType() != TechModule.Type.Ship) {
-            return null;
-        }
-        return (ShipModule)module;
     }
 
     @Override
@@ -55,12 +39,7 @@ public class TechnologyLogic implements ITechnologyLogic {
     public List<ShipModule> getBaseShipModules() {
         return TechModules.getBaseModules();
     }
-
-    @Override
-    public ShipModule getLowestEngine() {
-        return null;
-    }
-
+/*
     @Override
     public double getModuleCostReduction(String module, TechnologiesDb playerTechs) {
         Utils.assertNotNull(module);
@@ -72,4 +51,4 @@ public class TechnologyLogic implements ITechnologyLogic {
         int currentTechLevel = playerTechs.getTechLevel(moduleCategory);
         return getCostReduction(currentTechLevel - moduleTechLevel);
     }
-}
+*/}

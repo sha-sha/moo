@@ -1,90 +1,19 @@
 package shaul.games.moo.setup;
 
-import static shaul.games.moo.model.Research.TechModule.HullFunction;
-
-import shaul.games.moo.model.Research.TechBonus;
+import shaul.games.moo.model.Player.IPlayerStateModifier;
+import shaul.games.moo.model.Research.PlayerBonus;
 import shaul.games.moo.model.Research.TechModule;
 import shaul.games.moo.model.Research.Technology;
+import shaul.games.moo.model.Ship.Hull;
 import shaul.games.moo.model.Ship.ShipModule;
 import shaul.games.moo.model.Ship.ShipModuleData;
 import shaul.games.moo.model.Utils;
-
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.List;
 
 /**
  * Created by Shaul on 3/1/2015.
  */
 public class ShipTech {
 
-    public static ShipModule computer(final int level) {
-        return new ShipModule.ComputerShipModule("Battle Computer " + level,
-                new ShipModuleData.Builder()
-                    .setCost(20, 80, 120, 400)
-                    .setSize(20 * level, 80 * level, 120 * level, 400 * level)
-                    .setPower(20, 80, 120, 400)
-                    .setAttackLevel(level)
-                    .build());
-    }
-
-    public static ShipModule engine(final int level, final String name) {
-        return new ShipModule.EngineShipModule(name,
-                new ShipModuleData.Builder()
-                        .setCost(20, 80, 120, 400)
-                        .setSize(20 * level, 80 * level, 120 * level, 400 * level)
-                        .setPower(20, 80, 120, 400)
-                        .setWrapSpeed(level)
-                        .build());
-    }
-
-    public static TechModule energyWeapon(String name) {
-        return new ShipModule.WeaponShipModule(name,
-                new ShipModuleData.Builder()
-                        .setCost(20, 80, 120, 400)
-                        .setSize(20, 80, 120, 400)
-                        .setPower(20, 80, 120, 400)
-                        .setWeaponDamage(1)
-                        .build());
-    }
-
-    public static TechModule armor(final String name, final int level, final boolean extraThick) {
-
-        return new ShipModule.ArmorShipModule(name,
-                new ShipModuleData.Builder()
-                        .setCost(20 * (level - 1), 80 * level, 120 * level, 400 * level)
-                        .setSize(20 * level, 80 * level, 120 * level, 400 * level)
-                        .setShipHitPoints(3, 60, 200, 4000)
-                        .build());
-    }
-
-    public static ShipModule shield(final int level) {
-        return new ShipModule.ShieldShipModule("Shield " + level,
-                new ShipModuleData.Builder()
-                        .setCost(20, 80, 120, 400)
-                        .setSize(20 * level, 80 * level, 120 * level, 400 * level)
-                        .setPower(20, 80, 120, 400)
-                        .setHitAbsorbs(level)
-                        .build());
-    }
-
-    // Ship technology bonuses.
-
-    public static TechBonus shipAttack(int value) {
-        return new TechBonus(TechBonus.Type.INC_SHIP_ATTACK, value);
-    }
-
-    public static TechBonus shipScan() {
-        return new TechBonus(TechBonus.Type.SCAN_SHIPS_IN_BATTLE, 1);
-    }
-
-    public static TechBonus shipInitiative(int val) {
-        return new TechBonus(TechBonus.Type.INC_SHIP_INITIATIVE, val);
-    }
-
-    public static TechBonus shipMissleDef(int value) {
-        return new TechBonus(TechBonus.Type.INC_SHIP_MISSLE_DEF, value);
-    }
 
 
     public static class BattleScanner extends ShipModule.SpecialShipModule {
@@ -140,12 +69,22 @@ public class ShipTech {
 
     public static class Armor extends ShipModule.ArmorShipModule {
 
-        public Armor(String name, int level, boolean extra) {
+        public Armor(int techLevel, String name, int level, boolean doubleHull) {
             super(name, new ShipModuleData.Builder()
-                    .setCost(20 * (level - 1), 80 * level, 120 * level, 400 * level)
-                    .setSize(20 * level, 80 * level, 120 * level, 400 * level)
-                    .setShipHitPoints(3, 60, 200, 4000)
+                    .setCost(20 * (level - 1), 80 * (level - 1), 120 * (level - 1), 400 * (level - 1))
+                    .setSize(doubleHull ? calcDoubleHull(Hull.Small, techLevel) : 1,
+                            doubleHull ? calcDoubleHull(Hull.Medium, techLevel) : 1,
+                            doubleHull ? calcDoubleHull(Hull.Large, techLevel) : 1,
+                            doubleHull ? calcDoubleHull(Hull.Huge, techLevel) : 1)
+                    .setShipHitPointsModifier(
+                            doubleHull ? 1.0 + level * 0.5 : 0.5 + level * 0.5) // 50% increase for each level > 1.
                     .build());
+        }
+
+        private static int calcDoubleHull(Hull hull, int techLevel) {
+            double armorPerHull = hull.equals(Hull.Small) ? 0.5 :  0.4;
+            armorPerHull *= 1.0 + techLevel * 0.02;
+            return (int) Math.floor(hull.getBaseSpace() * armorPerHull);
         }
     }
 
@@ -153,12 +92,24 @@ public class ShipTech {
 
         public Engine(String name, int level) {
             super(name, new ShipModuleData.Builder()
-                    .setCost(20, 80, 120, 400)
-                    .setSize(20 * level, 80 * level, 120 * level, 400 * level)
-                    .setPower(20, 80, 120, 400)
+                    .setCost(level * 2, level * 2, level * 2, level * 2)
+                    .setSize(10 * level, 10 * level, 10 * level, 10 * level)
                     .setWrapSpeed(level)
                     .setOptionalManeuvers(level)
                     .build());
+        }
+    }
+
+    public static class ReserveFuelTanks extends ShipModule.SpecialShipModule{
+
+        public ReserveFuelTanks(String name) {
+            super(Technology.CATEGORY_PROPULSION,
+                    name,
+                    new ShipModuleData.Builder()
+                            .setCost(2, 6, 31, 155)
+                            .setSize(16, 82, 410, 2050)
+                            .setFuelTravelDistance(3)
+                            .build());
         }
     }
 
@@ -178,10 +129,23 @@ public class ShipTech {
 
         public Maneuver(int level) {
             super("Class " + Utils.toRomanNumber(level), new ShipModuleData.Builder()
-                    .setSize(20, 30, 40, 50)
+                    .setCost(1, 1, 10, 70)
+                    .setSize(1, 1, 10, 70)
                     .setPower(20, 80, 120, 400)
                     .setCombatSpeed(level)
                     .build());
+        }
+    }
+
+    public static class FuelCell extends TechModule {
+
+        public FuelCell(String name, final int shipFuelRange) {
+            super(name, new PlayerBonus() {
+                @Override
+                public void apply(IPlayerStateModifier playerStateModifier) {
+                    playerStateModifier.setShipFuelRange(shipFuelRange);
+                }
+            });
         }
     }
 }

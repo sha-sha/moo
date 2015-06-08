@@ -11,12 +11,6 @@ import java.util.*;
  * Created by shaul on 4/1/15.
  */
 public class TechModules {
-
-    public static final Map<String, TechModule> TECH_NAME_MAP = new TreeMap<>();
-    static {
-        init();
-    }
-
     private static final List<ShipModule> EMPTY_MODULES = Arrays.asList(
             ShipModule.NO_COMPUTER, ShipModule.NO_ECM, ShipModule.NO_SHIELD, ShipModule.NO_WEAPON, ShipModule.NO_SPECIAL);
     private static final List<ShipTech.Maneuver> MANEUVER_MODULES = Arrays.asList(
@@ -24,43 +18,6 @@ public class TechModules {
             new ShipTech.Maneuver(5), new ShipTech.Maneuver(5), new ShipTech.Maneuver(6), new ShipTech.Maneuver(7),
             new ShipTech.Maneuver(8), new ShipTech.Maneuver(9), new ShipTech.Maneuver(10), new ShipTech.Maneuver(11));
     private static final List<ShipModule> BASE_MODULES = new ArrayList<>();
-
-    public static TechModule getModule(String moduleName) {
-        return TECH_NAME_MAP.get(moduleName);
-    }
-
-
-    private static void init() {
-        int i;
-        for (i = 1; i <= 11; i++) {
-            add(new ShipTech.Ecm(i));
-            add(ShipTech.computer(i));
-            add(ShipTech.shield(i));
-            if (i > 1 && i <= 7) {
-                add(PlanetTech.roboticsControls(i));
-            }
-        }
-        //add(ShipTech.scanner());
-        add(GlobalTech.spaceScanner(1, 5, 0, 1, false));
-        add(GlobalTech.spaceScanner(2, 7, 0, 2, true));
-        add(GlobalTech.spaceScanner(3, 9, 9, 3, true));
-        add(GlobalTech.hyperspaceCommunications());
-
-        String[] armors = {"Titanium", "Duralloy", "Zortium", "Andrium", "Tritanium", "Adamantium", "Neutronium"};
-        for (i = 0; i < armors.length; i++) {
-            add(ShipTech.armor(armors[i], i, false));
-            add(ShipTech.armor(armors[i] + " II", i, true));
-        }
-        add(ShipTech.engine(1, "Nuclear Engine"));
-
-        add(ShipTech.energyWeapon("Laser"));
-        add(ShipTech.energyWeapon("Heavy Laser"));
-
-    }
-
-    private static void add(TechModule techModule) {
-        TECH_NAME_MAP.put(techModule.getName(), techModule);
-    }
 
     public static List<ShipModule> getBaseModules() {
         if (BASE_MODULES.isEmpty()) {
@@ -70,8 +27,5 @@ public class TechModules {
         return BASE_MODULES;
     }
 
-    //public static List<Technology> getTechnologies() {
-    //    return TECHNOLOGIES;
-   // }
 
 }

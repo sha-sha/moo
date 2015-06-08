@@ -314,13 +314,13 @@ public class ShipDesignerWindow {
     }
 
     private void openHullSelection(UiSelection moduleSelection, ShipDesigner shipDesigner) {
-        List<Utils.Available<ShipModule.HullType>> availableHullTypes = new ArrayList<>();
-        for (ShipModule.HullType hull : ShipModule.HullType.values()) {
-            availableHullTypes.add(new Utils.Available<ShipModule.HullType>(
+        List<Utils.Available<Hull>> availableHullTypes = new ArrayList<>();
+        for (Hull hull : Hull.values()) {
+            availableHullTypes.add(new Utils.Available<Hull>(
                     hull, shipDesigner.getHull().equals(hull) || shipDesigner.canChangeHull(hull)));
         }
-        BasicSelectionDialog<ShipModule.HullType> dialog =
-                new BasicSelectionDialog<ShipModule.HullType>(
+        BasicSelectionDialog<Hull> dialog =
+                new BasicSelectionDialog<Hull>(
                         moduleSelection, availableHullTypes);
         dialog.setModal(true);
         dialog.setSelected(shipDesigner.getHull());

@@ -62,7 +62,7 @@ public class ShipDesign {
 
     private final Map<SlotType, Utils.Countable<ShipModule>> shipModules;
 
-    private final ShipModule.HullType hull;
+    private final Hull hull;
     private final int attackLevel;
     private final int hitAbsorbs;
     private final int missleDefence;
@@ -71,7 +71,7 @@ public class ShipDesign {
     private final int combatSpeed;
 
 
-    ShipDesign(ShipModule.HullType hull, Map<SlotType, Utils.Countable<ShipModule>> shipModules) {
+    ShipDesign(Hull hull, Map<SlotType, Utils.Countable<ShipModule>> shipModules) {
         this.hull = hull;
         this.shipModules = new HashMap<>(shipModules);
         List<Utils.Countable<ShipModule>> allModules = new ArrayList<>(shipModules.values());
@@ -79,9 +79,9 @@ public class ShipDesign {
         int attackLevel = 0;
         int hitAbsorbs = 0;
         int missleDefence = 0;
-        int hitPoints = 0;
         int wrapSpeed = 0;
         int combatSpeed = 0;
+        double hitPointModifier = 1.0;
         for (Utils.Countable<ShipModule> moduleCountable : allModules) {
             Utils.assertNotNull(moduleCountable);
             ShipModule module = Utils.checkNotNull(moduleCountable.get());
@@ -89,15 +89,14 @@ public class ShipDesign {
             attackLevel += module.getModuleData().getAttackLevel();
             hitAbsorbs += module.getModuleData().getHitAbsorbs();
             missleDefence += module.getModuleData().getMissileDefence();
-            hitPoints += module.getModuleData().getShipHitPoints(hull);
+            hitPointModifier *= module.getModuleData().getShipHitPointsModifier();
             wrapSpeed += module.getModuleData().getWrapSpeed();
             combatSpeed += module.getModuleData().getCombatSpeed();
         }
-
         this.attackLevel = attackLevel;
         this.hitAbsorbs = hitAbsorbs;
         this.missleDefence = missleDefence;
-        this.hitPoints = hitPoints;
+        this.hitPoints = (int) Math.floor(hull.hits * hitPointModifier);
         this.wrapSpeed = wrapSpeed;
         this.combatSpeed = combatSpeed;
     }
@@ -142,7 +141,7 @@ public class ShipDesign {
     }
 
     public static class Builder {
-        public ShipModule.HullType hull;
+        public Hull hull;
         private Map<SlotType, Utils.Countable<ShipModule>> shipModules = new HashMap<>();
 
         public Builder set(SlotType slotType, ShipModule shipModule) {
@@ -167,12 +166,12 @@ public class ShipDesign {
             return shipModules.values();
         }
 
-        public Builder setHull(ShipModule.HullType hull) {
+        public Builder setHull(Hull hull) {
             this.hull = hull;
             return this;
         }
 
-        public ShipModule.HullType getHull() {
+        public Hull getHull() {
             return hull;
         }
 

@@ -1,11 +1,7 @@
 package shaul.games.moo.setup;
 
 import shaul.games.moo.model.Research.GlobalTechBonus;
-import shaul.games.moo.model.Research.TechBonus;
 import shaul.games.moo.model.Research.TechModule;
-
-import java.util.ArrayList;
-import java.util.List;
 
 /**
  * Created by Shaul on 3/1/2015.

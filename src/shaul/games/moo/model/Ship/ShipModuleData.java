@@ -1,5 +1,7 @@
 package shaul.games.moo.model.Ship;
 
+import shaul.games.moo.model.Utils;
+
 import java.util.Arrays;
 
 /**
@@ -7,15 +9,16 @@ import java.util.Arrays;
  */
 public class ShipModuleData {
 
+    private static final double NO_MODIFIER = 1.0;
+
     private final String desc;
     private final int[] cost;
     private final int[] size;
     private final int[] power;
-    private final int[] space;
     private final int attackLevel;
     private final int hitAbsorbs;
     private final int missileDefence;
-    private final int[] shipHitPoints;
+    private final double shipHitPointsModifier;
     private final int wrapSpeed;
     private final int optionalManeuvers;
     private final float numberOfEngine;
@@ -28,16 +31,16 @@ public class ShipModuleData {
     private final ShipModule.WeaponType weaponType;
     private final int weaponCooldown;
     private final int combatSpeed;
+    private final int fuelTravelDistance;
 
     public ShipModuleData(Builder builder) {
         this.cost = builder.cost;
         this.size = builder.size;
         this.power = builder.power;
-        this.space = builder.space;
         this.attackLevel = builder.attackLevel;
         this.hitAbsorbs = builder.hitAbsorbs;
         this.missileDefence = builder.missileDefence;
-        this.shipHitPoints = builder.shipHitPoints;
+        this.shipHitPointsModifier = builder.shipHitPointsModifier;
         this.wrapSpeed = builder.wrapSpeed;
         this.optionalManeuvers = builder.optionalManeuvers;
         this.numberOfEngine = builder.numberOfEngine;
@@ -50,16 +53,16 @@ public class ShipModuleData {
         this.weaponType = builder.weaponType;
         this.weaponCooldown = builder.weaponCooldown;
         this.combatSpeed = builder.combatSpeed;
+        this.fuelTravelDistance = builder.fuelTravelDistance;
 
-        desc = new StringBuilder()
-                .append(getAttribute("cost", cost))
+        desc = new StringBuilder().append(getAttribute("cost", cost))
                 .append(getAttribute("size", size))
                 .append(getAttribute("power", power))
-                .append(getAttribute("space" ,space))
                 .append(getAttribute(attackLevel > 0, "attackLevel", attackLevel))
                 .append(getAttribute(hitAbsorbs > 0, "hitAbsorbs", hitAbsorbs))
                 .append(getAttribute(missileDefence > 0, "missileDefence", missileDefence))
-                .append(getAttribute("shipHitPoints", shipHitPoints))
+                .append(getAttribute(shipHitPointsModifier != NO_MODIFIER,
+                        "shipHitPointsModifier", shipHitPointsModifier))
                 .append(getAttribute(wrapSpeed > 0, "wrapSpeed", wrapSpeed))
                 .append(getAttribute(optionalManeuvers > 0, "optionalManeuvers", optionalManeuvers))
                 .append(getAttribute(numberOfEngine > 0f, "numberOfEngine", String.valueOf(numberOfEngine)))
@@ -72,6 +75,7 @@ public class ShipModuleData {
                 .append(getAttribute(weaponRange > 0, "weaponRange", weaponRange))
                 .append(getAttribute(weaponType != ShipModule.WeaponType.None, "weaponType", weaponType.toString()))
                 .append(getAttribute(weaponCooldown > 0, "weaponCooldown", weaponCooldown))
+                .append(getAttribute(fuelTravelDistance > 0, "fuelTravelDistance", fuelTravelDistance))
                 .toString();
     }
 
@@ -81,7 +85,8 @@ public class ShipModuleData {
 
     public int getMissileDefence() { return missileDefence; }
 
-    public int getShipHitPoints(ShipModule.HullType hull) { return shipHitPoints[hull.ordinal()]; }
+    public double getShipHitPointsModifier() { return shipHitPointsModifier; }
+    //public int getShipHitPoints(Hull hull) { return shipHitPoints[hull.ordinal()]; }
 
     public int getWrapSpeed() { return wrapSpeed; }
 
@@ -107,11 +112,13 @@ public class ShipModuleData {
 
     public int getCombatSpeed() { return combatSpeed; }
 
-    public int getCost(ShipModule.HullType hull) { return cost[hull.ordinal()]; }
+    public int getCost(Hull hull) { return cost[hull.ordinal()]; }
 
-    public int getSize(ShipModule.HullType hull) { return size[hull.ordinal()]; }
+    public int getSize(Hull hull) { return size[hull.ordinal()]; }
 
-    public int getPower(ShipModule.HullType hull) { return power[hull.ordinal()]; }
+    public int getPower(Hull hull) { return power[hull.ordinal()]; }
+
+    public int getFuelTravelDistance() { return fuelTravelDistance; }
 
     @Override
     public String toString() {
@@ -119,6 +126,10 @@ public class ShipModuleData {
     }
 
     private String getAttribute(boolean condition, String name, int i) {
+        return condition ? " " + name + ":" + i : "";
+    }
+
+    private String getAttribute(boolean condition, String name, double i) {
         return condition ? " " + name + ":" + i : "";
     }
 
@@ -134,11 +145,10 @@ public class ShipModuleData {
         private int[] cost = {0, 0, 0, 0};
         private int[] size = {0, 0, 0, 0};
         private int[] power = {0, 0, 0, 0};
-        private int[] space = {0, 0, 0, 0};
         private int attackLevel = 0;
         private int hitAbsorbs = 0;
         private int missileDefence = 0;
-        private int[] shipHitPoints = {0, 0, 0, 0};
+        private double shipHitPointsModifier = NO_MODIFIER;
         private int wrapSpeed = 0;
         private int optionalManeuvers = 0;
         private float numberOfEngine = 0f;
@@ -151,15 +161,19 @@ public class ShipModuleData {
         private ShipModule.WeaponType weaponType = ShipModule.WeaponType.None;
         private int weaponCooldown = 0;
         private int combatSpeed = 0;
+        private int fuelTravelDistance = 0;
 
         public Builder setCost(int... cost) { this.cost = cost; return this; }
-        public Builder setSize(int... size) { this.size = size; return this; }
+        public Builder setSize (int... size){
+            Utils.check("length " + size.length, size.length == 4);
+            this.size = size; return this;
+        }
         public Builder setPower(int... power) { this.power = power; return this; }
-        public Builder setSpace(int... space) { this.space = space; return this; }
         public Builder setAttackLevel(int attackLevel) { this.attackLevel = attackLevel; return this; }
         public Builder setHitAbsorbs(int hitAbsorbs) { this.hitAbsorbs = hitAbsorbs; return this; }
         public Builder setMissleDefence(int missleDefence) { this.missileDefence = missleDefence; return this; }
-        public Builder setShipHitPoints(int... shipHitPoints) { this.shipHitPoints = shipHitPoints; return this; }
+        public Builder setShipHitPointsModifier(double shipHitPointsModifier) {
+            this.shipHitPointsModifier = shipHitPointsModifier; return this; }
         public Builder setWrapSpeed(int wrapSpeed) { this.wrapSpeed = wrapSpeed; return this; }
         public Builder setOptionalManeuvers(int optionalManeuvers) {
             this.optionalManeuvers = optionalManeuvers; return this; }
@@ -175,6 +189,7 @@ public class ShipModuleData {
         public Builder setWeaponType(ShipModule.WeaponType weaponType) { this.weaponType = weaponType; return this; }
         public Builder setWeaponCooldown(int weaponCooldown) { this.weaponCooldown = weaponCooldown; return this; }
         public Builder setCombatSpeed(int combatSpeed) { this.combatSpeed = combatSpeed; return this; }
+        public Builder setFuelTravelDistance(int fuelTravelDistance) { this.fuelTravelDistance = fuelTravelDistance; return this; }
 
         public ShipModuleData build() {
             return new ShipModuleData(this);

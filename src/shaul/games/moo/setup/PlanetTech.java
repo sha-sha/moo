@@ -1,9 +1,7 @@
 package shaul.games.moo.setup;
 
 import shaul.games.moo.model.Planet.PlanetTechBonus;
-import shaul.games.moo.model.Research.TechBonus;
 import shaul.games.moo.model.Research.TechModule;
-import shaul.games.moo.model.Ship.ShipModule;
 
 /**
  * Created by Shaul on 3/1/2015.

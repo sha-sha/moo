@@ -34,10 +34,6 @@ public class ShipModule extends TechModule {
 
     public enum WeaponType {None, Laser, Kinetic}
 
-    public enum HullType {
-        Tiny, Small, Medium, Huge
-    };
-
     private ShipModule(String technologyCategory,
                        String name,
                        Set<ShipDesign.SlotType> possibleSlotTypes,
@@ -65,7 +61,7 @@ public class ShipModule extends TechModule {
     }
     public Set<ShipDesign.SlotType> getPossibleSlotType() { return possibleSlotType; }
 
-    public int getSpace(IPlayerState playerState, HullType hull) {
+    public int getSpace(IPlayerState playerState, Hull hull) {
         int baseSize = moduleData.getSize(hull);
         if (baseSize == 0) {
             return baseSize;
@@ -73,7 +69,7 @@ public class ShipModule extends TechModule {
         return (int) (baseSize * playerState.getModuleSizeReduction(technologyCategory));
     }
 
-    public int getCost(IPlayerState playerState, HullType hull) {
+    public int getCost(IPlayerState playerState, Hull hull) {
         int baseCost = moduleData.getCost(hull);
         if (baseCost == 0) {
             return baseCost;

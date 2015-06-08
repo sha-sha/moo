@@ -11,6 +11,8 @@ import java.util.List;
  */
 public class TechModule {
 
+    private final PlayerBonus playerBonus;
+
     public enum Type {Global, Ship, Planet};
 
     public static final String SHIP_MODULE_COMPUTER = "computer";
@@ -24,32 +26,24 @@ public class TechModule {
     public static final String GLOBAL_MODULE_COMMUNICATION = "communication";
 
 
-    public static class HullFunction implements Utils.Int2Int {
-        private final double factor;
-        private final int offset;
-
-        HullFunction(double factor) { this(factor, 0); }
-        HullFunction(double factor, int offset) {
-            this.factor = factor;
-            this.offset = offset;
-        }
-
-        @Override
-        public int apply(int a) {
-            return ((int) Math.floor(factor * a)) + offset;
-        }
-    }
-
     private final String name;
     private final Type type;
 
     public TechModule(String name, Type type) {
         this.name = name;
         this.type = type;
+        playerBonus = PlayerBonus.NO_BONUS;
+    }
+
+    public TechModule(String name, PlayerBonus playerBonus) {
+        this.name = name;
+        this.type = Type.Global;
+        this.playerBonus = playerBonus;
     }
 
     public String getName() { return name; }
     public Type getType() { return type; }
+    public PlayerBonus getPlayerBonus() { return playerBonus; }
 
     @Override
     public String toString() {

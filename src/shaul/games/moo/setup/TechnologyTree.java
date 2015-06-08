@@ -67,10 +67,14 @@ public final class TechnologyTree {
         add(new BattleComputer(31, 11));
 
         add(new Armor(1, 1, "Titanium"));
+        add(new Armor(10, 2, "Duralloy"));
         add(new DeflectorShield(1, 1));
         add(new DeflectorShield(4, 2));
         add(new Laser(1, 1));
-        add(new Engine(1, 1, "Retros"));
+
+
+        add(new RetroEngine(1, 1, "Retros"));
+
         add(new Engine(4, 2, "Nuclear"));
 
     }}};
@@ -143,8 +147,17 @@ public final class TechnologyTree {
     private static class Armor extends Technology.Construction {
         public Armor(int techLevel, int level, String name) {
             super(techLevel, name + " Armor",
-                    new ShipTech.Armor(name, level, false),
-                    new ShipTech.Armor(name + " II", level, true));
+                    new ShipTech.Armor(techLevel, name, level, false),
+                    new ShipTech.Armor(techLevel, name + " II", level, true));
+        }
+    }
+
+    private static class RetroEngine extends Technology.Propulsion {
+        public RetroEngine(int techLevel, int level, String name) {
+            super(techLevel, name + " Engine",
+                    new ShipTech.Engine(name, level),
+                    new ShipTech.ReserveFuelTanks("Reserve Fuel Tanks"),
+                    new ShipTech.FuelCell("Basic Fuel Cells", 3));
         }
     }
 

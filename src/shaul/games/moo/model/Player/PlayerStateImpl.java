@@ -8,7 +8,9 @@ import shaul.games.moo.model.Ship.ShipModule;
 import shaul.games.moo.model.Utils;
 
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 import java.util.function.Predicate;
 
 /**
@@ -20,14 +22,29 @@ public class PlayerStateImpl implements IPlayerState {
     private final TechnologiesDb technologies;
 
     private final List<TechModule> techModules;
+    private final Map<String, Integer> techLevels;
+    private final int shipFuelRange;
+
 
     public PlayerStateImpl(List<Fleet> fleets, TechnologiesDb technologies) {
         this.technologies = technologies;
         this.fleets = fleets;
         this.techModules = new ArrayList<>();
+        this.techLevels = new HashMap<>();
+
+        ReadWritePlayerState readWritePlayerState = new ReadWritePlayerState();
+
         for (Technology tech : technologies.getTechnologies()) {
             techModules.addAll(tech.getTechModules());
+            Integer level = techLevels.get(tech.getCategory());
+            if (level == null || level < tech.getTechLevel()) {
+                techLevels.put(tech.getCategory(), tech.getTechLevel());
+            }
+            for (TechModule techModule : tech.getTechModules()) {
+                techModule.getPlayerBonus().apply(readWritePlayerState);
+            }
         }
+        this.shipFuelRange = readWritePlayerState.shipFuelRange;
     }
 
     @Override
@@ -76,7 +93,27 @@ public class PlayerStateImpl implements IPlayerState {
     }
 
     @Override
+    public int getTechLevel(String technologyCategory) {
+        return techLevels.get(technologyCategory);
+    }
+
+    @Override
+    public int getShipFuelRange() {
+        return 0;
+    }
+
+    @Override
     public double getModuleCostReduction(String module) {
         return 1.0;
+    }
+
+
+    private static class ReadWritePlayerState implements IPlayerStateModifier {
+        public int shipFuelRange = 0;
+
+        @Override
+        public void setShipFuelRange(int range) {
+            shipFuelRange = range;
+        }
     }
 }

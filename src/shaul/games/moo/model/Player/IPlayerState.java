@@ -3,6 +3,7 @@ package shaul.games.moo.model.Player;
 import shaul.games.moo.model.Fleet;
 import shaul.games.moo.model.Research.TechModule;
 import shaul.games.moo.model.Research.TechnologiesDb;
+import shaul.games.moo.model.Research.Technology;
 import shaul.games.moo.model.Ship.ShipModule;
 
 import java.util.List;
@@ -16,4 +17,8 @@ public interface IPlayerState {
     List<TechModule> getModulesOfType(final Class<? extends TechModule> type);
     double getModuleCostReduction(String module);
     double getModuleSizeReduction(String module);
+
+    int getTechLevel(String technologyCategory);
+
+    int getShipFuelRange();
 }
