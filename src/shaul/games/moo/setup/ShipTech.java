@@ -1,5 +1,6 @@
 package shaul.games.moo.setup;
 
+import shaul.games.moo.model.Planet.Environment;
 import shaul.games.moo.model.Player.IPlayerState;
 import shaul.games.moo.model.Research.PlayerBonus;
 import shaul.games.moo.model.Research.TechModule;
@@ -27,7 +28,8 @@ public class ShipTech {
                     .setShipInitiative(3)
                     .setMissleDefence(1)
                     .setShipScanLevel(ShipModule.ShipScanLevel.BASIC)
-                    .build());
+                    .build(),
+                    ExclusionGroup.None);
         }
     }
 
@@ -91,11 +93,15 @@ public class ShipTech {
     public static class Engine extends ShipModule.EngineShipModule{
 
         public Engine(String name, int level) {
+            this(name, level, 0);
+        }
+        public Engine(String name, int level, int additionalCombatSpeed) {
             super(name, new ShipModuleData.Builder()
                     .setCost(level * 2, level * 2, level * 2, level * 2)
                     .setSize(10 * level, 10 * level, 10 * level, 10 * level)
                     .setWrapSpeed(level)
                     .setOptionalManeuvers(level)
+                    .setCombatSpeed(additionalCombatSpeed)
                     .build());
         }
     }
@@ -109,7 +115,8 @@ public class ShipTech {
                             .setCost(2, 6, 31, 155)
                             .setSize(16, 82, 410, 2050)
                             .setFuelTravelDistance(3)
-                            .build());
+                            .build(),
+                    ExclusionGroup.None);
         }
     }
 
@@ -133,6 +140,7 @@ public class ShipTech {
                     .setSize(1, 1, 10, 70)
                     .setPower(20, 80, 120, 400)
                     .setCombatSpeed(level)
+                    .setManeuvers(level)
                     .build());
         }
     }
@@ -149,6 +157,32 @@ public class ShipTech {
         }
     }
 
+    public static class InertialStabilizer extends ShipModule.SpecialShipModule {
+        public InertialStabilizer(String name) {
+            super(Technology.Category.Propulsion, name, new ShipModuleData.Builder()
+                    .setCost(1, 1, 10, 70)
+                    .setSize(1, 1, 10, 70)
+                    .setPower(20, 80, 120, 400)
+                    .setManeuvers(2)
+                    .setCombatSpeed(1)
+                    .setMissleDefence(2)
+                            .build(),
+                    ExclusionGroup.None);
+        }
+    }
+
+    public static class ColonyBase extends ShipModule.SpecialShipModule {
+
+        public ColonyBase(String name, Environment environment) {
+            super(Technology.Category.Planetology, name, new ShipModuleData.Builder()
+                    .setCost(20, 80, 120, 400)
+                    .setSize(20, 30, 40, 50)
+                    .setPower(20, 80, 120, 400)
+                    .setColonyModuleEnv(environment)
+                    .build(),
+                    ExclusionGroup.Colony);
+        }
+    }
 
     public static class ShipSpaceScanner extends TechModule {
 
@@ -159,6 +193,21 @@ public class ShipTech {
                     techState.shipSensorRange = Math.max(techState.shipSensorRange, shipSensorRange);
                 }
             });
+        }
+    }
+
+    public static class BioBomb extends ShipModule.WeaponShipModule {
+
+        public BioBomb(String name, int level) {
+            super(Technology.Category.Planetology,
+                    name,
+                    new ShipModuleData.Builder()
+                            .setCost(20, 80, 120, 400)
+                            .setSize(20, 80, 120, 400)
+                            .setPower(20, 80, 120, 400)
+                            .setWeaponType(WeaponType.Bomb)
+                            .setWeaponPlanetPopReduction(level)
+                            .build());
         }
     }
 }

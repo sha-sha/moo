@@ -36,6 +36,14 @@ public class Utils {
         return newList;
     }
 
+    public static<K,V> List<K> convert(Collection<V> list, Function<V, K> converter) {
+        List<K> newList = new ArrayList<>();
+        for (V v : list) {
+            newList.add(converter.apply(v));
+        }
+        return newList;
+    }
+
     public static<K, V> Map<K, V> map(List<V> list, Function<V, K> elementKey) {
         Map<K, V> map = new HashMap<>();
         for (V v : list) {

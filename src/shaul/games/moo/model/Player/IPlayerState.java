@@ -37,6 +37,10 @@ public interface IPlayerState {
         public int industrialWaste = 90; // 90%
         public int groundCombatSuite = 0;
         public int shipAutoRepairsPercentage = 0;
+        public int groundCombatShield = 0;
+        public int planetaryShield = 0;
+        public int pollutionPerBcEliminated = 0;
+        public int terraformLevel = 0; // cost is 50BC per 10
     }
 
 }

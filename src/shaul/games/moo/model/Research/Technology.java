@@ -108,6 +108,13 @@ public class Technology {
         }
     }
 
+    public static class Planetology extends Technology {
+
+        public Planetology(int techLevel, String name, TechModule... modules) {
+            super(Category.Planetology, techLevel, name, modules);
+        }
+    }
+
     public static class Weapons extends Technology {
 
         public Weapons(int techLevel, String name, TechModule... modules) {

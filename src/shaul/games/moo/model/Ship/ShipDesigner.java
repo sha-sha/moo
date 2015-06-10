@@ -121,13 +121,16 @@ public class ShipDesigner {
 
         if (!slotType.canExistInOtherSlots) {
             for (ShipDesign.SlotType otherSlot : ShipDesign.SlotType.values()) {
-                if (getCurrentModule(otherSlot).equals(module)) {
+                ShipModule other = getCurrentModule(otherSlot);
+                if (other.equals(module)) {
+                    return false;
+                }
+                if (other.getExclusionGroup().equals(module.getExclusionGroup()) &&
+                        module.getExclusionGroup() != ShipModule.ExclusionGroup.None) {
                     return false;
                 }
             }
         }
-
-
 
 
         int currentModuleSpace = getSpaceOfModule(getCurrentModule(slotType), builder.getHull());
@@ -231,5 +234,9 @@ public class ShipDesigner {
 
     public int getCombatSpeed() {
         return builder.build().getCombatSpeed();
+    }
+
+    public int getManeuverability() {
+        return builder.build().getManeuverability();
     }
 }

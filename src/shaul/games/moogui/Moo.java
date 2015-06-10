@@ -5,13 +5,17 @@ import shaul.games.moo.model.Player.IPlayer;
 import shaul.games.moo.model.Player.PlayerImpl;
 import shaul.games.moo.model.Player.PlayerStateImpl;
 import shaul.games.moo.model.Research.TechnologiesDb;
+import shaul.games.moo.model.Research.Technology;
+import shaul.games.moo.model.Utils;
 import shaul.games.moo.setup.GameLogic;
+import shaul.games.moo.setup.TechnologyTree;
 
 import javax.swing.*;
 import java.awt.*;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.util.*;
+import java.util.List;
 
 /**
  * Created by shaul on 4/13/15.
@@ -82,11 +86,16 @@ public class Moo {
 
         // Ship
         IPlayer currentPlayer = new PlayerImpl(gameLogic, "shaul");
+        List<String> allTech = Utils.convert(
+                TechnologyTree.getTechnologiesMap().values(),
+                new Utils.Function<Technology, String>() {
+                    @Override
+                    public String apply(Technology technology) {
+                        return technology.getName();
+                    }
+                });
         currentPlayer.setPlayerState(new PlayerStateImpl(
-                null, new TechnologiesDb(gameLogic.getTechnologyLogic(), Arrays.asList(
-                "Battle Computer Mark 1", "Battle Computer Mark 2", "Battle Computer Mark 3",
-                "Battle Scanner", "Titanium Armor", "Duralloy Armor", "Laser I", "Class I Deflector Shield", "Class II Deflector Shield",
-                "ECM Jammer Mark 1", "Retros Engine", "Nuclear Engine"))));
+                null, new TechnologiesDb(gameLogic.getTechnologyLogic(), allTech)));
 
         new ShipDesignerWindow(gameLogic, currentPlayer);
     }

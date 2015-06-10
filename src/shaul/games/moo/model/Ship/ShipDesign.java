@@ -69,6 +69,7 @@ public class ShipDesign {
     private final int hitPoints;
     private final int wrapSpeed;
     private final int combatSpeed;
+    private final int maneuverability;
 
 
     ShipDesign(Hull hull, Map<SlotType, Utils.Countable<ShipModule>> shipModules) {
@@ -78,9 +79,10 @@ public class ShipDesign {
 
         int attackLevel = 0;
         int hitAbsorbs = 0;
-        int missleDefence = 0;
+        int missleDefence = hull.defence;
         int wrapSpeed = 0;
         int combatSpeed = 0;
+        int maneuverability = 0;
         double hitPointModifier = 1.0;
         for (Utils.Countable<ShipModule> moduleCountable : allModules) {
             Utils.assertNotNull(moduleCountable);
@@ -92,6 +94,7 @@ public class ShipDesign {
             hitPointModifier *= module.getModuleData().getShipHitPointsModifier();
             wrapSpeed += module.getModuleData().getWrapSpeed();
             combatSpeed += module.getModuleData().getCombatSpeed();
+            maneuverability += module.getModuleData().getManeuvers();
         }
         this.attackLevel = attackLevel;
         this.hitAbsorbs = hitAbsorbs;
@@ -99,6 +102,7 @@ public class ShipDesign {
         this.hitPoints = (int) Math.floor(hull.hits * hitPointModifier);
         this.wrapSpeed = wrapSpeed;
         this.combatSpeed = combatSpeed;
+        this.maneuverability = maneuverability;
     }
 
     @Override
@@ -138,6 +142,10 @@ public class ShipDesign {
 
     public int getCombatSpeed() {
         return combatSpeed;
+    }
+
+    public int getManeuverability() {
+        return maneuverability;
     }
 
     public static class Builder {

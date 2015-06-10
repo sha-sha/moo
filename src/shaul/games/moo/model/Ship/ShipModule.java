@@ -22,7 +22,8 @@ public class ShipModule extends TechModule {
     public static final ShipModule NO_ECM = new EcmShipModule("No ECM", NO_DATA);
     public static final ShipModule NO_WEAPON = new WeaponShipModule("No Weapon", NO_DATA);
     public static final Utils.Countable<ShipModule> ZERO_WEAPON = new Utils.Countable<>(NO_WEAPON, 0);
-    public static final ShipModule NO_SPECIAL = new SpecialShipModule(Technology.Category.Computers, "None", NO_DATA);
+    public static final ShipModule NO_SPECIAL =
+            new SpecialShipModule(Technology.Category.None, "None", NO_DATA, ExclusionGroup.None);
 
     public enum ShipComponent {NONE, COMPUTER, SHIELD, ECM, ARMOR, ENGINE, MANEUVER, WEAPON, SPECIAL}
     public enum ShipScanLevel {NONE, BASIC, ADVANCE}
@@ -31,19 +32,31 @@ public class ShipModule extends TechModule {
     private final ShipModuleData moduleData;
     private final ShipComponent shipComponent;
     private final Set<ShipDesign.SlotType> possibleSlotType;
+    private final ExclusionGroup exclusionGroup;
 
-    public enum WeaponType {None, Laser, Kinetic}
+    public enum WeaponType {None, Laser, Kinetic, Bomb}
+    public enum ExclusionGroup {None, Colony}
+
+    private ShipModule(Technology.Category technologyCategory,
+                       String name,
+                       Set<ShipDesign.SlotType> possibleSlotTypes,
+                       ShipComponent shipComponent,
+                       ShipModuleData moduleData,
+                       ExclusionGroup exclusionGroup) {
+        super(name, TechModule.Type.Ship);
+        this.technologyCategory = technologyCategory;
+        this.possibleSlotType = possibleSlotTypes;
+        this.shipComponent = shipComponent;
+        this.moduleData = moduleData;
+        this.exclusionGroup = exclusionGroup;
+    }
 
     private ShipModule(Technology.Category technologyCategory,
                        String name,
                        Set<ShipDesign.SlotType> possibleSlotTypes,
                        ShipComponent shipComponent,
                        ShipModuleData moduleData) {
-        super(name, TechModule.Type.Ship);
-        this.technologyCategory = technologyCategory;
-        this.possibleSlotType = possibleSlotTypes;
-        this.shipComponent = shipComponent;
-        this.moduleData = moduleData;
+        this(technologyCategory, name,possibleSlotTypes, shipComponent, moduleData, ExclusionGroup.None);
     }
 
     private ShipModule() {
@@ -52,6 +65,7 @@ public class ShipModule extends TechModule {
         this.technologyCategory = Technology.Category.Computers;
         this.possibleSlotType = new HashSet<>();
         this.moduleData = new ShipModuleData.Builder().build();
+        this.exclusionGroup = ExclusionGroup.None;
     }
 
     public ShipComponent getShipComponentType() { return shipComponent; }
@@ -60,6 +74,7 @@ public class ShipModule extends TechModule {
         return this == EMPTY || moduleData == NO_DATA;
     }
     public Set<ShipDesign.SlotType> getPossibleSlotType() { return possibleSlotType; }
+    public ExclusionGroup getExclusionGroup() { return exclusionGroup; }
 
     public int getSpace(IPlayerState playerState, Hull hull) {
         int baseSize = moduleData.getSize(hull);
@@ -140,7 +155,10 @@ public class ShipModule extends TechModule {
 
     public static class WeaponShipModule extends ShipModule {
         public WeaponShipModule(String name, ShipModuleData moduleData) {
-            super(Technology.Category.Weapons,
+            this(Technology.Category.Weapons, name, moduleData);
+        }
+        public WeaponShipModule(Technology.Category cat, String name, ShipModuleData moduleData) {
+            super(cat,
                     name,
                     Utils.setOf(ShipDesign.SlotType.Weapon1,
                             ShipDesign.SlotType.Weapon2,
@@ -152,14 +170,16 @@ public class ShipModule extends TechModule {
     }
 
     public static class SpecialShipModule extends ShipModule {
-        public SpecialShipModule(Technology.Category category, String name, ShipModuleData moduleData) {
+        public SpecialShipModule(
+                Technology.Category category, String name, ShipModuleData moduleData, ExclusionGroup exclusionGroup) {
             super(category,
                     name,
                     Utils.setOf(ShipDesign.SlotType.Special1,
                             ShipDesign.SlotType.Special2,
                             ShipDesign.SlotType.Special3),
                     ShipComponent.SPECIAL,
-                    moduleData);
+                    moduleData,
+                    exclusionGroup);
         }
     }
     

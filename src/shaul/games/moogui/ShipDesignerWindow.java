@@ -408,7 +408,7 @@ public class ShipDesignerWindow {
         }};
     private static final GenericInfo.Update COMBAT_SPEED = new GenericInfo.Update() {
         @Override public String update(ShipDesigner shipDesigner) {
-            return "Combat Speed: " + shipDesigner.getCombatSpeed();
+            return "Mnver: " + shipDesigner.getManeuverability() + " Spd: " + shipDesigner.getCombatSpeed();
         }};
     private static final GenericInfo.Update MANEUVER = new GenericInfo.Update() {
         @Override public String update(ShipDesigner shipDesigner) {

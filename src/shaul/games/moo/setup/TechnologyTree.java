@@ -1,5 +1,6 @@
 package shaul.games.moo.setup;
 
+import shaul.games.moo.model.Planet.Environment;
 import shaul.games.moo.model.Player.IPlayerState;
 import shaul.games.moo.model.Research.PlayerBonus;
 import shaul.games.moo.model.Research.TechModule;
@@ -78,15 +79,72 @@ public final class TechnologyTree {
         add(new ReducedIndustrialWaste(45, 0));
         add(new Armor(50, 7, "Neutronium"));
 
-
         add(new DeflectorShield(1, 1));
         add(new DeflectorShield(4, 2));
+        add(new CombatShield(8, "Personal Deflector Shield", 10));
+        add(new DeflectorShield(10, 3));
+        add(new PlanetaryShield(12, "Class IV Deflector Shield", 5));
+        add(new DeflectorShield(14, 4));
+        //add(new RepulsorBeam(16,
+        add(new DeflectorShield(20, 5));
+        add(new CombatShield(21, "Personal Absorption Shield", 20));
+        add(new PlanetaryShield(22, "Class X Planetary Shield", 10));
+        add(new DeflectorShield(24, 6));
+        //add(new Cloaking Device(27
+        add(new DeflectorShield(30, 7));
+        // add(new ZyroShield(31)
+        add(new PlanetaryShield(32, "Class XV Planetary Shield", 15));
+        add(new DeflectorShield(34, 9));
+        // add(new StasisField (37)
+        add(new CombatShield(38, "Personal Barrier Shield", 30));
+        add(new DeflectorShield(40, 11));
+        add(new PlanetaryShield(42, "Class XX Planetary Shield", 20));
+        //add(new BlackHoleGenerator(43)
+        add(new DeflectorShield(44, 13));
+        // add(new LightningShield(46
+        add(new DeflectorShield(50, 15));
+
+        add(new ControlledEnvironment(1, "Standard Colony", Environment.Minimal));
+        add(new EcologicalRestoration(1, "Ecological Restoration", 2));
+        add(new Terraforming(2, "Terraforming +10", 10));
+        add(new ControlledEnvironment(3, "Controlled Barren Environment", Environment.Barren));
+        add(new EcologicalRestoration(5, "Improved Ecological Restoration", 3));
+        add(new ControlledEnvironment(6, "Controlled Tundra Environment", Environment.Tundra));
+        add(new Terraforming(9, "Terraforming +20", 20));
+        add(new ControlledEnvironment(10, "Controlled Dead Environment", Environment.Dead));
+        add(new BioWeapon(11, "Death Spores", 1));
+        add(new ControlledEnvironment(12, "Controlled Inferno Environment", Environment.Inferno));
+        add(new EcologicalRestoration(13, "Enhanced Ecological Restoration", 5));
+        add(new Terraforming(14, "Terraforming +30", 30));
+        add(new ControlledEnvironment(15, "Controlled Toxic Environment", Environment.Toxic));
+        // TODO: complete ...
+
+
+        add(new RetroEngine(1, "Retros Engines"));
+        add(new FuelCells(2, "Hydrogen Fuel Cells", 4));
+        add(new FuelCells(5, "Deuterium Fuel Cells", 5));
+        add(new Engine(6, "Nuclear Engine", 2));
+        add(new FuelCells(9, "Irridium  Fuel Cells", 6));
+        add(new InertialStabilizer(10));
+        add(new Engine(12, "Sub Light Drives", 3));
+        add(new FuelCells(14, "Dotomite Crystals", 7));
+        //add(new EnergyPulsar(16))
+        add(new Engine(18, "Fusion Drives", 4, 1));
+        add(new FuelCells(19, "Uridium Fuel Cells", 8));
+        // 20 Warp Dissipator
+        add(new FuelCells(23, "Reajax II Fuel Cells", 9));
+        add(new Engine(24, "Impulse Drives", 5, 1));
+
+
+
+
+
+
+
         add(new Laser(1, 1));
 
 
-        add(new RetroEngine(1, 1, "Retros"));
 
-        add(new Engine(4, 2, "Nuclear"));
 
     }}};
     private static Map<String, Technology> TECHNOLOGIES_MAP = null;
@@ -171,7 +229,7 @@ public final class TechnologyTree {
         }
     }
 
-    private static class IndustrialTech extends Technology.Computer {
+    private static class IndustrialTech extends Technology.Construction {
         public IndustrialTech(int techLevel, final int cost) {
             super(techLevel, "Industrial Tech " + cost,
                     new TechModule("Industrial Tech " + cost, new PlayerBonus() {
@@ -183,7 +241,7 @@ public final class TechnologyTree {
         }
     }
 
-    private static class ReducedIndustrialWaste extends Technology.Computer {
+    private static class ReducedIndustrialWaste extends Technology.Construction {
         public ReducedIndustrialWaste(int techLevel, final int waste) {
             super(techLevel, waste > 0 ? "Reduced Industrial Waste " + waste : "Industrial Waste Elimination",
                     new TechModule("Reduced Industrial Waste " + waste, new PlayerBonus() {
@@ -195,7 +253,7 @@ public final class TechnologyTree {
         }
     }
 
-    private static class CombatSuits extends Technology.Computer {
+    private static class CombatSuits extends Technology.Construction {
         public CombatSuits(int techLevel, final String name, final int bonus) {
             super(techLevel, name, new TechModule(name, new PlayerBonus() {
                 @Override
@@ -206,7 +264,18 @@ public final class TechnologyTree {
         }
     }
 
-    private static class AutomatedRepairUnit extends Technology.Computer {
+    private static class CombatShield extends Technology.ForceField {
+        public CombatShield(int techLevel, final String name, final int bonus) {
+            super(techLevel, name, new TechModule(name, new PlayerBonus() {
+                @Override
+                public void apply(IPlayerState.TechState techState) {
+                    techState.groundCombatShield = Math.max(techState.groundCombatShield, bonus);
+                }
+            }));
+        }
+    }
+
+    private static class AutomatedRepairUnit extends Technology.Construction {
         public AutomatedRepairUnit(int techLevel, final String name, final int repairsPercentage) {
             super(techLevel, name, new TechModule(name, new PlayerBonus() {
                 @Override
@@ -230,6 +299,18 @@ public final class TechnologyTree {
         }
     }
 
+    private static class PlanetaryShield extends Technology.ForceField {
+        public PlanetaryShield(int techLevel, String name, final int shield) {
+            super(techLevel, name, new TechModule(name, new PlayerBonus() {
+                @Override
+                public void apply(IPlayerState.TechState techState) {
+                    techState.planetaryShield = Math.max(techState.planetaryShield, shield);
+                }
+            }));
+        }
+    }
+
+
     private static class Armor extends Technology.Construction {
         private static final int[] GROUND_DEF = {0, 5, 10, 15, 20, 25, 30};
         public Armor(int techLevel, final int level, String name) {
@@ -242,30 +323,82 @@ public final class TechnologyTree {
                             // TODO: missle base hit point is flat?
                             techState.missleBaseHitPoints = 15;
                             techState.groundCombatArmorDefence =
-                                    Math.max(techState.groundCombatArmorDefence, GROUND_DEF[level]);
+                                    Math.max(techState.groundCombatArmorDefence, GROUND_DEF[level - 1]);
                         }
                     }));
         }
     }
 
     private static class RetroEngine extends Technology.Propulsion {
-        public RetroEngine(int techLevel, int level, String name) {
-            super(techLevel, name + " Engine",
-                    new ShipTech.Engine(name, level),
+        public RetroEngine(int techLevel, String name) {
+            super(techLevel, name,
+                    new ShipTech.Engine(name, 1),
                     new ShipTech.ReserveFuelTanks("Reserve Fuel Tanks"),
                     new ShipTech.FuelCell("Basic Fuel Cells", 3));
         }
     }
 
     private static class Engine extends Technology.Propulsion {
-        public Engine(int techLevel, int level, String name) {
-            super(techLevel, name + " Engine", new ShipTech.Engine(name, level));
+        public Engine(int techLevel, String name, int level) {
+            super(techLevel, name, new ShipTech.Engine(name, level));
+        }
+        public Engine(int techLevel, String name, int level, int combatSpeed) {
+            super(techLevel, name, new ShipTech.Engine(name, level, combatSpeed));
+        }
+    }
+
+    private static class FuelCells extends Technology.Propulsion {
+        public FuelCells(int techLevel, String name, int range) {
+            super(techLevel, name, new ShipTech.FuelCell(name, range));
+        }
+    }
+
+    private static class InertialStabilizer extends Technology.Propulsion {
+        public InertialStabilizer(int techLevel) {
+            super(techLevel, "Inertial Stabilizer", new ShipTech.InertialStabilizer("Inertial Stabilizer"));
         }
     }
 
     private static class Laser extends Technology.Weapons {
         public Laser(int techLevel, int level) {
             super(techLevel, "Laser " + Utils.toRomanNumber(level), new ShipTech.Laser(level));
+        }
+    }
+
+    private static class EcologicalRestoration extends Technology.Planetology {
+        public EcologicalRestoration(int techLevel, String name, final int pollutionPerBcEliminated) {
+            super(techLevel, name, new TechModule(name, new PlayerBonus() {
+                @Override
+                public void apply(IPlayerState.TechState techState) {
+                    techState.pollutionPerBcEliminated =
+                            Math.max(techState.pollutionPerBcEliminated, pollutionPerBcEliminated);
+                }
+            }));
+        }
+    }
+
+    private static class Terraforming extends Technology.Planetology {
+        public Terraforming(int techLevel, String name, final int terraformLevel) {
+            super(techLevel, name, new TechModule(name, new PlayerBonus() {
+                @Override
+                public void apply(IPlayerState.TechState techState) {
+                    techState.terraformLevel = Math.max(techState.terraformLevel, terraformLevel);
+                }
+            }));
+        }
+    }
+
+    private static class ControlledEnvironment extends Technology.Planetology {
+        public ControlledEnvironment(int techLevel, String name, Environment environment) {
+            super(techLevel, name, new ShipTech.ColonyBase(
+                    environment.isHostile() ? environment.toString() + "  Colony Base" : "Standard Colony Base",
+                    environment));
+        }
+    }
+
+    private static class BioWeapon extends Technology.Planetology {
+        public BioWeapon(int techLevel, String name, int level) {
+            super(techLevel, name, new ShipTech.BioBomb(name, level));
         }
     }
 

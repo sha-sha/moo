@@ -1,5 +1,6 @@
 package shaul.games.moo.model.Ship;
 
+import shaul.games.moo.model.Planet.Environment;
 import shaul.games.moo.model.Utils;
 
 import java.util.Arrays;
@@ -20,6 +21,7 @@ public class ShipModuleData {
     private final int missileDefence;
     private final double shipHitPointsModifier;
     private final int wrapSpeed;
+    private final int maneuvers;
     private final int optionalManeuvers;
     private final float numberOfEngine;
     private final int shipInitiative;
@@ -32,6 +34,8 @@ public class ShipModuleData {
     private final int weaponCooldown;
     private final int combatSpeed;
     private final int fuelTravelDistance;
+    private final Environment colonyModuleEnv;
+    private final int weaponPlanetPopReduction;
 
     public ShipModuleData(Builder builder) {
         this.cost = builder.cost;
@@ -42,6 +46,7 @@ public class ShipModuleData {
         this.missileDefence = builder.missileDefence;
         this.shipHitPointsModifier = builder.shipHitPointsModifier;
         this.wrapSpeed = builder.wrapSpeed;
+        this.maneuvers = builder.maneuvers;
         this.optionalManeuvers = builder.optionalManeuvers;
         this.numberOfEngine = builder.numberOfEngine;
         this.shipInitiative = builder.shipInitiative;
@@ -54,6 +59,8 @@ public class ShipModuleData {
         this.weaponCooldown = builder.weaponCooldown;
         this.combatSpeed = builder.combatSpeed;
         this.fuelTravelDistance = builder.fuelTravelDistance;
+        this.colonyModuleEnv = builder.colonyModuleEnv;
+        this.weaponPlanetPopReduction = builder.weaponPlanetPopReduction;
 
         desc = new StringBuilder().append(getAttribute("cost", cost))
                 .append(getAttribute("size", size))
@@ -74,9 +81,11 @@ public class ShipModuleData {
                 .append(getAttribute(weaponShots > 0, "weaponShots", weaponShots))
                 .append(getAttribute(weaponRange > 0, "weaponRange", weaponRange))
                 .append(getAttribute(weaponType != ShipModule.WeaponType.None, "weaponType", weaponType.toString()))
+                .append(getAttribute(weaponPlanetPopReduction > 0, "weaponPlanetPopReduction", weaponPlanetPopReduction))
                 .append(getAttribute(weaponCooldown > 0, "weaponCooldown", weaponCooldown))
                 .append(getAttribute(fuelTravelDistance > 0, "fuelTravelDistance", fuelTravelDistance))
-                .toString();
+                .append(getAttribute("colonyModuleEnv", colonyModuleEnv))
+                        .toString();
     }
 
     public int getAttackLevel() { return attackLevel; }
@@ -89,6 +98,8 @@ public class ShipModuleData {
     //public int getShipHitPoints(Hull hull) { return shipHitPoints[hull.ordinal()]; }
 
     public int getWrapSpeed() { return wrapSpeed; }
+
+    public int getManeuvers() { return maneuvers; }
 
     public int getOptionalManeuvers() { return optionalManeuvers; }
 
@@ -108,6 +119,8 @@ public class ShipModuleData {
 
     public ShipModule.WeaponType getWeaponType() { return weaponType; }
 
+    public int getWeaponPlanetPopReduction() { return weaponPlanetPopReduction; }
+
     public int getWeaponCoolDown() { return weaponCooldown; }
 
     public int getCombatSpeed() { return combatSpeed; }
@@ -119,6 +132,8 @@ public class ShipModuleData {
     public int getPower(Hull hull) { return power[hull.ordinal()]; }
 
     public int getFuelTravelDistance() { return fuelTravelDistance; }
+
+    public Environment getColonyModuleEnv() { return colonyModuleEnv; }
 
     @Override
     public String toString() {
@@ -137,6 +152,10 @@ public class ShipModuleData {
         return condition ? " " + name + ":" + i : "";
     }
 
+    private String getAttribute(String name, Environment e) {
+        return e != null ? " " + name + ":" + e : "";
+    }
+
     private String getAttribute(String name, int[] i) {
         return i != null && i.length > 0 && i[0] > 0 ? " " + name + ":" + Arrays.toString(i) : "";
     }
@@ -150,6 +169,7 @@ public class ShipModuleData {
         private int missileDefence = 0;
         private double shipHitPointsModifier = NO_MODIFIER;
         private int wrapSpeed = 0;
+        private int maneuvers = 0;
         private int optionalManeuvers = 0;
         private float numberOfEngine = 0f;
         private int shipInitiative = 0;
@@ -162,6 +182,8 @@ public class ShipModuleData {
         private int weaponCooldown = 0;
         private int combatSpeed = 0;
         private int fuelTravelDistance = 0;
+        private Environment colonyModuleEnv = null;
+        private int weaponPlanetPopReduction = 0;
 
         public Builder setCost(int... cost) { this.cost = cost; return this; }
         public Builder setSize (int... size){
@@ -175,6 +197,7 @@ public class ShipModuleData {
         public Builder setShipHitPointsModifier(double shipHitPointsModifier) {
             this.shipHitPointsModifier = shipHitPointsModifier; return this; }
         public Builder setWrapSpeed(int wrapSpeed) { this.wrapSpeed = wrapSpeed; return this; }
+        public Builder setManeuvers(int maneuvers) { this.maneuvers = maneuvers; return this; }
         public Builder setOptionalManeuvers(int optionalManeuvers) {
             this.optionalManeuvers = optionalManeuvers; return this; }
         public Builder setNumberOfEngine(float numberOfEngine) {
@@ -187,9 +210,11 @@ public class ShipModuleData {
         public Builder setWeaponShots(int weaponShots) { this.weaponShots = weaponShots; return this; }
         public Builder setWeaponRange(int weaponRange) { this.weaponRange = weaponRange; return this; }
         public Builder setWeaponType(ShipModule.WeaponType weaponType) { this.weaponType = weaponType; return this; }
+        public Builder setWeaponPlanetPopReduction (int value) { this.weaponPlanetPopReduction = value; return this; }
         public Builder setWeaponCooldown(int weaponCooldown) { this.weaponCooldown = weaponCooldown; return this; }
         public Builder setCombatSpeed(int combatSpeed) { this.combatSpeed = combatSpeed; return this; }
         public Builder setFuelTravelDistance(int fuelTravelDistance) { this.fuelTravelDistance = fuelTravelDistance; return this; }
+        public Builder setColonyModuleEnv(Environment environment) { this.colonyModuleEnv = environment; return this; }
 
         public ShipModuleData build() {
             return new ShipModuleData(this);
