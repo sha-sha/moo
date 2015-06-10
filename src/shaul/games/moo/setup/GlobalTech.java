@@ -1,12 +1,27 @@
 package shaul.games.moo.setup;
 
+import shaul.games.moo.model.Player.IPlayerState;
 import shaul.games.moo.model.Research.GlobalTechBonus;
+import shaul.games.moo.model.Research.PlayerBonus;
 import shaul.games.moo.model.Research.TechModule;
 
 /**
  * Created by Shaul on 3/1/2015.
  */
 public class GlobalTech {
+
+    public static class AdvancedSpaceScanner extends TechModule {
+
+        public AdvancedSpaceScanner(String name) {
+            super(name, new PlayerBonus() {
+                @Override
+                public void apply(IPlayerState.TechState techState) {
+                    techState.canDetectEnemyShipDestinationAndEta = true;
+                }
+            });
+        }
+    }
+
 
     public static TechModule spaceScanner(int level, int planetShipSensorRange, int planetStarSensorRange,
                                           int shipSensorRange, boolean enemyShipDestinationAndEta) {

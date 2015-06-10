@@ -25,7 +25,7 @@ public enum Hull {
     }
 
     public int getSpace(IPlayerState playerState) {
-        return getSpaceOnTechLevel(playerState.getTechLevel(Technology.CATEGORY_CONSTRUCTION));
+        return getSpaceOnTechLevel(playerState.getTechLevel(Technology.Category.Construction));
     }
 
     public int getBaseSpace() {

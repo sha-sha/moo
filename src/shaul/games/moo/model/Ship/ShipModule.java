@@ -22,19 +22,19 @@ public class ShipModule extends TechModule {
     public static final ShipModule NO_ECM = new EcmShipModule("No ECM", NO_DATA);
     public static final ShipModule NO_WEAPON = new WeaponShipModule("No Weapon", NO_DATA);
     public static final Utils.Countable<ShipModule> ZERO_WEAPON = new Utils.Countable<>(NO_WEAPON, 0);
-    public static final ShipModule NO_SPECIAL = new SpecialShipModule(Technology.CATEGORY_COMPUTERS, "None", NO_DATA);
+    public static final ShipModule NO_SPECIAL = new SpecialShipModule(Technology.Category.Computers, "None", NO_DATA);
 
     public enum ShipComponent {NONE, COMPUTER, SHIELD, ECM, ARMOR, ENGINE, MANEUVER, WEAPON, SPECIAL}
     public enum ShipScanLevel {NONE, BASIC, ADVANCE}
 
-    private final String technologyCategory;
+    private final Technology.Category technologyCategory;
     private final ShipModuleData moduleData;
     private final ShipComponent shipComponent;
     private final Set<ShipDesign.SlotType> possibleSlotType;
 
     public enum WeaponType {None, Laser, Kinetic}
 
-    private ShipModule(String technologyCategory,
+    private ShipModule(Technology.Category technologyCategory,
                        String name,
                        Set<ShipDesign.SlotType> possibleSlotTypes,
                        ShipComponent shipComponent,
@@ -49,7 +49,7 @@ public class ShipModule extends TechModule {
     private ShipModule() {
         super("EMPTY", TechModule.Type.Ship);
         this.shipComponent = ShipComponent.NONE;
-        this.technologyCategory = Technology.CATEGORY_COMPUTERS;
+        this.technologyCategory = Technology.Category.Computers;
         this.possibleSlotType = new HashSet<>();
         this.moduleData = new ShipModuleData.Builder().build();
     }
@@ -94,7 +94,7 @@ public class ShipModule extends TechModule {
 
     public static class ComputerShipModule extends ShipModule {
         public ComputerShipModule(String name, ShipModuleData moduleData) {
-            super(Technology.CATEGORY_COMPUTERS,
+            super(Technology.Category.Computers,
                     name,
                     Utils.setOf(ShipDesign.SlotType.Computer),
                     ShipComponent.COMPUTER, moduleData);
@@ -103,7 +103,7 @@ public class ShipModule extends TechModule {
 
     public static class ShieldShipModule extends ShipModule {
         public ShieldShipModule(String name, ShipModuleData moduleData) {
-            super(Technology.CATEGORY_FORCE_FIELDS,
+            super(Technology.Category.ForceFields,
                     name,
                     Utils.setOf(ShipDesign.SlotType.Shield),
                     ShipComponent.SHIELD, moduleData);
@@ -112,7 +112,7 @@ public class ShipModule extends TechModule {
 
     public static class ArmorShipModule extends ShipModule {
         public ArmorShipModule(String name, ShipModuleData moduleData) {
-            super(Technology.CATEGORY_CONSTRUCTION,
+            super(Technology.Category.Construction,
                     name,
                     Utils.setOf(ShipDesign.SlotType.Armor),
                     ShipComponent.ARMOR,
@@ -122,7 +122,7 @@ public class ShipModule extends TechModule {
 
     public static class EcmShipModule extends ShipModule {
         public EcmShipModule(String name, ShipModuleData moduleData) {
-            super(Technology.CATEGORY_COMPUTERS,
+            super(Technology.Category.Computers,
                     name,
                     Utils.setOf(ShipDesign.SlotType.Ecm),
                     ShipComponent.ECM, moduleData);
@@ -131,7 +131,7 @@ public class ShipModule extends TechModule {
 
     public static class EngineShipModule extends ShipModule {
         public EngineShipModule(String name, ShipModuleData moduleData) {
-            super(Technology.CATEGORY_PROPULSION,
+            super(Technology.Category.Propulsion,
                     name,
                     Utils.setOf(ShipDesign.SlotType.Engine),
                     ShipComponent.ENGINE, moduleData);
@@ -140,7 +140,7 @@ public class ShipModule extends TechModule {
 
     public static class WeaponShipModule extends ShipModule {
         public WeaponShipModule(String name, ShipModuleData moduleData) {
-            super(Technology.CATEGORY_WEAPONS,
+            super(Technology.Category.Weapons,
                     name,
                     Utils.setOf(ShipDesign.SlotType.Weapon1,
                             ShipDesign.SlotType.Weapon2,
@@ -152,7 +152,7 @@ public class ShipModule extends TechModule {
     }
 
     public static class SpecialShipModule extends ShipModule {
-        public SpecialShipModule(String category, String name, ShipModuleData moduleData) {
+        public SpecialShipModule(Technology.Category category, String name, ShipModuleData moduleData) {
             super(category,
                     name,
                     Utils.setOf(ShipDesign.SlotType.Special1,
@@ -165,7 +165,7 @@ public class ShipModule extends TechModule {
     
     public static class ManeuverShipModule extends ShipModule {
         public ManeuverShipModule(String name, ShipModuleData moduleData) {
-            super(Technology.CATEGORY_NONE,
+            super(Technology.Category.None,
                     name,
                     Utils.setOf(ShipDesign.SlotType.Maneuver),
                     ShipComponent.MANEUVER, moduleData);

@@ -1,6 +1,6 @@
 package shaul.games.moo.setup;
 
-import shaul.games.moo.model.Player.IPlayerStateModifier;
+import shaul.games.moo.model.Player.IPlayerState;
 import shaul.games.moo.model.Research.PlayerBonus;
 import shaul.games.moo.model.Research.TechModule;
 import shaul.games.moo.model.Research.Technology;
@@ -19,7 +19,7 @@ public class ShipTech {
     public static class BattleScanner extends ShipModule.SpecialShipModule {
 
         public BattleScanner() {
-            super(Technology.CATEGORY_COMPUTERS,
+            super(Technology.Category.Computers,
                     "Battle Scanner", new ShipModuleData.Builder()
                     .setCost(20, 80, 120, 400)
                     .setSize(20, 80, 120, 400)
@@ -103,7 +103,7 @@ public class ShipTech {
     public static class ReserveFuelTanks extends ShipModule.SpecialShipModule{
 
         public ReserveFuelTanks(String name) {
-            super(Technology.CATEGORY_PROPULSION,
+            super(Technology.Category.Propulsion,
                     name,
                     new ShipModuleData.Builder()
                             .setCost(2, 6, 31, 155)
@@ -142,8 +142,21 @@ public class ShipTech {
         public FuelCell(String name, final int shipFuelRange) {
             super(name, new PlayerBonus() {
                 @Override
-                public void apply(IPlayerStateModifier playerStateModifier) {
-                    playerStateModifier.setShipFuelRange(shipFuelRange);
+                public void apply(IPlayerState.TechState techState) {
+                    techState.shipFuelRange = Math.max(techState.shipFuelRange, shipFuelRange);
+                }
+            });
+        }
+    }
+
+
+    public static class ShipSpaceScanner extends TechModule {
+
+        public ShipSpaceScanner(String name, final int shipSensorRange) {
+            super(name, new PlayerBonus() {
+                @Override
+                public void apply(IPlayerState.TechState techState) {
+                    techState.shipSensorRange = Math.max(techState.shipSensorRange, shipSensorRange);
                 }
             });
         }

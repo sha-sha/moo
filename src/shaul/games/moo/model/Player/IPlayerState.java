@@ -15,10 +15,28 @@ public interface IPlayerState {
     TechnologiesDb getTechnologies();
     List<Fleet> getFleets();
     List<TechModule> getModulesOfType(final Class<? extends TechModule> type);
-    double getModuleCostReduction(String module);
-    double getModuleSizeReduction(String module);
+    double getModuleCostReduction(Technology.Category category);
+    double getModuleSizeReduction(Technology.Category category);
 
-    int getTechLevel(String technologyCategory);
+    int getTechLevel(Technology.Category category);
 
     int getShipFuelRange();
+
+
+    public static class TechState {
+        public int shipFuelRange = 0;
+        public int factoriesPerPopulation = 0;
+        public int planetShipSensorRange = 0;
+        public int planetStarSensorRange = 0;
+        public int shipSensorRange = 0;
+        public int missleBaseHitPoints = 0;
+        public boolean canDetectEnemyShipDestinationAndEta = false;
+        public boolean canChangeShipDestinationInHyperSpace = false;
+        public int groundCombatArmorDefence = 0;
+        public int factoryCost = 10;
+        public int industrialWaste = 90; // 90%
+        public int groundCombatSuite = 0;
+        public int shipAutoRepairsPercentage = 0;
+    }
+
 }

@@ -1,5 +1,7 @@
 package shaul.games.moo.model.Research;
 
+import shaul.games.moo.model.Player.IPlayerState;
+
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
@@ -9,23 +11,35 @@ import java.util.List;
  */
 public class Technology {
 
-    private final String category;
+    public enum Category {
+        Computers("Computers"),
+        Construction("Construction"),
+        ForceFields("Force Fields"),
+        Planetology("Planetology"),
+        Propulsion("Propulsion"),
+        Weapons("Weapons"),
+        None("None");
+
+        private final String name;
+
+        Category(String name) {
+            this.name = name;
+        }
+
+        @Override
+        public String toString() {
+            return name;
+        }
+    }
+
+    private final Category category;
     private final String name;
     private final int researchPoints;
     private final List<TechModule> techModules;
     private final List<String> modules;
     private final int techLevel;
 
-    public Technology(String category, int techLevel, String name, String... modules) {
-        this.category = category;
-        this.techLevel = techLevel;
-        this.name = name;
-        this.modules = Arrays.asList(modules);
-        techModules = new ArrayList<>();
-        researchPoints = 0;
-    }
-
-    public Technology(String category, int techLevel, String name, TechModule... modules) {
+    public Technology(Category category, int techLevel, String name, TechModule... modules) {
         this.category = category;
         this.techLevel = techLevel;
         this.name = name;
@@ -37,8 +51,12 @@ public class Technology {
         researchPoints = 0;
     }
 
+    public Technology(Category category, int techLevel, String name, PlayerBonus playerBonus) {
+        this(category, techLevel, name, new TechModule(name, playerBonus));
+    }
+
     public String getName() { return  name; }
-    public String getCategory() { return category; }
+    public Category getCategory() { return category; }
     public int getTechLevel() { return techLevel; }
     public int getResearchPoints() { return researchPoints; }
     public List<String> getModules() { return modules; }
@@ -50,46 +68,50 @@ public class Technology {
                 name, category, techLevel, researchPoints, modules.toString());
     }
 
-    public static final String CATEGORY_COMPUTERS = "Computers";
-    public static final String CATEGORY_CONSTRUCTION = "Construction";
-    public static final String CATEGORY_FORCE_FIELDS = "Force Fields";
-    public static final String CATEGORY_PLANETOLOGY = "Planetology";
-    public static final String CATEGORY_PROPULSION = "Propulsion";
-    public static final String CATEGORY_WEAPONS = "Weapons";
-    public static final String CATEGORY_NONE = "None";
+//    public static final String CATEGORY_COMPUTERS = "Computers";
+//    public static final String CATEGORY_CONSTRUCTION = "Construction";
+//    public static final String CATEGORY_FORCE_FIELDS = "Force Fields";
+//    public static final String CATEGORY_PLANETOLOGY = "Planetology";
+//    public static final String CATEGORY_PROPULSION = "Propulsion";
+//    public static final String CATEGORY_WEAPONS = "Weapons";
+//    public static final String CATEGORY_NONE = "None";
 
     public static class Computer extends Technology {
 
         public Computer(int techLevel, String name, TechModule... modules) {
-            super(CATEGORY_COMPUTERS, techLevel, name, modules);
+            super(Category.Computers, techLevel, name, modules);
+        }
+
+        public Computer(int techLevel, String name, PlayerBonus playerBonus) {
+            super(Category.Computers, techLevel, name, playerBonus);
         }
     }
 
     public static class ForceField extends Technology {
 
         public ForceField(int techLevel, String name, TechModule... modules) {
-            super(CATEGORY_FORCE_FIELDS, techLevel, name, modules);
+            super(Category.ForceFields, techLevel, name, modules);
         }
     }
 
     public static class Construction extends Technology {
 
         public Construction(int techLevel, String name, TechModule... modules) {
-            super(CATEGORY_CONSTRUCTION, techLevel, name, modules);
+            super(Category.Construction, techLevel, name, modules);
         }
     }
 
     public static class Propulsion extends Technology {
 
         public Propulsion(int techLevel, String name, TechModule... modules) {
-            super(CATEGORY_PROPULSION, techLevel, name, modules);
+            super(Category.Propulsion, techLevel, name, modules);
         }
     }
 
     public static class Weapons extends Technology {
 
         public Weapons(int techLevel, String name, TechModule... modules) {
-            super(CATEGORY_WEAPONS, techLevel, name, modules);
+            super(Category.Weapons, techLevel, name, modules);
         }
     }
 }

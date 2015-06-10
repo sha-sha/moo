@@ -22,7 +22,7 @@ public class PlayerStateImpl implements IPlayerState {
     private final TechnologiesDb technologies;
 
     private final List<TechModule> techModules;
-    private final Map<String, Integer> techLevels;
+    private final Map<Technology.Category, Integer> techLevels;
     private final int shipFuelRange;
 
 
@@ -32,7 +32,7 @@ public class PlayerStateImpl implements IPlayerState {
         this.techModules = new ArrayList<>();
         this.techLevels = new HashMap<>();
 
-        ReadWritePlayerState readWritePlayerState = new ReadWritePlayerState();
+        TechState techState = new TechState();
 
         for (Technology tech : technologies.getTechnologies()) {
             techModules.addAll(tech.getTechModules());
@@ -41,10 +41,10 @@ public class PlayerStateImpl implements IPlayerState {
                 techLevels.put(tech.getCategory(), tech.getTechLevel());
             }
             for (TechModule techModule : tech.getTechModules()) {
-                techModule.getPlayerBonus().apply(readWritePlayerState);
+                techModule.getPlayerBonus().apply(techState);
             }
         }
-        this.shipFuelRange = readWritePlayerState.shipFuelRange;
+        this.shipFuelRange = techState.shipFuelRange;
     }
 
     @Override
@@ -76,7 +76,7 @@ public class PlayerStateImpl implements IPlayerState {
     }
 
     @Override
-    public double getModuleSizeReduction(String module) {
+    public double getModuleSizeReduction(Technology.Category module) {
         return 1.0;
 
         /*
@@ -93,8 +93,8 @@ public class PlayerStateImpl implements IPlayerState {
     }
 
     @Override
-    public int getTechLevel(String technologyCategory) {
-        return techLevels.get(technologyCategory);
+    public int getTechLevel(Technology.Category category) {
+        return techLevels.get(category);
     }
 
     @Override
@@ -103,17 +103,9 @@ public class PlayerStateImpl implements IPlayerState {
     }
 
     @Override
-    public double getModuleCostReduction(String module) {
+    public double getModuleCostReduction(Technology.Category module) {
         return 1.0;
     }
 
 
-    private static class ReadWritePlayerState implements IPlayerStateModifier {
-        public int shipFuelRange = 0;
-
-        @Override
-        public void setShipFuelRange(int range) {
-            shipFuelRange = range;
-        }
-    }
 }
