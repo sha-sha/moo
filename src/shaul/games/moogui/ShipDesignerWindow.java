@@ -125,7 +125,7 @@ public class ShipDesignerWindow {
 
     }
 
-    private void initWeapon(final ShipDesigner shipDesigner, final ShipDesign.SlotType slot, int row, JPanel weaponPanel) {
+    private void initWeapon(final ShipDesigner shipDesigner, final ShipDesign.SlotType slot, int row, final JPanel weaponPanel) {
         weaponPanel.add(new JLabel("Weapon " + row), "0, " + row);
         final UpDown upDown = new UpDown(weaponPanel.getBackground());
         upDown.setListener(new UpDown.Listener() {
@@ -165,9 +165,21 @@ public class ShipDesignerWindow {
         weapon.setBorder(null);
         weapon.add(initialValue, BorderLayout.CENTER);
         weaponPanel.add(weapon, "2, " + row);
+        uiUpdater.register(new InfoUi() {
+            @Override
+            public void update() {
+                weapon.removeAll();
+                weapon.revalidate();
+                weapon.repaint();
+                GenericUi<ShipModule> newUi = UiFactory.create(shipDesigner.getCurrentModule(slot));
+                newUi.setBackground(weaponPanel.getBackground());
+                weapon.add(newUi);
+
+            }
+        });
     }
 
-    private void initSpecial(final ShipDesigner shipDesigner, final ShipDesign.SlotType slot, int row, JPanel panel) {
+    private void initSpecial(final ShipDesigner shipDesigner, final ShipDesign.SlotType slot, int row, final JPanel panel) {
         panel.add(new JLabel("Special " + row), "0, " + row);
         final UiSelection<GenericUi<ShipModule>> special = new UiSelection<>();
         special.setListener(new UiSelection.Listener() {
@@ -188,6 +200,18 @@ public class ShipDesignerWindow {
         special.setBorder(null);
         special.add(initialValue, BorderLayout.CENTER);
         panel.add(special, "2, " + row);
+        uiUpdater.register(new InfoUi() {
+            @Override
+            public void update() {
+                special.removeAll();
+                special.revalidate();
+                special.repaint();
+                GenericUi<ShipModule> newUi = UiFactory.create(shipDesigner.getCurrentModule(slot));
+                newUi.setBackground(panel.getBackground());
+                special.add(newUi);
+
+            }
+        });
     }
 
     private JPanel createShipModuleSelectAndInfo(

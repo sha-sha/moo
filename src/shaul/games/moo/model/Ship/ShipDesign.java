@@ -8,8 +8,6 @@ import java.util.*;
  * Created by Shaul on 3/24/2015.
  */
 public class ShipDesign {
-    public static final Utils.Countable<ShipModule> NO_WEAPON =
-            new Utils.Countable<ShipModule>(ShipModule.EMPTY, 0);
 
     public enum SlotType {
         Computer(false, false),

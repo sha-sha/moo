@@ -41,6 +41,7 @@ public interface IPlayerState {
         public int planetaryShield = 0;
         public int pollutionPerBcEliminated = 0;
         public int terraformLevel = 0; // cost is 50BC per 10
+        public boolean enableIntergalacticStarGates = false;
     }
 
 }

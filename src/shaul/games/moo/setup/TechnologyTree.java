@@ -112,7 +112,7 @@ public final class TechnologyTree {
         add(new ControlledEnvironment(6, "Controlled Tundra Environment", Environment.Tundra));
         add(new Terraforming(9, "Terraforming +20", 20));
         add(new ControlledEnvironment(10, "Controlled Dead Environment", Environment.Dead));
-        add(new BioWeapon(11, "Death Spores", 1));
+        add(new BioBombTechnology(11, "Death Spores", ShipWeapons.Bomb.DeathSpores));
         add(new ControlledEnvironment(12, "Controlled Inferno Environment", Environment.Inferno));
         add(new EcologicalRestoration(13, "Enhanced Ecological Restoration", 5));
         add(new Terraforming(14, "Terraforming +30", 30));
@@ -134,14 +134,24 @@ public final class TechnologyTree {
         // 20 Warp Dissipator
         add(new FuelCells(23, "Reajax II Fuel Cells", 9));
         add(new Engine(24, "Impulse Drives", 5, 1));
+        add(new IntergalacticStarGates(27));
+        add(new FuelCells(29, "Trilithium Fuel Cells", 10));
+        add(new Engine(30, "Ion Drives", 6, 2));
+        // add(new HighEnergyFocus(34
+        add(new Engine(36, "Anti-Matter Drives", 7, 2));
+        // 38 Sub Space Teleporter
+        // 40 Ionic Pulsar - Deals 10 damage to all adjacent and diagonally adjacent ships plus 1 damage per 2 attacking ships.
+        add(new FuelCells(41, "Thorium Fuel Cells", 9999));
+        add(new Engine(42, "Inter-phased Drives", 8, 3));
+        // 43 Sub Space Interdictor - Nullifies the functionality of all sub-space teleporters in use over the owner's planets.
+        // 45 Combat Transporters - Ensures at least 50% of transporters land on the targeted planet.
+        // 46 Inertial Nullifier - Increases the maneuverability rating of the equipped ship by 4 and increases the maximum number of movement squares in space combat by 2.
+        add(new Engine(48, "Hyper Drives", 9, 3));
+        // 50 Displacement Device - Causes 33% of all attacks to miss the target automatically.
 
 
-
-
-
-
-
-        add(new Laser(1, 1));
+        add(new BeamTechnology(1, "Laser", ShipWeapons.Beam.Laser));
+        add(new BeamTechnology(1, "Heavy Laser", ShipWeapons.Beam.HeavyLaser));
 
 
 
@@ -174,13 +184,13 @@ public final class TechnologyTree {
 
     private static class BattleScanner extends Technology.Computer {
         public BattleScanner(int techLevel) {
-            super(techLevel, "Battle Scanner", new ShipTech.BattleScanner());
+            super(techLevel, "Battle Scanner", new ShipTech.BattleScanner(techLevel));
         }
     }
 
     private static class BattleComputer extends Technology.Computer {
         public BattleComputer(int techLevel, int level) {
-            super(techLevel, "Battle Computer Mark " + level, new ShipTech.BattleComputer(level));
+            super(techLevel, "Battle Computer Mark " + level, new ShipTech.BattleComputer(techLevel, level));
         }
     }
 
@@ -289,13 +299,14 @@ public final class TechnologyTree {
 
     private static class EcmJammer extends Technology.Computer {
         public EcmJammer(int techLevel, int level) {
-            super(techLevel, "ECM Jammer Mark " + level, new ShipTech.Ecm(level));
+            super(techLevel, "ECM Jammer Mark " + level, new ShipTech.Ecm(techLevel, level));
         }
     }
 
     private static class DeflectorShield extends Technology.ForceField {
         public DeflectorShield(int techLevel, int level) {
-            super(techLevel, "Class " + Utils.toRomanNumber(level) + " Deflector Shield", new ShipTech.Shield(level));
+            super(techLevel, "Class " + Utils.toRomanNumber(level) + " Deflector Shield",
+                    new ShipTech.Shield(techLevel, level));
         }
     }
 
@@ -332,18 +343,18 @@ public final class TechnologyTree {
     private static class RetroEngine extends Technology.Propulsion {
         public RetroEngine(int techLevel, String name) {
             super(techLevel, name,
-                    new ShipTech.Engine(name, 1),
-                    new ShipTech.ReserveFuelTanks("Reserve Fuel Tanks"),
+                    new ShipTech.Engine(techLevel, name, 1),
+                    new ShipTech.ReserveFuelTanks(techLevel, "Reserve Fuel Tanks"),
                     new ShipTech.FuelCell("Basic Fuel Cells", 3));
         }
     }
 
     private static class Engine extends Technology.Propulsion {
         public Engine(int techLevel, String name, int level) {
-            super(techLevel, name, new ShipTech.Engine(name, level));
+            super(techLevel, name, new ShipTech.Engine(techLevel, name, level));
         }
         public Engine(int techLevel, String name, int level, int combatSpeed) {
-            super(techLevel, name, new ShipTech.Engine(name, level, combatSpeed));
+            super(techLevel, name, new ShipTech.Engine(techLevel, name, level, combatSpeed));
         }
     }
 
@@ -355,13 +366,31 @@ public final class TechnologyTree {
 
     private static class InertialStabilizer extends Technology.Propulsion {
         public InertialStabilizer(int techLevel) {
-            super(techLevel, "Inertial Stabilizer", new ShipTech.InertialStabilizer("Inertial Stabilizer"));
+            super(techLevel, "Inertial Stabilizer", new ShipTech.InertialStabilizer(techLevel, "Inertial Stabilizer"));
         }
     }
 
-    private static class Laser extends Technology.Weapons {
-        public Laser(int techLevel, int level) {
-            super(techLevel, "Laser " + Utils.toRomanNumber(level), new ShipTech.Laser(level));
+    private static class IntergalacticStarGates extends Technology.Propulsion {
+        public IntergalacticStarGates(int techLevel) {
+            super(techLevel, "Intergalactic Star Gates",
+                    new TechModule("Intergalactic Star Gates", new PlayerBonus() {
+                        @Override
+                        public void apply(IPlayerState.TechState techState) {
+                            techState.enableIntergalacticStarGates = true;
+                        }
+                    }));
+        }
+    }
+
+    private static class BeamTechnology extends Technology.Weapons {
+        public BeamTechnology(int techLevel, String name, ShipWeapons.Beam beam) {
+            super(techLevel, name, new ShipTech.BeamModule(techLevel, name, beam));
+        }
+    }
+
+    private static class BioBombTechnology extends Technology.Planetology {
+        public BioBombTechnology(int techLevel, String name, ShipWeapons.Bomb bomb) {
+            super(techLevel, name, new ShipTech.BombModule(techLevel, name, bomb));
         }
     }
 
@@ -391,15 +420,9 @@ public final class TechnologyTree {
     private static class ControlledEnvironment extends Technology.Planetology {
         public ControlledEnvironment(int techLevel, String name, Environment environment) {
             super(techLevel, name, new ShipTech.ColonyBase(
+                    techLevel,
                     environment.isHostile() ? environment.toString() + "  Colony Base" : "Standard Colony Base",
                     environment));
         }
     }
-
-    private static class BioWeapon extends Technology.Planetology {
-        public BioWeapon(int techLevel, String name, int level) {
-            super(techLevel, name, new ShipTech.BioBomb(name, level));
-        }
-    }
-
 }

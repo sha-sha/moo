@@ -26,12 +26,7 @@ public class ShipModuleData {
     private final float numberOfEngine;
     private final int shipInitiative;
     private final ShipModule.ShipScanLevel shipScanLevel;
-    private final int weaponDamage;
-    private final int weaponSpeed;
-    private final int weaponShots;
-    private final int weaponRange;
-    private final ShipModule.WeaponType weaponType;
-    private final int weaponCooldown;
+    private final Weapon weapon;
     private final int combatSpeed;
     private final int fuelTravelDistance;
     private final Environment colonyModuleEnv;
@@ -51,12 +46,7 @@ public class ShipModuleData {
         this.numberOfEngine = builder.numberOfEngine;
         this.shipInitiative = builder.shipInitiative;
         this.shipScanLevel = builder.shipScanLevel;
-        this.weaponDamage = builder.weaponDamage;
-        this.weaponSpeed = builder.weaponSpeed;
-        this.weaponShots = builder.weaponShots;
-        this.weaponRange = builder.weaponRange;
-        this.weaponType = builder.weaponType;
-        this.weaponCooldown = builder.weaponCooldown;
+        this.weapon = builder.weapon;
         this.combatSpeed = builder.combatSpeed;
         this.fuelTravelDistance = builder.fuelTravelDistance;
         this.colonyModuleEnv = builder.colonyModuleEnv;
@@ -76,13 +66,8 @@ public class ShipModuleData {
                 .append(getAttribute(shipInitiative > 0, "shipInitiative", shipInitiative))
                 .append(getAttribute(
                         shipScanLevel != ShipModule.ShipScanLevel.NONE, "shipScanLevel", shipScanLevel.toString()))
-                .append(getAttribute(weaponDamage > 0, "weaponDamage", weaponDamage))
-                .append(getAttribute(weaponSpeed > 0, "weaponSpeed", weaponSpeed))
-                .append(getAttribute(weaponShots > 0, "weaponShots", weaponShots))
-                .append(getAttribute(weaponRange > 0, "weaponRange", weaponRange))
-                .append(getAttribute(weaponType != ShipModule.WeaponType.None, "weaponType", weaponType.toString()))
+                .append(getAttribute(weapon != null, "weapon", weapon != null ? weapon.toString() : ""))
                 .append(getAttribute(weaponPlanetPopReduction > 0, "weaponPlanetPopReduction", weaponPlanetPopReduction))
-                .append(getAttribute(weaponCooldown > 0, "weaponCooldown", weaponCooldown))
                 .append(getAttribute(fuelTravelDistance > 0, "fuelTravelDistance", fuelTravelDistance))
                 .append(getAttribute("colonyModuleEnv", colonyModuleEnv))
                         .toString();
@@ -109,19 +94,9 @@ public class ShipModuleData {
 
     public ShipModule.ShipScanLevel getShipScanLevel() { return shipScanLevel;}
 
-    public int getWeaponDamage() { return weaponDamage; }
-
-    public int getWeaponSpeed() { return weaponSpeed; }
-
-    public int getWeaponShots() { return weaponShots; }
-
-    public int getWeaponRange() { return weaponRange; }
-
-    public ShipModule.WeaponType getWeaponType() { return weaponType; }
+    public Weapon getWeapon() { return weapon; }
 
     public int getWeaponPlanetPopReduction() { return weaponPlanetPopReduction; }
-
-    public int getWeaponCoolDown() { return weaponCooldown; }
 
     public int getCombatSpeed() { return combatSpeed; }
 
@@ -174,6 +149,7 @@ public class ShipModuleData {
         private float numberOfEngine = 0f;
         private int shipInitiative = 0;
         private ShipModule.ShipScanLevel shipScanLevel = ShipModule.ShipScanLevel.NONE;
+        private Weapon weapon;
         private int weaponDamage = 0;
         private int weaponSpeed = 0;
         private int weaponShots = 0;
@@ -205,6 +181,7 @@ public class ShipModuleData {
         public Builder setShipInitiative(int shipInitiative) { this.shipInitiative = shipInitiative; return this;}
         public Builder setShipScanLevel(ShipModule.ShipScanLevel shipScanLevel) {
             this.shipScanLevel = shipScanLevel; return this;}
+        public Builder setWeapon(Weapon weapon) { this.weapon = weapon; return this; }
         public Builder setWeaponDamage(int weaponDamage) { this.weaponDamage = weaponDamage; return this; }
         public Builder setWeaponSpeed(int weaponSpeed) { this.weaponSpeed = weaponSpeed; return this; }
         public Builder setWeaponShots(int weaponShots) { this.weaponShots = weaponShots; return this; }

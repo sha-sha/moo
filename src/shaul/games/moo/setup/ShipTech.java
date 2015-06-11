@@ -19,8 +19,9 @@ public class ShipTech {
 
     public static class BattleScanner extends ShipModule.SpecialShipModule {
 
-        public BattleScanner() {
+        public BattleScanner(int techLevel) {
             super(Technology.Category.Computers,
+                    techLevel,
                     "Battle Scanner", new ShipModuleData.Builder()
                     .setCost(20, 80, 120, 400)
                     .setSize(20, 80, 120, 400)
@@ -35,8 +36,8 @@ public class ShipTech {
 
     public static class Ecm extends ShipModule.EcmShipModule {
 
-        public Ecm(int level) {
-            super("ECM " + level, new ShipModuleData.Builder()
+        public Ecm(int techLevel, int level) {
+            super(techLevel, "ECM " + level, new ShipModuleData.Builder()
                     .setCost(20, 80, 120, 400)
                     .setSize(20, 80, 120, 400)
                     .setPower(20, 80, 120, 400)
@@ -47,8 +48,8 @@ public class ShipTech {
 
     public static class BattleComputer extends ShipModule.ComputerShipModule {
 
-        public BattleComputer(int level) {
-            super("Battle Computer " + level, new ShipModuleData.Builder()
+        public BattleComputer(int techLevel, int level) {
+            super(techLevel, "Battle Computer " + level, new ShipModuleData.Builder()
                     .setCost(20, 80, 120, 400)
                     .setSize(20 * level, 80 * level, 120 * level, 400 * level)
                     .setPower(20, 80, 120, 400)
@@ -59,8 +60,8 @@ public class ShipTech {
 
     public static class Shield extends ShipModule.ShieldShipModule {
 
-        public Shield(int level) {
-            super("Shield " + level, new ShipModuleData.Builder()
+        public Shield(int techLevel, int level) {
+            super(techLevel, "Shield " + level, new ShipModuleData.Builder()
                     .setCost(20, 80, 120, 400)
                     .setSize(20 * level, 80 * level, 120 * level, 400 * level)
                     .setPower(20, 80, 120, 400)
@@ -72,7 +73,7 @@ public class ShipTech {
     public static class Armor extends ShipModule.ArmorShipModule {
 
         public Armor(int techLevel, String name, int level, boolean doubleHull) {
-            super(name, new ShipModuleData.Builder()
+            super(techLevel, name, new ShipModuleData.Builder()
                     .setCost(20 * (level - 1), 80 * (level - 1), 120 * (level - 1), 400 * (level - 1))
                     .setSize(doubleHull ? calcDoubleHull(Hull.Small, techLevel) : 1,
                             doubleHull ? calcDoubleHull(Hull.Medium, techLevel) : 1,
@@ -92,11 +93,11 @@ public class ShipTech {
 
     public static class Engine extends ShipModule.EngineShipModule{
 
-        public Engine(String name, int level) {
-            this(name, level, 0);
+        public Engine(int techLevel, String name, int level) {
+            this(techLevel, name, level, 0);
         }
-        public Engine(String name, int level, int additionalCombatSpeed) {
-            super(name, new ShipModuleData.Builder()
+        public Engine(int techLevel, String name, int level, int additionalCombatSpeed) {
+            super(techLevel, name, new ShipModuleData.Builder()
                     .setCost(level * 2, level * 2, level * 2, level * 2)
                     .setSize(10 * level, 10 * level, 10 * level, 10 * level)
                     .setWrapSpeed(level)
@@ -108,8 +109,9 @@ public class ShipTech {
 
     public static class ReserveFuelTanks extends ShipModule.SpecialShipModule{
 
-        public ReserveFuelTanks(String name) {
+        public ReserveFuelTanks(int techLevel, String name) {
             super(Technology.Category.Propulsion,
+                    techLevel,
                     name,
                     new ShipModuleData.Builder()
                             .setCost(2, 6, 31, 155)
@@ -120,22 +122,34 @@ public class ShipTech {
         }
     }
 
-    public static class Laser extends ShipModule.WeaponShipModule {
+    public static class BeamModule extends ShipModule.WeaponShipModule {
 
-        public Laser(int level) {
-            super("Laser " + level, new ShipModuleData.Builder()
-                    .setCost(20, 80, 120, 400)
-                    .setSize(20, 30, 40, 50)
-                    .setPower(20, 80, 120, 400)
-                    .setWeaponDamage(1)
+        public BeamModule(int techLevel, String name, ShipWeapons.Beam beam) {
+            super(techLevel, name, new ShipModuleData.Builder()
+                    .setCost(beam.cost, beam.cost, beam.cost, beam.cost)
+                    .setSize(beam.size, beam.size, beam.size, beam.size)
+                    .setPower(beam.power, beam.power, beam.power, beam.power)
+                    .setWeapon(beam.weapon)
+                    .build());
+        }
+    }
+
+    public static class BombModule extends ShipModule.WeaponShipModule {
+
+        public BombModule(int techLevel, String name, ShipWeapons.Bomb bomb) {
+            super(techLevel, name, new ShipModuleData.Builder()
+                    .setCost(bomb.cost, bomb.cost, bomb.cost, bomb.cost)
+                    .setSize(bomb.size, bomb.size, bomb.size, bomb.size)
+                    .setPower(bomb.power, bomb.power, bomb.power, bomb.power)
+                    .setWeapon(bomb.weapon)
                     .build());
         }
     }
 
     public static class Maneuver extends ShipModule.ManeuverShipModule {
 
-        public Maneuver(int level) {
-            super("Class " + Utils.toRomanNumber(level), new ShipModuleData.Builder()
+        public Maneuver(int techLevel, int level) {
+            super(techLevel, "Class " + Utils.toRomanNumber(level), new ShipModuleData.Builder()
                     .setCost(1, 1, 10, 70)
                     .setSize(1, 1, 10, 70)
                     .setPower(20, 80, 120, 400)
@@ -158,8 +172,8 @@ public class ShipTech {
     }
 
     public static class InertialStabilizer extends ShipModule.SpecialShipModule {
-        public InertialStabilizer(String name) {
-            super(Technology.Category.Propulsion, name, new ShipModuleData.Builder()
+        public InertialStabilizer(int techLevel, String name) {
+            super(Technology.Category.Propulsion, techLevel, name, new ShipModuleData.Builder()
                     .setCost(1, 1, 10, 70)
                     .setSize(1, 1, 10, 70)
                     .setPower(20, 80, 120, 400)
@@ -173,8 +187,8 @@ public class ShipTech {
 
     public static class ColonyBase extends ShipModule.SpecialShipModule {
 
-        public ColonyBase(String name, Environment environment) {
-            super(Technology.Category.Planetology, name, new ShipModuleData.Builder()
+        public ColonyBase(int techLevel, String name, Environment environment) {
+            super(Technology.Category.Planetology, techLevel, name, new ShipModuleData.Builder()
                     .setCost(20, 80, 120, 400)
                     .setSize(20, 30, 40, 50)
                     .setPower(20, 80, 120, 400)
@@ -193,21 +207,6 @@ public class ShipTech {
                     techState.shipSensorRange = Math.max(techState.shipSensorRange, shipSensorRange);
                 }
             });
-        }
-    }
-
-    public static class BioBomb extends ShipModule.WeaponShipModule {
-
-        public BioBomb(String name, int level) {
-            super(Technology.Category.Planetology,
-                    name,
-                    new ShipModuleData.Builder()
-                            .setCost(20, 80, 120, 400)
-                            .setSize(20, 80, 120, 400)
-                            .setPower(20, 80, 120, 400)
-                            .setWeaponType(WeaponType.Bomb)
-                            .setWeaponPlanetPopReduction(level)
-                            .build());
         }
     }
 }

@@ -17,18 +17,20 @@ public class ShipModule extends TechModule {
 
     public static final ShipModule EMPTY = new ShipModule();
     public static final ShipModuleData NO_DATA = new ShipModuleData.Builder().build();
-    public static final ShipModule NO_COMPUTER = new ComputerShipModule("No Computer", NO_DATA);
-    public static final ShipModule NO_SHIELD = new ShieldShipModule("No Shield", NO_DATA);
-    public static final ShipModule NO_ECM = new EcmShipModule("No ECM", NO_DATA);
-    public static final ShipModule NO_WEAPON = new WeaponShipModule("No Weapon", NO_DATA);
+    public static final ShipModule NO_COMPUTER = new ComputerShipModule(0, "No Computer", NO_DATA);
+    public static final ShipModule NO_SHIELD = new ShieldShipModule(0, "No Shield", NO_DATA);
+    public static final ShipModule NO_ECM = new EcmShipModule(0, "No ECM", NO_DATA);
+    public static final ShipModule NO_WEAPON =
+            new WeaponShipModule(0, "No Weapon", new ShipModuleData.Builder().setWeapon(Weapon.NONE).build());
     public static final Utils.Countable<ShipModule> ZERO_WEAPON = new Utils.Countable<>(NO_WEAPON, 0);
     public static final ShipModule NO_SPECIAL =
-            new SpecialShipModule(Technology.Category.None, "None", NO_DATA, ExclusionGroup.None);
+            new SpecialShipModule(Technology.Category.None, 0, "None", NO_DATA, ExclusionGroup.None);
 
     public enum ShipComponent {NONE, COMPUTER, SHIELD, ECM, ARMOR, ENGINE, MANEUVER, WEAPON, SPECIAL}
     public enum ShipScanLevel {NONE, BASIC, ADVANCE}
 
     private final Technology.Category technologyCategory;
+    private final int techLevel;
     private final ShipModuleData moduleData;
     private final ShipComponent shipComponent;
     private final Set<ShipDesign.SlotType> possibleSlotType;
@@ -38,12 +40,14 @@ public class ShipModule extends TechModule {
     public enum ExclusionGroup {None, Colony}
 
     private ShipModule(Technology.Category technologyCategory,
+                       int techLevel,
                        String name,
                        Set<ShipDesign.SlotType> possibleSlotTypes,
                        ShipComponent shipComponent,
                        ShipModuleData moduleData,
                        ExclusionGroup exclusionGroup) {
         super(name, TechModule.Type.Ship);
+        this.techLevel = techLevel;
         this.technologyCategory = technologyCategory;
         this.possibleSlotType = possibleSlotTypes;
         this.shipComponent = shipComponent;
@@ -52,11 +56,12 @@ public class ShipModule extends TechModule {
     }
 
     private ShipModule(Technology.Category technologyCategory,
+                       int techLevel,
                        String name,
                        Set<ShipDesign.SlotType> possibleSlotTypes,
                        ShipComponent shipComponent,
                        ShipModuleData moduleData) {
-        this(technologyCategory, name,possibleSlotTypes, shipComponent, moduleData, ExclusionGroup.None);
+        this(technologyCategory, techLevel, name,possibleSlotTypes, shipComponent, moduleData, ExclusionGroup.None);
     }
 
     private ShipModule() {
@@ -66,8 +71,10 @@ public class ShipModule extends TechModule {
         this.possibleSlotType = new HashSet<>();
         this.moduleData = new ShipModuleData.Builder().build();
         this.exclusionGroup = ExclusionGroup.None;
+        this.techLevel = 0;
     }
 
+    public int getTechLevel() { return techLevel; }
     public ShipComponent getShipComponentType() { return shipComponent; }
     public ShipModuleData getModuleData() { return moduleData; }
     public boolean isEmpty() {
@@ -92,6 +99,10 @@ public class ShipModule extends TechModule {
         return (int) (baseCost * playerState.getModuleCostReduction(technologyCategory));
     }
 
+    public int getBasicCost(Hull hull) {
+        return moduleData.getCost(hull);
+    }
+
     @Override
     public String toString() {
         return String.format("%s %s data: %s", getType(), getName(), moduleData);
@@ -108,8 +119,9 @@ public class ShipModule extends TechModule {
 //    }
 
     public static class ComputerShipModule extends ShipModule {
-        public ComputerShipModule(String name, ShipModuleData moduleData) {
+        public ComputerShipModule(int techLevel, String name, ShipModuleData moduleData) {
             super(Technology.Category.Computers,
+                    techLevel,
                     name,
                     Utils.setOf(ShipDesign.SlotType.Computer),
                     ShipComponent.COMPUTER, moduleData);
@@ -117,8 +129,9 @@ public class ShipModule extends TechModule {
     }
 
     public static class ShieldShipModule extends ShipModule {
-        public ShieldShipModule(String name, ShipModuleData moduleData) {
+        public ShieldShipModule(int techLevel, String name, ShipModuleData moduleData) {
             super(Technology.Category.ForceFields,
+                    techLevel,
                     name,
                     Utils.setOf(ShipDesign.SlotType.Shield),
                     ShipComponent.SHIELD, moduleData);
@@ -126,8 +139,9 @@ public class ShipModule extends TechModule {
     }
 
     public static class ArmorShipModule extends ShipModule {
-        public ArmorShipModule(String name, ShipModuleData moduleData) {
+        public ArmorShipModule(int techLevel, String name, ShipModuleData moduleData) {
             super(Technology.Category.Construction,
+                    techLevel,
                     name,
                     Utils.setOf(ShipDesign.SlotType.Armor),
                     ShipComponent.ARMOR,
@@ -136,8 +150,9 @@ public class ShipModule extends TechModule {
     }
 
     public static class EcmShipModule extends ShipModule {
-        public EcmShipModule(String name, ShipModuleData moduleData) {
+        public EcmShipModule(int techLevel, String name, ShipModuleData moduleData) {
             super(Technology.Category.Computers,
+                    techLevel,
                     name,
                     Utils.setOf(ShipDesign.SlotType.Ecm),
                     ShipComponent.ECM, moduleData);
@@ -145,8 +160,9 @@ public class ShipModule extends TechModule {
     }
 
     public static class EngineShipModule extends ShipModule {
-        public EngineShipModule(String name, ShipModuleData moduleData) {
+        public EngineShipModule(int techLevel, String name, ShipModuleData moduleData) {
             super(Technology.Category.Propulsion,
+                    techLevel,
                     name,
                     Utils.setOf(ShipDesign.SlotType.Engine),
                     ShipComponent.ENGINE, moduleData);
@@ -154,11 +170,12 @@ public class ShipModule extends TechModule {
     }
 
     public static class WeaponShipModule extends ShipModule {
-        public WeaponShipModule(String name, ShipModuleData moduleData) {
-            this(Technology.Category.Weapons, name, moduleData);
+        public WeaponShipModule(int techLevel, String name, ShipModuleData moduleData) {
+            this(Technology.Category.Weapons, techLevel, name, moduleData);
         }
-        public WeaponShipModule(Technology.Category cat, String name, ShipModuleData moduleData) {
+        public WeaponShipModule(Technology.Category cat, int techLevel, String name, ShipModuleData moduleData) {
             super(cat,
+                    techLevel,
                     name,
                     Utils.setOf(ShipDesign.SlotType.Weapon1,
                             ShipDesign.SlotType.Weapon2,
@@ -170,9 +187,10 @@ public class ShipModule extends TechModule {
     }
 
     public static class SpecialShipModule extends ShipModule {
-        public SpecialShipModule(
-                Technology.Category category, String name, ShipModuleData moduleData, ExclusionGroup exclusionGroup) {
+        public SpecialShipModule(Technology.Category category, int techLevel, String name,
+                                 ShipModuleData moduleData, ExclusionGroup exclusionGroup) {
             super(category,
+                    techLevel,
                     name,
                     Utils.setOf(ShipDesign.SlotType.Special1,
                             ShipDesign.SlotType.Special2,
@@ -184,8 +202,9 @@ public class ShipModule extends TechModule {
     }
     
     public static class ManeuverShipModule extends ShipModule {
-        public ManeuverShipModule(String name, ShipModuleData moduleData) {
+        public ManeuverShipModule(int techLevel, String name, ShipModuleData moduleData) {
             super(Technology.Category.None,
+                    techLevel,
                     name,
                     Utils.setOf(ShipDesign.SlotType.Maneuver),
                     ShipComponent.MANEUVER, moduleData);

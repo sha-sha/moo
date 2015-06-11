@@ -59,7 +59,7 @@ public class UiFactory {
         public ShipModuleWeaponUi(ShipModule shipModule) {
             super(shipModule);
 
-            String text = shipModule.getName() + " DMG: " + shipModule.getModuleData().getWeaponDamage();
+            String text = shipModule.getName() + " DMG: " + shipModule.getModuleData().getWeapon().getMaxDamage();
             if (shipModule.isEmpty()) {
                 text = shipModule.getName();
             }

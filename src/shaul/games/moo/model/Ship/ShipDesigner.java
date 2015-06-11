@@ -84,6 +84,15 @@ public class ShipDesigner {
                 }
             }
         }
+        Collections.sort(modules, new Comparator<ShipModule>() {
+            @Override
+            public int compare(ShipModule o1, ShipModule o2) {
+                if (o1.getTechLevel() == o2.getTechLevel()) {
+                    return o1.getBasicCost(Hull.Huge) - o2.getBasicCost(Hull.Huge);
+                }
+                return o1.getTechLevel() - o2.getTechLevel();
+            }
+        });
         return modules;
     }
 
