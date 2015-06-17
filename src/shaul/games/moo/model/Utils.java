@@ -26,7 +26,7 @@ public class Utils {
         return new HashSet<>(Arrays.asList(t));
     }
 
-    public static<K> List<K> filter(List<K> list, Predicate<K> predicate) {
+    public static<K> List<K> filter(Collection<K> list, Predicate<K> predicate) {
         List<K> newList = new ArrayList<>();
         for (K k : list) {
             if (predicate.test(k)) {

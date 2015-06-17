@@ -159,6 +159,7 @@ public final class TechnologyTree {
     }}};
     private static Map<String, Technology> TECHNOLOGIES_MAP = null;
     private static Map<String, Technology> MODULE_TECHNOLOGIES_MAP = null;
+    private static Map<Technology.Category, List<Technology>> TECHNOLOGIES_OF_CAT_MAP = null;
 
     public static Map<String, Technology> getTechnologiesMap() {
         if (TECHNOLOGIES_MAP == null) {
@@ -168,6 +169,19 @@ public final class TechnologyTree {
             }
         }
         return TECHNOLOGIES_MAP;
+    }
+
+    public static Map<Technology.Category, List<Technology>> getTechnologiesPerCategory() {
+        if (TECHNOLOGIES_OF_CAT_MAP == null) {
+            TECHNOLOGIES_OF_CAT_MAP = new HashMap<>();
+            for (Technology t : TECHNOLOGIES) {
+                if (TECHNOLOGIES_OF_CAT_MAP.get(t.getCategory()) == null) {
+                    TECHNOLOGIES_OF_CAT_MAP.put(t.getCategory(), new ArrayList<Technology>());
+                }
+                TECHNOLOGIES_OF_CAT_MAP.get(t.getCategory()).add(t);
+            }
+        }
+        return TECHNOLOGIES_OF_CAT_MAP;
     }
 
     public static Map<String, Technology> getModuleToTechnologyMap() {

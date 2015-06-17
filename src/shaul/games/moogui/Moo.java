@@ -16,6 +16,7 @@ import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.util.*;
 import java.util.List;
+import java.util.function.Predicate;
 
 /**
  * Created by shaul on 4/13/15.
@@ -86,8 +87,15 @@ public class Moo {
 
         // Ship
         IPlayer currentPlayer = new PlayerImpl(gameLogic, "shaul");
-        List<String> allTech = Utils.convert(
-                TechnologyTree.getTechnologiesMap().values(),
+        List<Technology> level1Techs = Utils.filter(TechnologyTree.getTechnologiesMap().values(),
+                new Predicate<Technology>() {
+                    @Override
+                    public boolean test(Technology technology) {
+                        return technology.getTechLevel() == 1;
+                    }
+                });
+
+        List <String> allLevel1TechNames = Utils.convert(level1Techs,
                 new Utils.Function<Technology, String>() {
                     @Override
                     public String apply(Technology technology) {
@@ -95,8 +103,9 @@ public class Moo {
                     }
                 });
         currentPlayer.setPlayerState(new PlayerStateImpl(
-                null, new TechnologiesDb(gameLogic.getTechnologyLogic(), allTech)));
+                null, new TechnologiesDb(gameLogic.getTechnologyLogic(), allLevel1TechNames)));
 
-        new ShipDesignerWindow(gameLogic, currentPlayer);
+        //new ShipDesignerWindow(gameLogic, currentPlayer);
+        new MainGameWindow(gameLogic, currentPlayer);
     }
 }

@@ -7,10 +7,10 @@ import shaul.games.moo.model.Research.Technology;
  * Created by Shaul on 5/30/2015.
  */
 public enum Hull {
-    Small(40, 3, 2, 6),
-    Medium(200, 18, 1, 36),
-    Large(1000, 100, 0, 200),
-    Huge(5000, 600, -1, 1200);
+    Small(40, 3, 3, 6),
+    Medium(200, 18, 2, 36),
+    Large(1000, 100, 1, 200),
+    Huge(5000, 600, 0, 1200);
 
     private final int space;
     public final int hits;

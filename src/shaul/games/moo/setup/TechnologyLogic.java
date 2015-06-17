@@ -39,6 +39,11 @@ public class TechnologyLogic implements ITechnologyLogic {
     public List<ShipModule> getBaseShipModules() {
         return TechModules.getBaseModules();
     }
+
+    @Override
+    public List<Technology> getTechnologies(Technology.Category category) {
+        return TechnologyTree.getTechnologiesPerCategory().get(category);
+    }
 /*
     @Override
     public double getModuleCostReduction(String module, TechnologiesDb playerTechs) {

@@ -2,12 +2,10 @@ package shaul.games.moo.model.Ship;
 
 import shaul.games.moo.model.IGameLogic;
 import shaul.games.moo.model.Player.IPlayer;
-import shaul.games.moo.model.Research.Category;
 import shaul.games.moo.model.Research.TechModule;
 import shaul.games.moo.model.Utils;
 
 import java.util.*;
-import java.util.function.Predicate;
 
 /**
  * Created by Shaul on 5/16/2015.
@@ -177,7 +175,7 @@ public class ShipDesigner {
     }
 
     private int getSpaceOfModule(ShipModule shipModule, Hull hull) {
-        return shipModule.getSpace(player.getPlayerState(), hull);
+        return shipModule.getSize(player.getPlayerState(), hull);
     }
 
     public int getTotalSpace() {
@@ -188,11 +186,20 @@ public class ShipDesigner {
         return usedSpace;
     }
 
-    private void update() {
+    public void update() {
+        update(false);
+    }
+
+    public void update(boolean inDebugMode) {
         totalSpace = builder.getHull().getSpace(player.getPlayerState());
         usedSpace = 0;
         cost = 0; // should be hull cost.
         maxManeuverability = MIN_MANEUVER;
+
+        if (inDebugMode) {
+            validateAllModules();
+        }
+
         for (Utils.Countable<ShipModule> module : builder.getModules()) {
             usedSpace += module.getCount() * getSpaceOfModule(module.get(), builder.getHull());
             cost += module.getCount() * getCostOfModule(module.get(), builder.getHull());
@@ -201,6 +208,24 @@ public class ShipDesigner {
         // Reduce maneuverability if it exceeded the max.
         if (builder.get(ShipDesign.SlotType.Maneuver).getModuleData().getCombatSpeed() > maxManeuverability) {
             builder.set(ShipDesign.SlotType.Maneuver, getManeuverModule(maxManeuverability));
+        }
+    }
+
+    private void validateAllModules() {
+        for (ShipDesign.SlotType slotType : ShipDesign.SlotType.values()) {
+            ShipModule curr = builder.get(slotType);
+            if (curr.isEmpty()) {
+                continue;
+            }
+            List<ShipModule> modules = getAvailableModules(ShipDesign.getAllowedModule(slotType));
+            if (!modules.contains(curr) || !canInstall(slotType, curr)) {
+                for (ShipModule m : modules) {
+                    if (canInstall(slotType, m)) {
+                        builder.set(slotType, m);
+                        break;
+                    }
+                }
+            }
         }
     }
 
@@ -247,5 +272,10 @@ public class ShipDesigner {
 
     public int getManeuverability() {
         return builder.build().getManeuverability();
+    }
+
+    public void reset() {
+        this.builder = resetBuilder(1);
+        update();
     }
 }

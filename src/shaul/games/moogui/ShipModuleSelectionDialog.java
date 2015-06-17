@@ -1,5 +1,8 @@
 package shaul.games.moogui;
 
+import shaul.games.moo.model.Player.IPlayerState;
+import shaul.games.moo.model.Ship.Hull;
+import shaul.games.moo.model.Ship.ShipDesigner;
 import shaul.games.moo.model.Ship.ShipModule;
 import shaul.games.moo.model.Utils;
 
@@ -15,8 +18,9 @@ import java.util.List;
 public class ShipModuleSelectionDialog extends BasicSelectionDialog {
 
 
-    public ShipModuleSelectionDialog(JComponent parent, List<Utils.Available<ShipModule>> optionalModules) {
-        super(parent, optionalModules);
+    public ShipModuleSelectionDialog(JComponent parent, List<Utils.Available<ShipModule>> optionalModules,
+                                     UiFactory.Settings settings, IPlayerState playerState, ShipDesigner shipDesigner) {
+        super(parent, optionalModules, settings, playerState, shipDesigner);
     }
 
     public ShipModule getSelected() {

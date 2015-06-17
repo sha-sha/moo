@@ -49,7 +49,7 @@ public class ShipTech {
     public static class BattleComputer extends ShipModule.ComputerShipModule {
 
         public BattleComputer(int techLevel, int level) {
-            super(techLevel, "Battle Computer " + level, new ShipModuleData.Builder()
+            super(techLevel, "Mark " + Utils.toRomanNumber(level), new ShipModuleData.Builder()
                     .setCost(20, 80, 120, 400)
                     .setSize(20 * level, 80 * level, 120 * level, 400 * level)
                     .setPower(20, 80, 120, 400)
@@ -102,6 +102,7 @@ public class ShipTech {
                     .setSize(10 * level, 10 * level, 10 * level, 10 * level)
                     .setWrapSpeed(level)
                     .setOptionalManeuvers(level)
+                    .setGeneratedPower(level * 10)
                     .setCombatSpeed(additionalCombatSpeed)
                     .build());
         }

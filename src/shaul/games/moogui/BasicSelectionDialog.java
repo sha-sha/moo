@@ -1,5 +1,8 @@
 package shaul.games.moogui;
 
+import shaul.games.moo.model.Player.IPlayerState;
+import shaul.games.moo.model.Ship.Hull;
+import shaul.games.moo.model.Ship.ShipDesigner;
 import shaul.games.moo.model.Ship.ShipModule;
 import shaul.games.moo.model.Utils;
 
@@ -21,7 +24,8 @@ public class BasicSelectionDialog<T> extends JDialog implements UiElement.UiList
     private boolean autoKillInOProgress;
     private boolean hasResult;
 
-    public BasicSelectionDialog(JComponent parent, List<Utils.Available<T>> optionalTypes) {
+    public BasicSelectionDialog(JComponent parent, List<Utils.Available<T>> optionalTypes,
+                                UiFactory.Settings settings, IPlayerState playerState, ShipDesigner shipDesigner) {
         super(SwingUtilities.windowForComponent(parent));
         JPanel main = new JPanel();
         main.setLayout(new BoxLayout(main, BoxLayout.Y_AXIS));
@@ -35,8 +39,11 @@ public class BasicSelectionDialog<T> extends JDialog implements UiElement.UiList
         };
         autoKillTimer = new Timer(100, timerKillListener);
 
+        if (settings != null) {
+            main.add(UiFactory.createTitles(settings));
+        }
         for (Utils.Available<T> optionalType : optionalTypes) {
-            GenericUi<T> moduleUi = UiFactory.create(optionalType.get());
+            GenericUi<T> moduleUi = UiFactory.create(optionalType.get(), settings, playerState, shipDesigner);
             moduleUi.setEnabled(optionalType.isAvailable());
             if (optionalType.isAvailable()) {
                 moduleUi.setListener(this);

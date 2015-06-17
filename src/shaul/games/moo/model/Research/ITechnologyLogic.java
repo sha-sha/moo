@@ -16,4 +16,5 @@ public interface ITechnologyLogic {
     Technology getTechnology(String name);
     Technology getTechnologyOfTechModule(String techModuleName);
     List<ShipModule> getBaseShipModules();
+    List<Technology> getTechnologies(Technology.Category category);
 }

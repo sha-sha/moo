@@ -31,6 +31,7 @@ public class ShipModuleData {
     private final int fuelTravelDistance;
     private final Environment colonyModuleEnv;
     private final int weaponPlanetPopReduction;
+    private final int generatedPower;
 
     public ShipModuleData(Builder builder) {
         this.cost = builder.cost;
@@ -51,6 +52,7 @@ public class ShipModuleData {
         this.fuelTravelDistance = builder.fuelTravelDistance;
         this.colonyModuleEnv = builder.colonyModuleEnv;
         this.weaponPlanetPopReduction = builder.weaponPlanetPopReduction;
+        this.generatedPower = builder.generatedPower;
 
         desc = new StringBuilder().append(getAttribute("cost", cost))
                 .append(getAttribute("size", size))
@@ -110,6 +112,9 @@ public class ShipModuleData {
 
     public Environment getColonyModuleEnv() { return colonyModuleEnv; }
 
+    public double getGeneratedPower() { return generatedPower; }
+
+
     @Override
     public String toString() {
         return desc;
@@ -160,6 +165,7 @@ public class ShipModuleData {
         private int fuelTravelDistance = 0;
         private Environment colonyModuleEnv = null;
         private int weaponPlanetPopReduction = 0;
+        public int generatedPower = 0;
 
         public Builder setCost(int... cost) { this.cost = cost; return this; }
         public Builder setSize (int... size){
@@ -192,6 +198,7 @@ public class ShipModuleData {
         public Builder setCombatSpeed(int combatSpeed) { this.combatSpeed = combatSpeed; return this; }
         public Builder setFuelTravelDistance(int fuelTravelDistance) { this.fuelTravelDistance = fuelTravelDistance; return this; }
         public Builder setColonyModuleEnv(Environment environment) { this.colonyModuleEnv = environment; return this; }
+        public Builder setGeneratedPower(int value) { this.generatedPower = value; return this; }
 
         public ShipModuleData build() {
             return new ShipModuleData(this);

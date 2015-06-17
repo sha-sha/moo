@@ -83,12 +83,21 @@ public class ShipModule extends TechModule {
     public Set<ShipDesign.SlotType> getPossibleSlotType() { return possibleSlotType; }
     public ExclusionGroup getExclusionGroup() { return exclusionGroup; }
 
-    public int getSpace(IPlayerState playerState, Hull hull) {
+    public int getSize(IPlayerState playerState, Hull hull) {
         int baseSize = moduleData.getSize(hull);
         if (baseSize == 0) {
             return baseSize;
         }
         return (int) (baseSize * playerState.getModuleSizeReduction(technologyCategory));
+    }
+
+    // Returns the space requires taking into account the added engine reactors need for the power required.
+    public int getRequiredSpace(IPlayerState playerState, Hull hull, ShipModule engine) {
+        Utils.check(engine instanceof EngineShipModule, "engine parameter is not an engine module");
+        double powerRequired = getModuleData().getPower(hull);
+        double extraEngines = powerRequired / engine.getModuleData().getGeneratedPower();
+        int engineSpace = (int) Math.ceil(extraEngines * engine.getSize(playerState, hull));
+        return getSize(playerState, hull) + engineSpace;
     }
 
     public int getCost(IPlayerState playerState, Hull hull) {

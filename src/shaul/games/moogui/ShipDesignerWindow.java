@@ -3,6 +3,7 @@ package shaul.games.moogui;
 import layout.TableLayout;
 import shaul.games.moo.model.IGameLogic;
 import shaul.games.moo.model.Player.IPlayer;
+import shaul.games.moo.model.Player.IPlayerState;
 import shaul.games.moo.model.Ship.*;
 import shaul.games.moo.model.Utils;
 
@@ -11,6 +12,8 @@ import javax.swing.border.EmptyBorder;
 import javax.swing.border.LineBorder;
 import javax.swing.plaf.basic.BasicArrowButton;
 import java.awt.*;
+import java.awt.event.ActionEvent;
+import java.awt.event.ActionListener;
 import java.awt.event.MouseEvent;
 import java.awt.event.MouseListener;
 import java.util.*;
@@ -19,30 +22,66 @@ import java.util.List;
 /**
  * Created by shaul on 4/13/15.
  */
-public class ShipDesignerWindow {
+public class ShipDesignerWindow implements MainGameWindow.MainPanel {
+
+    private static final Map<ShipDesign.SlotType, UiFactory.Settings> SLOT_UI_SETTINGS =
+            new HashMap<ShipDesign.SlotType, UiFactory.Settings>(){{{
+                put(ShipDesign.SlotType.Armor, new UiFactory.Settings(
+                        new UiFactory.Settings.Field[] {UiFactory.Settings.Field.Name, UiFactory.Settings.Field.Cost,
+                                UiFactory.Settings.Field.Size},
+                        new double[] {100, 40, 40}));
+                put(ShipDesign.SlotType.Computer, new UiFactory.Settings(
+                        new UiFactory.Settings.Field[] {UiFactory.Settings.Field.Name, UiFactory.Settings.Field.Cost,
+                                UiFactory.Settings.Field.Size, UiFactory.Settings.Field.Power,
+                                UiFactory.Settings.Field.Space},
+                        new double[] {100, 40, 40, 40, 40}));
+                put(ShipDesign.SlotType.Ecm, new UiFactory.Settings(
+                        new UiFactory.Settings.Field[] {UiFactory.Settings.Field.Name, UiFactory.Settings.Field.Cost,
+                                UiFactory.Settings.Field.Size},
+                        new double[] {100, 40, 40}));
+                put(ShipDesign.SlotType.Maneuver, new UiFactory.Settings(
+                        new UiFactory.Settings.Field[] {UiFactory.Settings.Field.Name,
+                                UiFactory.Settings.Field.CombatSpeed, UiFactory.Settings.Field.Cost,
+                                UiFactory.Settings.Field.Power, UiFactory.Settings.Field.Space},
+                        new double[] {100, 50, 40, 40, 40}));
+                put(ShipDesign.SlotType.Shield, new UiFactory.Settings(
+                        new UiFactory.Settings.Field[] {UiFactory.Settings.Field.Name, UiFactory.Settings.Field.Cost,
+                                UiFactory.Settings.Field.Size, UiFactory.Settings.Field.Power},
+                        new double[] {80, 80, 80, 80}));
+                put(ShipDesign.SlotType.Weapon1, new UiFactory.Settings(
+                        new UiFactory.Settings.Field[] {UiFactory.Settings.Field.Name, UiFactory.Settings.Field.Cost,
+                                UiFactory.Settings.Field.Size},
+                        new double[] {100, 40, 40}));
+                put(ShipDesign.SlotType.Weapon1, get(ShipDesign.SlotType.Weapon1));
+                put(ShipDesign.SlotType.Weapon2, get(ShipDesign.SlotType.Weapon2));
+            }}};
 
     private final InfoPanel infoPanel;
+    private final IPlayer player;
+    private final ShipDesigner shipDesigner;
     //private ArrayList<InfoUi> infoUis;
     private Updater uiUpdater = new Updater();
-    private final JFrame guiFrame;
+    // private final JFrame guiFrame;
+    private final JPanel topPanel;
+    private MainGameWindow.PanelAction panelActionListener;
 
     public ShipDesignerWindow(IGameLogic gameLogic, IPlayer player) {
+        this.player = player;
 
-        final ShipDesigner shipDesigner = new ShipDesigner(gameLogic, player);
-
+        this.shipDesigner = new ShipDesigner(gameLogic, player);
+/*
         guiFrame = new JFrame();
 
-        //make sure the program exits when the frame closes
-        guiFrame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
         guiFrame.setTitle("Ship Designer");
         guiFrame.setSize(640, 480);
         guiFrame.setBounds(100, 100, 600, 300);
 
         //This will center the JFrame in the middle of the screen
         guiFrame.setLocationRelativeTo(null);
-
-        double size[][] =  {{320, 320}, {120, 140, 110, 110}};
-        guiFrame.setLayout(new TableLayout(size));
+*/
+        double size[][] =  {{160, 160, 160, 160}, {120, 140, 110, 110}};
+        topPanel = new JPanel(new TableLayout(size));
+        //guiFrame.setLayout(new TableLayout(size));
 
 
         double topleftSizes[][] =  {{315}, {33, 33, 33}};
@@ -61,7 +100,7 @@ public class ShipDesignerWindow {
                 ShipDesign.SlotType.Ecm,
                 " Ecm:",
                 new GenericInfo(shipDesigner, MISSLE_DEFENCE), uiUpdater), "0, 2");
-        guiFrame.add(topLeftPanel, "0, 0");
+        topPanel.add(topLeftPanel, "0, 0, 1, 0");
 
         double topRightSizes[][] =  {{315}, {33, 33, 33}};
         final JPanel topRightPanel = new JPanel(new TableLayout(topRightSizes));
@@ -80,7 +119,7 @@ public class ShipDesignerWindow {
                 " Maneuver:",
                 new GenericInfo(shipDesigner, COMBAT_SPEED),
                 uiUpdater), "0, 2");
-        guiFrame.add(topRightPanel, "1, 0");
+        topPanel.add(topRightPanel, "2, 0, 3, 0");
 
 
         double weaponLayoutSizes[][] =  {{80, 40, 400, 80}, {20, 30, 30, 30, 30}};
@@ -94,7 +133,7 @@ public class ShipDesignerWindow {
         initWeapon(shipDesigner,ShipDesign.SlotType.Weapon3, 3, weaponPanel);
         initWeapon(shipDesigner,ShipDesign.SlotType.Weapon4, 4, weaponPanel);
 
-        guiFrame.add(weaponPanel, "0, 1, 1, 1");
+        topPanel.add(weaponPanel, "0, 1, 3, 1");
 
         double specialLayoutSizes[][] =  {{80, 40, 400, 80}, {40, 40, 40}};
         final JPanel specialPanel = new JPanel(new TableLayout(specialLayoutSizes));
@@ -103,26 +142,58 @@ public class ShipDesignerWindow {
         initSpecial(shipDesigner, ShipDesign.SlotType.Special2, 1, specialPanel);
         initSpecial(shipDesigner, ShipDesign.SlotType.Special3, 2, specialPanel);
 
-        guiFrame.add(specialPanel, "0, 2, 1, 2");
+        topPanel.add(specialPanel, "0, 2, 3, 2");
 
-        final JPanel hullPanel = new JPanel(new TableLayout(new double[][] {{320}, {120}}));
+        final JPanel hullPanel = new JPanel(new TableLayout(new double[][] {{160}, {120}}));
 
         hullPanel.add(createNameSelect(
                         shipDesigner,
                         " Hull: ",
                         new HullSelectorListener(),
                         shipDesigner.getHull().toString()), "0, 0");
-        guiFrame.add(hullPanel, "0, 3");
+        topPanel.add(hullPanel, "0, 3");
 
         infoPanel = new InfoPanel(shipDesigner);
-        guiFrame.add(infoPanel, "1, 3");
+        topPanel.add(infoPanel, "1, 3");
         infoPanel.update();
+
+        JPanel toolbarPanel = new JPanel();
+        toolbarPanel.add(createButton("Exit", new ActionListener() {
+            @Override
+            public void actionPerformed(ActionEvent e) {
+                if (panelActionListener != null) {
+                    panelActionListener.onExit();
+                }
+            }
+        }));
+        toolbarPanel.add(createButton("Reset", new ActionListener() {
+            @Override
+            public void actionPerformed(ActionEvent e) {
+                shipDesigner.reset();
+            }
+        }));
+        topPanel.add(toolbarPanel, "3, 3");
 
 
         //make sure the JFrame is visible
-        guiFrame.pack();
-        guiFrame.setVisible(true);
+        //topPanel.pack();
+        //topPanel.setVisible(true);
 
+    }
+
+    public JPanel getPanel() {
+        return topPanel;
+    }
+
+    public void refresh(boolean debugMode) {
+        shipDesigner.update(debugMode);
+        updateAll();
+    }
+
+    private JButton createButton(String text, ActionListener actionListener) {
+        JButton button = new JButton(text);
+        button.addActionListener(actionListener);
+        return button;
     }
 
     private void initWeapon(final ShipDesigner shipDesigner, final ShipDesign.SlotType slot, int row, final JPanel weaponPanel) {
@@ -263,6 +334,9 @@ public class ShipDesignerWindow {
         return panel;
     }
 
+    private UiFactory.Settings getUiSettingsOf(ShipDesign.SlotType slotType) {
+        return SLOT_UI_SETTINGS.get(slotType);
+    }
 
     private List<Utils.Available<ShipModule>> buildAvailableModuleList(
             ShipDesigner shipDesigner, ShipDesign.SlotType slotType) {
@@ -280,8 +354,12 @@ public class ShipDesignerWindow {
 
     private boolean openShipComponentSelection(
             UiSelection moduleSelection, ShipDesigner shipDesigner, ShipDesign.SlotType slotType) {
-        ShipModuleSelectionDialog dialog =
-                new ShipModuleSelectionDialog(moduleSelection, buildAvailableModuleList(shipDesigner, slotType));
+        ShipModuleSelectionDialog dialog = new ShipModuleSelectionDialog(
+                moduleSelection,
+                buildAvailableModuleList(shipDesigner, slotType),
+                getUiSettingsOf(slotType),
+                player.getPlayerState(),
+                shipDesigner);
         dialog.setModal(true);
         dialog.setSelected(shipDesigner.getCurrentModule(slotType));
         dialog.setLocationRelativeTo(moduleSelection);
@@ -295,8 +373,8 @@ public class ShipDesignerWindow {
 //            moduleSelection.revalidate();
 //            moduleSelection.repaint();
 //            moduleSelection.add(UiFactory.create(shipDesigner.getCurrentModule(slotType)));
-            guiFrame.pack();
-            guiFrame.invalidate();
+            //topPanel.pack();
+            topPanel.invalidate();
             moduleSelection.invalidate();
             return true;
         }
@@ -308,7 +386,7 @@ public class ShipDesignerWindow {
             final String title,
             final UiSelectorListener moduleSelectorListener,
             final String initialValue) {
-        double[][] sizes = {{160, 160}, {35}};
+        double[][] sizes = {{80, 80}, {35}};
         JPanel panel = new JPanel();
         panel.setLayout(new TableLayout(sizes));
         panel.add(new JLabel(title), "0, 0");
@@ -345,7 +423,7 @@ public class ShipDesignerWindow {
         }
         BasicSelectionDialog<Hull> dialog =
                 new BasicSelectionDialog<Hull>(
-                        moduleSelection, availableHullTypes);
+                        moduleSelection, availableHullTypes, null, null, null);
         dialog.setModal(true);
         dialog.setSelected(shipDesigner.getHull());
         dialog.setLocationRelativeTo(moduleSelection);
@@ -355,6 +433,11 @@ public class ShipDesignerWindow {
         updateAll();
         moduleSelection.removeAll();
         moduleSelection.add(UiFactory.create(shipDesigner.getHull()));
+    }
+
+    @Override
+    public void setPanelActionListener(MainGameWindow.PanelAction panelActionListener) {
+        this.panelActionListener = panelActionListener;
     }
 
     private class HullSelectorListener implements UiSelectorListener {
