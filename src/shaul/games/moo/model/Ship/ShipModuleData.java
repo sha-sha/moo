@@ -102,7 +102,7 @@ public class ShipModuleData {
 
     public int getCombatSpeed() { return combatSpeed; }
 
-    public int getCost(Hull hull) { return cost[hull.ordinal()]; }
+    int getCost(Hull hull) { return cost[hull.ordinal()]; }
 
     public int getSize(Hull hull) { return size[hull.ordinal()]; }
 

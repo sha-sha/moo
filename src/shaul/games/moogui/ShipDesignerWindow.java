@@ -39,6 +39,11 @@ public class ShipDesignerWindow implements MainGameWindow.MainPanel {
                         new UiFactory.Settings.Field[] {UiFactory.Settings.Field.Name, UiFactory.Settings.Field.Cost,
                                 UiFactory.Settings.Field.Size},
                         new double[] {100, 40, 40}));
+                put(ShipDesign.SlotType.Engine, new UiFactory.Settings(
+                        new UiFactory.Settings.Field[] {UiFactory.Settings.Field.Name, UiFactory.Settings.Field.Cost,
+                                UiFactory.Settings.Field.Size, UiFactory.Settings.Field.NumberOfEngine,
+                                UiFactory.Settings.Field.Space},
+                        new double[] {120, 40, 80, 60, 40}));
                 put(ShipDesign.SlotType.Maneuver, new UiFactory.Settings(
                         new UiFactory.Settings.Field[] {UiFactory.Settings.Field.Name,
                                 UiFactory.Settings.Field.CombatSpeed, UiFactory.Settings.Field.Cost,
@@ -169,7 +174,8 @@ public class ShipDesignerWindow implements MainGameWindow.MainPanel {
         toolbarPanel.add(createButton("Reset", new ActionListener() {
             @Override
             public void actionPerformed(ActionEvent e) {
-                shipDesigner.reset();
+                shipDesigner.reset(shipDesigner.getHull());
+                refresh(false);
             }
         }));
         topPanel.add(toolbarPanel, "3, 3");
@@ -482,9 +488,14 @@ public class ShipDesignerWindow implements MainGameWindow.MainPanel {
 
         public void update() {
             int spaceUsed = shipDesigner.getUsedSpace();
+            ShipModule.EngineShipModule engine =
+                    (ShipModule.EngineShipModule) shipDesigner.getCurrentModule(ShipDesign.SlotType.Engine);
             StringBuilder sb = new StringBuilder();
             sb.append("<html>");
             sb.append("Space used: " + spaceUsed + " out of " + shipDesigner.getTotalSpace());
+            sb.append("<br>");
+            sb.append("Power: " + shipDesigner.getRequiredPower() + " Reactors: " +
+                    engine.getNumberOfEngine(shipDesigner.getRequiredPower()));
             sb.append("<br>");
             sb.append("Cost: " + shipDesigner.getCost());
             sb.append("</html>");

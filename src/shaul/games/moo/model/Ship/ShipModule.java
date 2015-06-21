@@ -5,10 +5,7 @@ import shaul.games.moo.model.Research.TechModule;
 import shaul.games.moo.model.Research.Technology;
 import shaul.games.moo.model.Utils;
 
-import java.util.Arrays;
-import java.util.Collections;
-import java.util.HashSet;
-import java.util.Set;
+import java.util.*;
 
 /**
  * Created by Shaul on 3/8/2015.
@@ -100,12 +97,16 @@ public class ShipModule extends TechModule {
         return getSize(playerState, hull) + engineSpace;
     }
 
-    public int getCost(IPlayerState playerState, Hull hull) {
+    public int getCost(IPlayerState playerState, Hull hull, ShipModule.EngineShipModule engine) {
         int baseCost = moduleData.getCost(hull);
-        if (baseCost == 0) {
-            return baseCost;
+        baseCost = (int) (baseCost * playerState.getModuleCostReduction(technologyCategory));
+
+        if (moduleData.getPower(hull) > 0) {
+            double numEngines = engine.getNumberOfEngine(moduleData.getPower(hull));
+            int engineCost = (int) Math.ceil(engine.getCost(playerState, hull, engine) * numEngines);
+            return baseCost + engineCost;
         }
-        return (int) (baseCost * playerState.getModuleCostReduction(technologyCategory));
+        return baseCost;
     }
 
     public int getBasicCost(Hull hull) {
@@ -168,13 +169,19 @@ public class ShipModule extends TechModule {
         }
     }
 
-    public static class EngineShipModule extends ShipModule {
+    public static abstract class EngineShipModule extends ShipModule {
         public EngineShipModule(int techLevel, String name, ShipModuleData moduleData) {
             super(Technology.Category.Propulsion,
                     techLevel,
                     name,
                     Utils.setOf(ShipDesign.SlotType.Engine),
                     ShipComponent.ENGINE, moduleData);
+        }
+
+        public abstract List<ManeuverShipModule> getManeuverShipModules();
+
+        public double getNumberOfEngine(int totalPower) {
+            return (double) (Math.ceil(10.0 * totalPower / getModuleData().getGeneratedPower())) / 10.0;
         }
     }
 

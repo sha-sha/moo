@@ -13,17 +13,11 @@ import java.util.*;
 public class TechModules {
     private static final List<ShipModule> EMPTY_MODULES = Arrays.asList(
             ShipModule.NO_COMPUTER, ShipModule.NO_ECM, ShipModule.NO_SHIELD, ShipModule.NO_WEAPON, ShipModule.NO_SPECIAL);
-    private static final List<ShipTech.Maneuver> MANEUVER_MODULES = Arrays.asList(
-            new ShipTech.Maneuver(0, 1), new ShipTech.Maneuver(1, 2), new ShipTech.Maneuver(2, 3),
-            new ShipTech.Maneuver(3, 4), new ShipTech.Maneuver(4, 5), new ShipTech.Maneuver(5, 6),
-            new ShipTech.Maneuver(6, 7), new ShipTech.Maneuver(7, 8), new ShipTech.Maneuver(8, 9),
-            new ShipTech.Maneuver(9, 10), new ShipTech.Maneuver(10, 11));
     private static final List<ShipModule> BASE_MODULES = new ArrayList<>();
 
     public static List<ShipModule> getBaseModules() {
         if (BASE_MODULES.isEmpty()) {
             BASE_MODULES.addAll(EMPTY_MODULES);
-            BASE_MODULES.addAll(MANEUVER_MODULES);
         }
         return BASE_MODULES;
     }

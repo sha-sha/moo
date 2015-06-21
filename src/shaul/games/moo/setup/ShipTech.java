@@ -10,6 +10,11 @@ import shaul.games.moo.model.Ship.ShipModule;
 import shaul.games.moo.model.Ship.ShipModuleData;
 import shaul.games.moo.model.Utils;
 
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.Collections;
+import java.util.List;
+
 /**
  * Created by Shaul on 3/1/2015.
  */
@@ -75,10 +80,10 @@ public class ShipTech {
         public Armor(int techLevel, String name, int level, boolean doubleHull) {
             super(techLevel, name, new ShipModuleData.Builder()
                     .setCost(20 * (level - 1), 80 * (level - 1), 120 * (level - 1), 400 * (level - 1))
-                    .setSize(doubleHull ? calcDoubleHull(Hull.Small, techLevel) : 1,
-                            doubleHull ? calcDoubleHull(Hull.Medium, techLevel) : 1,
-                            doubleHull ? calcDoubleHull(Hull.Large, techLevel) : 1,
-                            doubleHull ? calcDoubleHull(Hull.Huge, techLevel) : 1)
+                    .setSize(doubleHull ? calcDoubleHull(Hull.Small, techLevel) : 0,
+                            doubleHull ? calcDoubleHull(Hull.Medium, techLevel) : 0,
+                            doubleHull ? calcDoubleHull(Hull.Large, techLevel) : 0,
+                            doubleHull ? calcDoubleHull(Hull.Huge, techLevel) : 0)
                     .setShipHitPointsModifier(
                             doubleHull ? 1.0 + level * 0.5 : 0.5 + level * 0.5) // 50% increase for each level > 1.
                     .build());
@@ -93,6 +98,8 @@ public class ShipTech {
 
     public static class Engine extends ShipModule.EngineShipModule{
 
+        private final List<ManeuverShipModule> maneuverShipModules;
+
         public Engine(int techLevel, String name, int level) {
             this(techLevel, name, level, 0);
         }
@@ -105,6 +112,16 @@ public class ShipTech {
                     .setGeneratedPower(level * 10)
                     .setCombatSpeed(additionalCombatSpeed)
                     .build());
+            List<ManeuverShipModule> maneuverShipModules = new ArrayList<>();
+            for (int i = 1; i <= level; i++) {
+                maneuverShipModules.add(new Maneuver(techLevel, i, level));
+            }
+            this.maneuverShipModules = Collections.unmodifiableList(maneuverShipModules);
+        }
+
+        @Override
+        public List<ManeuverShipModule> getManeuverShipModules() {
+            return maneuverShipModules;
         }
     }
 
@@ -147,16 +164,27 @@ public class ShipTech {
         }
     }
 
-    public static class Maneuver extends ShipModule.ManeuverShipModule {
+    private static class Maneuver extends ShipModule.ManeuverShipModule {
+        private static double[] BASE_POWER = {2.0, 15.0, 100.0, 700.0};
 
-        public Maneuver(int techLevel, int level) {
+        private Maneuver(int techLevel, int level, int engineLevel) {
             super(techLevel, "Class " + Utils.toRomanNumber(level), new ShipModuleData.Builder()
-                    .setCost(1, 1, 10, 70)
-                    .setSize(1, 1, 10, 70)
-                    .setPower(20, 80, 120, 400)
+                    .setCost(0, 0, 0, 0)
+                    .setSize(0, 0, 0, 0)
+                    .setPower(round(requiredPower(level, engineLevel, 0)),
+                            round(requiredPower(level, engineLevel, 1)),
+                            round(requiredPower(level, engineLevel, 2)),
+                            round(requiredPower(level, engineLevel, 3)))
                     .setCombatSpeed(level)
                     .setManeuvers(level)
                     .build());
+        }
+
+        private static double requiredPower(int level, int engineLevel, int hull) {
+            return BASE_POWER[hull] * level / engineLevel;
+        }
+        private static int round(double v) {
+            return (int) Math.round(v);
         }
     }
 

@@ -20,7 +20,8 @@ public class UiFactory {
 
     public static class Settings {
         public enum Field {
-            Name("Name"), Cost("Cost"), Size("Size"), Power("Power"), Space("Space"), CombatSpeed("+Speed");
+            Name("Name"), Cost("Cost"), Size("Size"), Power("Power"), Space("Space"), NumberOfEngine("Reactors"),
+            CombatSpeed("+Speed");
 
             private final String name;
 
@@ -53,12 +54,16 @@ public class UiFactory {
                 ShipModule shipModule, IPlayerState playerState,  ShipDesigner shipDesigner, Field field) {
             switch (field) {
                 case Name: return shipModule.getName();
-                case Cost: return String.valueOf(shipModule.getCost(playerState, shipDesigner.getHull()));
+                case Cost: return String.valueOf(shipModule.getCost(playerState, shipDesigner.getHull(),
+                        (ShipModule.EngineShipModule) shipDesigner.getCurrentModule(ShipDesign.SlotType.Engine)));
                 case Size: return String.valueOf(shipModule.getSize(playerState, shipDesigner.getHull()));
                 case Power: return String.valueOf(shipModule.getModuleData().getPower(shipDesigner.getHull()));
                 case Space: return String.valueOf(shipModule.getRequiredSpace(playerState, shipDesigner.getHull(),
                         shipDesigner.getCurrentModule(ShipDesign.SlotType.Engine)));
                 case CombatSpeed: return String.valueOf(shipModule.getModuleData().getCombatSpeed());
+                case NumberOfEngine: return String.valueOf(shipModule instanceof ShipModule.EngineShipModule ?
+                        ((ShipModule.EngineShipModule) shipModule).getNumberOfEngine(shipDesigner.getRequiredPower()) :
+                        0);
                 default:
                     throw new GameRunTimeError("UiFactory.Settings doesn't support " + field);
             }
