@@ -97,13 +97,18 @@ public class ShipModule extends TechModule {
         return getSize(playerState, hull) + engineSpace;
     }
 
-    public int getCost(IPlayerState playerState, Hull hull, ShipModule.EngineShipModule engine) {
+    public int getCost(IPlayerState playerState, Hull hull) {
         int baseCost = moduleData.getCost(hull);
         baseCost = (int) (baseCost * playerState.getModuleCostReduction(technologyCategory));
+        return baseCost;
+    }
+
+    public int getExtendedCost(IPlayerState playerState, Hull hull, ShipModule.EngineShipModule engine) {
+        int baseCost = getCost(playerState, hull);
 
         if (moduleData.getPower(hull) > 0) {
             double numEngines = engine.getNumberOfEngine(moduleData.getPower(hull));
-            int engineCost = (int) Math.ceil(engine.getCost(playerState, hull, engine) * numEngines);
+            int engineCost = (int) Math.ceil(engine.getCost(playerState, hull) * numEngines);
             return baseCost + engineCost;
         }
         return baseCost;

@@ -68,6 +68,7 @@ public class ShipDesign {
     private final int wrapSpeed;
     private final int combatSpeed;
     private final int maneuverability;
+    private final String name;
 
 
     ShipDesign(Hull hull, Map<SlotType, Utils.Countable<ShipModule>> shipModules) {
@@ -101,6 +102,7 @@ public class ShipDesign {
         this.wrapSpeed = wrapSpeed;
         this.combatSpeed = combatSpeed;
         this.maneuverability = maneuverability;
+        this.name = "rrr";
     }
 
     @Override
@@ -116,6 +118,10 @@ public class ShipDesign {
             }
         }
         return sb.toString();
+    }
+
+    public String getName() {
+        return name;
     }
 
     public int getAttackLevel() {

@@ -3,19 +3,18 @@ package shaul.games.moogui;
 import layout.TableLayout;
 import shaul.games.moo.model.IGameLogic;
 import shaul.games.moo.model.Player.IPlayer;
-import shaul.games.moo.model.Player.IPlayerState;
 import shaul.games.moo.model.Ship.*;
 import shaul.games.moo.model.Utils;
+import shaul.games.moogui.Widget.Element;
+import shaul.games.moogui.Widget.Selector;
+import shaul.games.moogui.Widget.UpDown;
 
 import javax.swing.*;
 import javax.swing.border.EmptyBorder;
 import javax.swing.border.LineBorder;
 import javax.swing.plaf.basic.BasicArrowButton;
 import java.awt.*;
-import java.awt.event.ActionEvent;
-import java.awt.event.ActionListener;
-import java.awt.event.MouseEvent;
-import java.awt.event.MouseListener;
+import java.awt.event.*;
 import java.util.*;
 import java.util.List;
 
@@ -67,7 +66,7 @@ public class ShipDesignerWindow implements MainGameWindow.MainPanel {
     //private ArrayList<InfoUi> infoUis;
     private Updater uiUpdater = new Updater();
     // private final JFrame guiFrame;
-    private final JPanel topPanel;
+    private final JPanel mainPanel;
     private MainGameWindow.PanelAction panelActionListener;
 
     public ShipDesignerWindow(IGameLogic gameLogic, IPlayer player) {
@@ -84,12 +83,13 @@ public class ShipDesignerWindow implements MainGameWindow.MainPanel {
         //This will center the JFrame in the middle of the screen
         guiFrame.setLocationRelativeTo(null);
 */
-        double size[][] =  {{160, 160, 160, 160}, {120, 140, 110, 110}};
-        topPanel = new JPanel(new TableLayout(size));
+        double size[][] =  {{160, 240, 160, 240}, {120, 190, 150, 140}};
+        mainPanel = new JPanel(new TableLayout(size));
+
         //guiFrame.setLayout(new TableLayout(size));
 
 
-        double topleftSizes[][] =  {{315}, {33, 33, 33}};
+        double topleftSizes[][] =  {{395}, {33, 33, 33}};
         final JPanel topLeftPanel = new JPanel(new TableLayout(topleftSizes));
         topLeftPanel.setBorder(new LineBorder(Color.BLACK, 1));
 
@@ -105,9 +105,9 @@ public class ShipDesignerWindow implements MainGameWindow.MainPanel {
                 ShipDesign.SlotType.Ecm,
                 " Ecm:",
                 new GenericInfo(shipDesigner, MISSLE_DEFENCE), uiUpdater), "0, 2");
-        topPanel.add(topLeftPanel, "0, 0, 1, 0");
+        mainPanel.add(topLeftPanel, "0, 0, 1, 0");
 
-        double topRightSizes[][] =  {{315}, {33, 33, 33}};
+        double topRightSizes[][] =  {{395}, {33, 33, 33}};
         final JPanel topRightPanel = new JPanel(new TableLayout(topRightSizes));
         topRightPanel.setBorder(new LineBorder(Color.BLACK, 1));
 
@@ -124,10 +124,10 @@ public class ShipDesignerWindow implements MainGameWindow.MainPanel {
                 " Maneuver:",
                 new GenericInfo(shipDesigner, COMBAT_SPEED),
                 uiUpdater), "0, 2");
-        topPanel.add(topRightPanel, "2, 0, 3, 0");
+        mainPanel.add(topRightPanel, "2, 0, 3, 0");
 
 
-        double weaponLayoutSizes[][] =  {{80, 40, 400, 80}, {20, 30, 30, 30, 30}};
+        double weaponLayoutSizes[][] =  {{80, 120, 480, 80}, {30, 40, 40, 40, 40}};
         final JPanel weaponPanel = new JPanel(new TableLayout(weaponLayoutSizes));
         weaponPanel.setBackground(new Color(160, 190, 190));
         weaponPanel.add(new JLabel("Count"), "1, 0");
@@ -136,59 +136,72 @@ public class ShipDesignerWindow implements MainGameWindow.MainPanel {
         initWeapon(shipDesigner, ShipDesign.SlotType.Weapon1, 1, weaponPanel);
         initWeapon(shipDesigner,ShipDesign.SlotType.Weapon2, 2, weaponPanel);
         initWeapon(shipDesigner,ShipDesign.SlotType.Weapon3, 3, weaponPanel);
-        initWeapon(shipDesigner,ShipDesign.SlotType.Weapon4, 4, weaponPanel);
+        initWeapon(shipDesigner, ShipDesign.SlotType.Weapon4, 4, weaponPanel);
 
-        topPanel.add(weaponPanel, "0, 1, 3, 1");
+        mainPanel.add(weaponPanel, "0, 1, 3, 1");
 
-        double specialLayoutSizes[][] =  {{80, 40, 400, 80}, {40, 40, 40}};
+        double specialLayoutSizes[][] =  {{80, 80, 480, 80}, {40, 40, 40}};
         final JPanel specialPanel = new JPanel(new TableLayout(specialLayoutSizes));
         specialPanel.setBackground(new Color(160, 190, 160));
         initSpecial(shipDesigner, ShipDesign.SlotType.Special1, 0, specialPanel);
         initSpecial(shipDesigner, ShipDesign.SlotType.Special2, 1, specialPanel);
         initSpecial(shipDesigner, ShipDesign.SlotType.Special3, 2, specialPanel);
 
-        topPanel.add(specialPanel, "0, 2, 3, 2");
+        mainPanel.add(specialPanel, "0, 2, 3, 2");
 
-        final JPanel hullPanel = new JPanel(new TableLayout(new double[][] {{160}, {120}}));
+        final JPanel lowerPanel = new JPanel(new TableLayout(new double[][] {{200, 200, 240, 160}, {TableLayout.FILL}}));
+        mainPanel.add(lowerPanel, "0, 3, 3, 3");
+
+        final JPanel hullPanel = new JPanel(new TableLayout(new double[][] {{200}, {120}}));
 
         hullPanel.add(createNameSelect(
                         shipDesigner,
                         " Hull: ",
                         new HullSelectorListener(),
                         shipDesigner.getHull().toString()), "0, 0");
-        topPanel.add(hullPanel, "0, 3");
+        lowerPanel.add(hullPanel, "0, 0");
 
         infoPanel = new InfoPanel(shipDesigner);
-        topPanel.add(infoPanel, "1, 3");
+        lowerPanel.add(infoPanel, "2, 0");
         infoPanel.update();
 
         JPanel toolbarPanel = new JPanel();
-        toolbarPanel.add(createButton("Exit", new ActionListener() {
+        toolbarPanel.add(createButton("Cancel", new ActionListener() {
             @Override
             public void actionPerformed(ActionEvent e) {
                 if (panelActionListener != null) {
                     panelActionListener.onExit();
                 }
             }
-        }));
-        toolbarPanel.add(createButton("Reset", new ActionListener() {
+        }, null));
+        toolbarPanel.add(createButton("Clear", new ActionListener() {
             @Override
             public void actionPerformed(ActionEvent e) {
                 shipDesigner.reset(shipDesigner.getHull());
                 refresh(false);
             }
-        }));
-        topPanel.add(toolbarPanel, "3, 3");
+        }, Color.red));
+        lowerPanel.add(toolbarPanel, "3, 0");
 
+        mainPanel.getInputMap(JComponent.WHEN_IN_FOCUSED_WINDOW).put(
+                KeyStroke.getKeyStroke(KeyEvent.VK_ESCAPE, 0), "Cancel"); //$NON-NLS-1$
+        mainPanel.getActionMap().put("Cancel", new AbstractAction(){ //$NON-NLS-1$
+            public void actionPerformed(ActionEvent e)
+            {
+                if (panelActionListener != null) {
+                    panelActionListener.onExit();
+                }
+            }
+        });
 
         //make sure the JFrame is visible
-        //topPanel.pack();
-        //topPanel.setVisible(true);
+        //mainPanel.pack();
+        //mainPanel.setVisible(true);
 
     }
 
     public JPanel getPanel() {
-        return topPanel;
+        return mainPanel;
     }
 
     public void refresh(boolean debugMode) {
@@ -196,8 +209,11 @@ public class ShipDesignerWindow implements MainGameWindow.MainPanel {
         updateAll();
     }
 
-    private JButton createButton(String text, ActionListener actionListener) {
+    private JButton createButton(String text, ActionListener actionListener, Color color) {
         JButton button = new JButton(text);
+        if (color != null) {
+            button.setBackground(color);
+        }
         button.addActionListener(actionListener);
         return button;
     }
@@ -218,8 +234,8 @@ public class ShipDesignerWindow implements MainGameWindow.MainPanel {
         });
         weaponPanel.add(upDown, "1, " + row);
 
-        final UiSelection<GenericUi<ShipModule>> weapon = new UiSelection<>();
-        weapon.setListener(new UiSelection.Listener() {
+        final Selector<GenericUi<ShipModule>> weapon = new Selector<>();
+        weapon.setListener(new Selector.Listener() {
             @Override
             public void onClick() {
                 if (openShipComponentSelection(weapon, shipDesigner, slot)) {
@@ -229,9 +245,9 @@ public class ShipDesignerWindow implements MainGameWindow.MainPanel {
             }
         });
         final GenericUi<ShipModule> initialValue = UiFactory.create(shipDesigner.getCurrentModule(slot));
-        initialValue.setListener(new UiElement.UiListener() {
+        initialValue.setListener(new Element.UiListener() {
             @Override
-            public void onClick(UiElement shipModuleUi) {
+            public void onClick(Element shipModuleUi) {
                 if (openShipComponentSelection(weapon, shipDesigner, slot)) {
                     upDown.setValue(shipDesigner.getCurrentModule(slot).isEmpty() ? 0 : 1);
                 }
@@ -258,17 +274,17 @@ public class ShipDesignerWindow implements MainGameWindow.MainPanel {
 
     private void initSpecial(final ShipDesigner shipDesigner, final ShipDesign.SlotType slot, int row, final JPanel panel) {
         panel.add(new JLabel("Special " + row), "0, " + row);
-        final UiSelection<GenericUi<ShipModule>> special = new UiSelection<>();
-        special.setListener(new UiSelection.Listener() {
+        final Selector<GenericUi<ShipModule>> special = new Selector<>();
+        special.setListener(new Selector.Listener() {
             @Override
             public void onClick() {
                 openShipComponentSelection(special, shipDesigner, slot);
             }
         });
         final GenericUi<ShipModule> initialValue = UiFactory.create(shipDesigner.getCurrentModule(slot));
-        initialValue.setListener(new UiElement.UiListener() {
+        initialValue.setListener(new Element.UiListener() {
             @Override
-            public void onClick(UiElement shipModuleUi) {
+            public void onClick(Element shipModuleUi) {
                 openShipComponentSelection(special, shipDesigner, slot);
             }
         });
@@ -297,27 +313,27 @@ public class ShipDesignerWindow implements MainGameWindow.MainPanel {
             final String title,
             final InfoUi infoUi,
             Updater uiUpdater) {
-        double[][] sizes = {{70, 135, 105}, {35}};
+        double[][] sizes = {{70, 135, 185}, {35}};
         final UiSelectorListener moduleSelectorListener = new UiSelectorListener() {
             @Override
-            public void onSelect(UiSelection uiSelection, ShipDesigner shipDesigner) {
-                openShipComponentSelection(uiSelection, shipDesigner, slotType);
+            public void onSelect(Selector Selector, ShipDesigner shipDesigner) {
+                openShipComponentSelection(Selector, shipDesigner, slotType);
             }
         };
         JPanel panel = new JPanel();
         panel.setLayout(new TableLayout(sizes));
         panel.add(new JLabel(title), "0, 0");
-        final UiSelection<GenericUi<ShipModule>> slot = new UiSelection<>();
-        slot.setListener(new UiSelection.Listener() {
+        final Selector<GenericUi<ShipModule>> slot = new Selector<>();
+        slot.setListener(new Selector.Listener() {
             @Override
             public void onClick() {
                 moduleSelectorListener.onSelect(slot, shipDesigner);
             }
         });
         final GenericUi<ShipModule> initialValue = UiFactory.create(shipDesigner.getCurrentModule(slotType));
-        initialValue.setListener(new UiElement.UiListener() {
+        initialValue.setListener(new Element.UiListener() {
             @Override
-            public void onClick(UiElement shipModuleUi) {
+            public void onClick(Element shipModuleUi) {
                 moduleSelectorListener.onSelect(slot, shipDesigner);
             }
         });
@@ -359,7 +375,7 @@ public class ShipDesignerWindow implements MainGameWindow.MainPanel {
     }
 
     private boolean openShipComponentSelection(
-            UiSelection moduleSelection, ShipDesigner shipDesigner, ShipDesign.SlotType slotType) {
+            Selector moduleSelection, ShipDesigner shipDesigner, ShipDesign.SlotType slotType) {
         ShipModuleSelectionDialog dialog = new ShipModuleSelectionDialog(
                 moduleSelection,
                 buildAvailableModuleList(shipDesigner, slotType),
@@ -379,8 +395,8 @@ public class ShipDesignerWindow implements MainGameWindow.MainPanel {
 //            moduleSelection.revalidate();
 //            moduleSelection.repaint();
 //            moduleSelection.add(UiFactory.create(shipDesigner.getCurrentModule(slotType)));
-            //topPanel.pack();
-            topPanel.invalidate();
+            //mainPanel.pack();
+            mainPanel.invalidate();
             moduleSelection.invalidate();
             return true;
         }
@@ -396,17 +412,17 @@ public class ShipDesignerWindow implements MainGameWindow.MainPanel {
         JPanel panel = new JPanel();
         panel.setLayout(new TableLayout(sizes));
         panel.add(new JLabel(title), "0, 0");
-        final UiSelection<GenericUi<String>> slot = new UiSelection<>();
-        slot.setListener(new UiSelection.Listener() {
+        final Selector<GenericUi<String>> slot = new Selector<>();
+        slot.setListener(new Selector.Listener() {
             @Override
             public void onClick() {
                 moduleSelectorListener.onSelect(slot, shipDesigner);
             }
         });
         GenericUi<String> initialValueUi = UiFactory.create(initialValue);
-        initialValueUi.setListener(new UiElement.UiListener() {
+        initialValueUi.setListener(new Element.UiListener() {
             @Override
-            public void onClick(UiElement shipModuleUi) {
+            public void onClick(Element shipModuleUi) {
                 moduleSelectorListener.onSelect(slot, shipDesigner);
             }
         });
@@ -421,7 +437,7 @@ public class ShipDesignerWindow implements MainGameWindow.MainPanel {
         uiUpdater.update();
     }
 
-    private void openHullSelection(UiSelection moduleSelection, ShipDesigner shipDesigner) {
+    private void openHullSelection(Selector moduleSelection, ShipDesigner shipDesigner) {
         List<Utils.Available<Hull>> availableHullTypes = new ArrayList<>();
         for (Hull hull : Hull.values()) {
             availableHullTypes.add(new Utils.Available<Hull>(
@@ -448,7 +464,7 @@ public class ShipDesignerWindow implements MainGameWindow.MainPanel {
 
     private class HullSelectorListener implements UiSelectorListener {
         @Override
-        public void onSelect(UiSelection moduleSelection, ShipDesigner shipDesigner) {
+        public void onSelect(Selector moduleSelection, ShipDesigner shipDesigner) {
             openHullSelection(moduleSelection, shipDesigner);
         }
     }
@@ -476,61 +492,82 @@ public class ShipDesignerWindow implements MainGameWindow.MainPanel {
         }
     }
 
+    private static abstract class SlotUpdate implements GenericInfo.Update {
+
+        private final ShipDesign.SlotType slotType;
+
+        SlotUpdate(ShipDesign.SlotType slotType) {
+            this.slotType = slotType;
+        }
+
+        @Override
+        public String update(ShipDesigner shipDesigner) {
+            return getValue(shipDesigner) + " [" + shipDesigner.getPowerRequired(slotType) + "]";
+        }
+
+        abstract protected String getValue(ShipDesigner shipDesigner);
+    }
+
     private static class InfoPanel extends JPanel implements InfoUi {
         private final ShipDesigner shipDesigner;
-        private final JLabel label;
+        private final JLabel label1;
+        private final JLabel label2;
+        private final JLabel label3;
+        private final JLabel label4;
 
         InfoPanel(ShipDesigner shipDesigner) {
+            setLayout(new GridLayout(4, 2, 0, 0));
             this.shipDesigner = shipDesigner;
-            this.label = new JLabel("Empty");
-            add(label);
+            this.label1 = new JLabel("", SwingConstants.RIGHT);
+            this.label2 = new JLabel("", SwingConstants.RIGHT);
+            this.label3 = new JLabel("", SwingConstants.RIGHT);
+            this.label4 = new JLabel("", SwingConstants.RIGHT);
+            add(new JLabel("Ship Cost"));
+            add(label1);
+            add(new JLabel("Total Space"));
+            add(label2);
+            add(new JLabel("Available Space"));
+            add(label3);
+            add(new JLabel("Power [Reactors]"));
+            add(label4);
         }
 
         public void update() {
             int spaceUsed = shipDesigner.getUsedSpace();
             ShipModule.EngineShipModule engine =
                     (ShipModule.EngineShipModule) shipDesigner.getCurrentModule(ShipDesign.SlotType.Engine);
-            StringBuilder sb = new StringBuilder();
-            sb.append("<html>");
-            sb.append("Space used: " + spaceUsed + " out of " + shipDesigner.getTotalSpace());
-            sb.append("<br>");
-            sb.append("Power: " + shipDesigner.getRequiredPower() + " Reactors: " +
-                    engine.getNumberOfEngine(shipDesigner.getRequiredPower()));
-            sb.append("<br>");
-            sb.append("Cost: " + shipDesigner.getCost());
-            sb.append("</html>");
-            this.label.setText(sb.toString());
+            this.label1.setText(shipDesigner.getCost() + " BC");
+            this.label2.setText(String.valueOf(shipDesigner.getTotalSpace()));
+            this.label3.setText(String.valueOf(shipDesigner.getTotalSpace() - spaceUsed));
+            this.label4.setText(String.format("%d  [%.1f]", shipDesigner.getRequiredPower(),
+                    engine.getNumberOfEngine(shipDesigner.getRequiredPower())));
         }
     }
 
-    private static final GenericInfo.Update ATTACK_INFO = new GenericInfo.Update() {
-        @Override public String update(ShipDesigner shipDesigner) {
+    private static final GenericInfo.Update ATTACK_INFO = new SlotUpdate(ShipDesign.SlotType.Computer) {
+        @Override public String getValue(ShipDesigner shipDesigner) {
             return "Attack Level: " + shipDesigner.getAttackLevel();
         }};
-    private static final GenericInfo.Update HIT_POINT = new GenericInfo.Update() {
-        @Override public String update(ShipDesigner shipDesigner) {
+    private static final GenericInfo.Update HIT_POINT = new SlotUpdate(ShipDesign.SlotType.Armor) {
+        @Override public String getValue(ShipDesigner shipDesigner) {
             return "Hit Points: " + shipDesigner.getHitPoints();
         }};
-    private static final GenericInfo.Update HIT_ABSORBS = new GenericInfo.Update() {
-        @Override public String update(ShipDesigner shipDesigner) {
+    private static final GenericInfo.Update HIT_ABSORBS = new SlotUpdate(ShipDesign.SlotType.Shield) {
+        @Override public String getValue(ShipDesigner shipDesigner) {
             int hitsAbsorbs = shipDesigner.getHitsAbsorbs();
             return "Hit Absorbs: " + shipDesigner.getHitsAbsorbs();
         }};
-    private static final GenericInfo.Update MISSLE_DEFENCE = new GenericInfo.Update() {
-        @Override public String update(ShipDesigner shipDesigner) {
+    private static final GenericInfo.Update MISSLE_DEFENCE = new SlotUpdate(ShipDesign.SlotType.Ecm) {
+        @Override public String getValue(ShipDesigner shipDesigner) {
             return "Missle Defence: " + shipDesigner.getMissleDefence();
         }};
     private static final GenericInfo.Update WRAP_AND_DEFENCE = new GenericInfo.Update() {
         @Override public String update(ShipDesigner shipDesigner) {
             return "Wrap: " + shipDesigner.getWrapSpeed() + " Defence ?";
         }};
-    private static final GenericInfo.Update COMBAT_SPEED = new GenericInfo.Update() {
-        @Override public String update(ShipDesigner shipDesigner) {
+    private static final GenericInfo.Update COMBAT_SPEED = new SlotUpdate(ShipDesign.SlotType.Maneuver) {
+        @Override public String getValue(ShipDesigner shipDesigner) {
             return "Mnver: " + shipDesigner.getManeuverability() + " Spd: " + shipDesigner.getCombatSpeed();
-        }};
-    private static final GenericInfo.Update MANEUVER = new GenericInfo.Update() {
-        @Override public String update(ShipDesigner shipDesigner) {
-            return "Wrap: " + shipDesigner.getWrapSpeed() + " Defence ?";
         }};
 
     private static class Test extends JPanel {
@@ -541,154 +578,7 @@ public class ShipDesignerWindow implements MainGameWindow.MainPanel {
     }
 
     private interface UiSelectorListener {
-        void onSelect(UiSelection uiSelection, ShipDesigner shipDesigner);
-    }
-
-    private static class UiSelection<T extends JComponent & UiElement>
-            extends JPanel implements MouseListener, UiElement.UiListener {
-
-        private Listener listener;
-
-        @Override
-        public void onClick(UiElement ui) {
-            doClickAction();
-        }
-
-        public interface Listener {
-            void onClick();
-        }
-
-        public UiSelection() {
-            super();
-            addMouseListener(this);
-        }
-
-        public void setListener(Listener listener) {
-            this.listener = listener;
-        }
-
-        public void add(T ui) {
-            super.add(ui);
-            ui.setListener(this);
-        }
-
-        @Override
-        public void mouseClicked(MouseEvent e) {
-
-        }
-
-        @Override
-        public void mousePressed(MouseEvent e) {
-
-        }
-
-        @Override
-        public void mouseReleased(MouseEvent e) {
-            if(contains(e.getPoint())){
-                doClickAction();
-            }
-        }
-
-        private void doClickAction() {
-            System.out.println("UiSelection.doClickAction");
-            if (listener != null) {
-                listener.onClick();
-            } else {
-                System.out.print("ModuleSelection has mo listener!");
-            }
-        }
-
-        @Override
-        public void mouseEntered(MouseEvent e) {
-
-        }
-
-        @Override
-        public void mouseExited(MouseEvent e) {
-
-        }
-    }
-
-    private static class UpDown extends JPanel implements MouseListener {
-
-        @Override
-        public void mouseClicked(MouseEvent e) {
-
-        }
-
-        @Override
-        public void mousePressed(MouseEvent e) {
-
-        }
-
-        @Override
-        public void mouseReleased(MouseEvent e) {
-            int newVal = current;
-            if (e.getSource() == up) {
-                newVal++;
-            } else if (e.getSource() == down) {
-                newVal--;
-            }
-            if (listener != null && listener.onChange(this, newVal)) {
-                setValue(newVal);
-            }
-        }
-
-        @Override
-        public void mouseEntered(MouseEvent e) {
-
-        }
-
-        @Override
-        public void mouseExited(MouseEvent e) {
-
-        }
-
-        interface Listener {
-            boolean onChange(UpDown upDown, int newValue);
-        }
-
-        private final BasicArrowButton up;
-        private final BasicArrowButton down;
-        private final JLabel text;
-        private Listener listener;
-        private int current = 0;
-
-        UpDown(Color back) {
-            JPanel buttons = new JPanel();
-            double buttonSizes[][] = {{TableLayout.FILL}, {0.5, 0.5}};
-            buttons.setLayout(new TableLayout(buttonSizes));
-            this.up = new BasicArrowButton(SwingConstants.NORTH);
-            up.addMouseListener(this);
-            buttons.add(up, "0, 0");
-
-            down = new BasicArrowButton(SwingConstants.SOUTH);
-            down.addMouseListener(this);
-            buttons.add(down, "0, 1");
-            buttons.setBackground(back);
-
-            double sizes[][] = {{16, TableLayout.FILL}, {TableLayout.FILL}};
-            setLayout(new TableLayout(sizes));
-            setBorder(new EmptyBorder(2, 2, 2, 2));
-            setBackground(back);
-            add(buttons, "0, 0");
-            text = new JLabel("0");
-            add(text, "1, 0");
-        }
-
-        void setListener(Listener listener) {
-            this.listener = listener;
-        }
-
-        void setValue(int val) {
-            this.current = val;
-            text.setText("" + val);
-        }
-
-        int getValue() {
-            return this.current;
-        }
-
+        void onSelect(Selector uiSelection, ShipDesigner shipDesigner);
     }
 
     private static class Updater {

@@ -5,6 +5,8 @@ import shaul.games.moo.model.Ship.Hull;
 import shaul.games.moo.model.Ship.ShipDesigner;
 import shaul.games.moo.model.Ship.ShipModule;
 import shaul.games.moo.model.Utils;
+import shaul.games.moogui.Widget.Element;
+import shaul.games.moogui.Widget.SelectionDialog;
 
 import javax.swing.*;
 import java.awt.event.ActionEvent;
@@ -15,9 +17,12 @@ import java.util.List;
 /**
  * Created by Shaul on 5/3/2015.
  */
-public class BasicSelectionDialog<T> extends JDialog implements UiElement.UiListener {
+public class BasicSelectionDialog<T> extends JDialog implements Element.UiListener {
 
     private final ArrayList<GenericUi<T>> moduleUiList;
+    private final UiFactory.Settings settings;
+    private final IPlayerState playerState;
+    private final ShipDesigner shipDesigner;
     private T selected = null;
     private final Timer autoKillTimer;
     private final ActionListener timerKillListener;
@@ -27,6 +32,9 @@ public class BasicSelectionDialog<T> extends JDialog implements UiElement.UiList
     public BasicSelectionDialog(JComponent parent, List<Utils.Available<T>> optionalTypes,
                                 UiFactory.Settings settings, IPlayerState playerState, ShipDesigner shipDesigner) {
         super(SwingUtilities.windowForComponent(parent));
+        this.settings = settings;
+        this.playerState = playerState;
+        this.shipDesigner = shipDesigner;
         JPanel main = new JPanel();
         main.setLayout(new BoxLayout(main, BoxLayout.Y_AXIS));
         moduleUiList = new ArrayList<>();
@@ -84,7 +92,7 @@ public class BasicSelectionDialog<T> extends JDialog implements UiElement.UiList
     }
 
     @Override
-    public void onClick(UiElement stringUi) {
+    public void onClick(Element stringUi) {
         if (!autoKillInOProgress) {
             autoKillInOProgress = true;
             setSelected(((GenericUi<T>) stringUi).getData());

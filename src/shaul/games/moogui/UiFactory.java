@@ -8,10 +8,15 @@ import shaul.games.moo.model.Ship.ShipDesign;
 import shaul.games.moo.model.Ship.ShipDesigner;
 import shaul.games.moo.model.Ship.ShipModule;
 import shaul.games.moo.model.Utils;
+import shaul.games.moogui.Widget.SelectionDialog;
+import shaul.games.moogui.Widget.Selector;
+import shaul.games.moogui.Widget.UpDown;
 
 import javax.swing.*;
+import java.awt.*;
 import java.util.Arrays;
 import java.util.List;
+import java.util.function.Supplier;
 
 /**
  * Created by Shaul on 4/26/2015.
@@ -54,7 +59,7 @@ public class UiFactory {
                 ShipModule shipModule, IPlayerState playerState,  ShipDesigner shipDesigner, Field field) {
             switch (field) {
                 case Name: return shipModule.getName();
-                case Cost: return String.valueOf(shipModule.getCost(playerState, shipDesigner.getHull(),
+                case Cost: return String.valueOf(shipModule.getExtendedCost(playerState, shipDesigner.getHull(),
                         (ShipModule.EngineShipModule) shipDesigner.getCurrentModule(ShipDesign.SlotType.Engine)));
                 case Size: return String.valueOf(shipModule.getSize(playerState, shipDesigner.getHull()));
                 case Power: return String.valueOf(shipModule.getModuleData().getPower(shipDesigner.getHull()));
@@ -82,6 +87,34 @@ public class UiFactory {
             panel.add(new JLabel(settings.columns[i].toString()), String.valueOf(i) + ", 0");
         }
         return panel;
+    }
+
+    public static<T> Selector<GenericUi<T>> createSelector(final List<Utils.Available<T>> list, T current) {
+        return createSelector(new Supplier<List<Utils.Available<T>>>() {
+            @Override
+            public List<Utils.Available<T>> get() {
+                return list;
+            }
+        }, current);
+    }
+
+    public static<T> Selector<GenericUi<T>> createSelector(Supplier<List<Utils.Available<T>>> listSupplier, T current) {
+        final SelectionDialog<T> selectorDialog = new SelectionDialog<T>(listSupplier);
+        final Selector<GenericUi<T>> slot = new Selector<>();
+        slot.setListener(new Selector.Listener() {
+            @Override
+            public void onClick() {
+                selectorDialog.showDialog(slot);
+                slot.removeAll();
+                slot.revalidate();
+                slot.repaint();
+                GenericUi<T> newUi = UiFactory.create(selectorDialog.getSelected());
+                //shipNameSlot.setBackground(weaponPanel.getBackground());
+                slot.add(newUi);
+            }
+        });
+        slot.add(UiFactory.create(current));
+        return slot;
     }
 
     public static<T> GenericUi<T> create(

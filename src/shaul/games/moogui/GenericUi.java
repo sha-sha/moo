@@ -1,6 +1,7 @@
 package shaul.games.moogui;
 
 import shaul.games.moo.model.Ship.ShipModule;
+import shaul.games.moogui.Widget.Element;
 
 import javax.swing.*;
 import java.awt.*;
@@ -10,7 +11,7 @@ import java.awt.event.MouseListener;
 /**
  * Created by Shaul on 4/26/2015.
  */
-public class GenericUi<DATA> extends JPanel implements MouseListener, UiElement {
+public class GenericUi<DATA> extends JPanel implements MouseListener, Element {
 
     private Style style;
     private DATA data;

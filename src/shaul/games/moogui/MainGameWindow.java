@@ -3,7 +3,6 @@ package shaul.games.moogui;
 import layout.TableLayout;
 import shaul.games.moo.model.IGameLogic;
 import shaul.games.moo.model.Player.IPlayer;
-import shaul.games.moo.model.Ship.ShipDesigner;
 
 import javax.swing.*;
 import javax.swing.border.LineBorder;
@@ -33,12 +32,8 @@ public class MainGameWindow {
         //make sure the program exits when the frame closes
         guiFrame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
         guiFrame.setTitle("Master Of Orion");
-        guiFrame.setSize(640, 480);
+        guiFrame.setSize(800, 600);
         guiFrame.setBounds(100, 100, 600, 300);
-
-
-        //This will center the JFrame in the middle of the screen
-        guiFrame.setLocationRelativeTo(null);
 
         //double size[][] =  {{640}, {100, 340, 40}};
         final JPanel topPanel = new JPanel(new CardLayout());
@@ -49,13 +44,21 @@ public class MainGameWindow {
 
 
 
-        double size[][] =  {{640}, {100, 340, 40}};
+        double size[][] =  {{800}, {100, 460, 40}};
         JPanel panel = new JPanel(new TableLayout(size));
         //guiFrame.setLayout(new TableLayout(size));
 
         final ShipDesignerWindow shipDesign = new ShipDesignerWindow(gameLogic, player);
 
-        double toolbarSizes[][] =  {{80, 80, 80, 80, 80, 80, 80, 80}, {40}};
+        PanelAction exitPanelAction = new PanelAction() {
+            @Override
+            public void onExit() {
+                CardLayout cl = (CardLayout) (topPanel.getLayout());
+                cl.show(topPanel, "1");
+            }
+        };
+
+        double toolbarSizes[][] =  {{80, 80, 80, 80, 80, 80, 80, 80, 80, 80}, {40}};
         final JPanel toolbarPanel = new JPanel(new TableLayout(toolbarSizes));
         toolbarPanel.setBorder(new LineBorder(Color.BLACK, 1));
         JButton designButton = new JButton("Design");
@@ -78,23 +81,40 @@ public class MainGameWindow {
         });
         toolbarPanel.add(configTechsButton, "1, 0");
 
+        final AutoBattleSimWindow battleSimWindow = new AutoBattleSimWindow(gameLogic, player);
+        battleSimWindow.setPanelActionListener(exitPanelAction);
+
+        JButton testBattleButton = new JButton("Battle");
+        testBattleButton.addActionListener(new ActionListener() {
+            @Override
+            public void actionPerformed(ActionEvent e) {
+                shipDesign.refresh(true);
+                CardLayout cl = (CardLayout)(topPanel.getLayout());
+                cl.show(topPanel, "3");
+            }
+        });
+        toolbarPanel.add(testBattleButton, "2, 0");
+
         panel.add(toolbarPanel, "0, 2");
 
         //make sure the JFrame is visible
         //guiFrame.pack();
         //panel.setVisible(true);
 
-        shipDesign.setPanelActionListener(new PanelAction() {
-            @Override
-            public void onExit() {
-                CardLayout cl = (CardLayout)(topPanel.getLayout());
-                cl.show(topPanel, "1");
-            }
-        });
-
+        shipDesign.setPanelActionListener(exitPanelAction);
         topPanel.add(panel, "1");
         topPanel.add(shipDesign.getPanel(), "2");
+
+
+        topPanel.add(battleSimWindow, "3");
         guiFrame.pack();
+
+        Dimension screenSize = Toolkit.getDefaultToolkit().getScreenSize();
+        Point middle = new Point(screenSize.width / 2, screenSize.height / 2);
+        Point newLocation = new Point(middle.x - (guiFrame.getWidth() / 2),
+                middle.y - (guiFrame.getHeight() / 2));
+        guiFrame.setLocation(newLocation);
+
         guiFrame.setVisible(true);
 
     }

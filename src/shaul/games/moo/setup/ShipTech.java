@@ -55,9 +55,9 @@ public class ShipTech {
 
         public BattleComputer(int techLevel, int level) {
             super(techLevel, "Mark " + Utils.toRomanNumber(level), new ShipModuleData.Builder()
-                    .setCost(20, 80, 120, 400)
-                    .setSize(20 * level, 80 * level, 120 * level, 400 * level)
-                    .setPower(20, 80, 120, 400)
+                    .setCost(4, 20, 100, 500)
+                    .setSize(5, 10, 20, 100)
+                    .setPower(5, 10, 20, 100)
                     .setAttackLevel(level)
                     .build());
         }

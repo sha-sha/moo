@@ -1,18 +1,18 @@
-package shaul.games.moogui;
+package shaul.games.moogui.Widget;
 
 import javax.swing.*;
 
 /**
- * Created by Shaul on 5/2/2015.
+ * Created by Shaul on 7/12/2015.
  */
-public interface UiElement {
-    interface UiListener {
-        void onClick(UiElement t);
+public interface Element {
+    public interface UiListener {
+        void onClick(Element t);
     }
     void setListener(UiListener listener);
 
 
-    public static class UiLabel extends JLabel implements UiElement {
+    public static class Label extends JLabel implements Element {
 
         private UiListener listener;
 
